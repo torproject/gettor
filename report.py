@@ -16,7 +16,7 @@
 import os
 import sys
 import ConfigParser
-from datetime import datetime as dt
+import datetime as dt
 
 import sqlite3
 
@@ -109,12 +109,17 @@ DESC""".format(each))
                                 if not each[0] == "none"])
             self.requests.append(result)
 
+        # Get the last month since we run the script on the first day of every
+        # month and generate the report for the previous.
+        first_day_current = dt.datetime.today().replace(day=1)
+        last_month = first_day_current - dt.timedelta(days=1)
+
         with open(OUTPUT, "a") as f:
-            f.write(REPORT.format(dt.now().strftime("%B %Y"),
+            f.write(REPORT.format(last_month.strftime("%B %Y"),
                                   self.requests[0][0],
-                                  dt.now().strftime("%B"),
+                                  last_month.strftime("%B"),
                                   self.requests[1][1],
-                                  dt.strptime(self.requests[1][0], "%Y-%m-%d")
+                                  dt.datetime.strptime(self.requests[1][0], "%Y-%m-%d")
                                   .strftime("%B %-d"),
                                   *self.requests[2:]))
         self.conn.close()
