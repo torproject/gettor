@@ -1,7 +1,7 @@
 # Download Tor Browser
 
 In this repository you will find links to download the latest version of
-Tor Browser, which currently is %VERSION%. Please select one of the links below:
+Tor Browser, which currently is %TB_VERSION%. Please select one of the links below:
 
 ## Windows
 [Download Tor Browser](%WINDOWS_EN%) (English) ([signature file](%WINDOWS_EN_SIG%)).
