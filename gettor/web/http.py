@@ -15,7 +15,7 @@ import re
 import json
 import codecs
 import urllib2
-import ConfigParser
+import configparser
 
 from time import gmtime, strftime
 

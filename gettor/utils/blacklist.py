@@ -15,7 +15,7 @@ import time
 import logging
 import sqlite3
 import datetime
-import ConfigParser
+import configparser
 
 import db
 import utils

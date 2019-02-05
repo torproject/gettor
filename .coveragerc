@@ -1,0 +1,34 @@
+[run]
+source = gettor
+branch = True
+#parallel = True
+timid = False
+
+[report]
+omit =
+     */_langs*
+     */_version*
+     */__init__*
+     */sitecustomize*
+     */test/*
+# Regexes for lines to exclude from report generation:
+exclude_lines =
+     pragma: no cover
+     # don't complain if the code doesn't hit unimplemented sections:
+     raise NotImplementedError
+     pass
+     # don't complain if non-runnable or debuging code isn't run:
+     if 0:
+     if False:
+     if self[.verbosity.]
+     if options[.verbosity.]
+     def __repr__
+     if __name__ == .__main__.:
+     except Exception as impossible:
+# Ignore source code which cannot be found:
+ignore_errors = True
+# Exit with status code 2 if under this percentage is covered:
+fail_under = 80
+
+[html]
+directory = doc/coverage-html

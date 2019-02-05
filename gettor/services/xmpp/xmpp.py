@@ -17,7 +17,7 @@ import time
 import gettext
 import hashlib
 import logging
-import ConfigParser
+import configparser
 
 from sleekxmpp import ClientXMPP
 from sleekxmpp.xmlstream.stanzabase import JID

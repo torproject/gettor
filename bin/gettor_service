@@ -1,0 +1,39 @@
+#!/bin/bash
+#
+# This file is part of GetTor, a Tor Browser distribution system.
+#
+# :authors: isra <ilv@torproject.org>
+#           see also AUTHORS file
+#
+# :copyright:   (c) 2008-2014, The Tor Project, Inc.
+#               (c) 2014-2018, Israel Leiva
+#
+# :license: This is Free Software. See LICENSE for license information.
+
+source venv/bin/activate
+
+case "$1" in
+start)
+   twistd3 --python=scripts/gettor --logfile=log/gettor.log --pidfile=gettor.pid
+   ;;
+stop)
+   kill -INT `cat gettor.pid`
+   ;;
+restart)
+   $0 stop
+   sleep 2;
+   $0 start
+   ;;
+status)
+   if [ -e gettor.pid ]; then
+      echo gettor is running with pid=`cat gettor.pid`
+   else
+      echo gettor is NOT running
+      exit 1
+   fi
+   ;;
+*)
+   echo "Usage: $0 {start|stop|status|restart}"
+esac
+
+exit 0

@@ -1,0 +1,154 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
+# This file is part of GetTor, a Tor Browser distribution system.
+#
+# :authors: isra <ilv@torproject.org>
+#           see also AUTHORS file
+#
+# :license: This is Free Software. See LICENSE for license information.
+
+import os
+import sys
+import sqlite3
+import argparse
+import subprocess
+
+from shutil import move
+
+def print_header():
+    header = """
+                             __     __
+                            /\ \__ /\ \__
+                  __      __\ \ ,_\\\ \ ,_\   ____   _  __
+                /'_ `\  /'__`\ \ \/ \ \ \/  / __ `\/\`'__\
+               /\ \L\ \/\  __/\ \ \_ \ \ \ /\ \L\  \ \ \/
+               \ \____ \ \____\\\__\ \ \ \__\ \_____/\ \_\
+                \/___L\ \/____/ \/__/  \/__/\/___/  \/_/
+                 /\_____/
+                 \_/___/
+
+    """
+    print("")
+    print("@"*100)
+    print("@"*100)
+    print(header)
+    print("@"*100)
+    print("")
+
+def print_footer():
+    print("")
+    print("@"*100)
+    print("@"*100)
+    print("")
+
+def main():
+
+    parser = argparse.ArgumentParser(
+        description="Tool to create the gettor SQLite database."
+    )
+
+    parser.add_argument(
+        "-f", "--filename", default="gettor.db", metavar="gettor.db",
+        help="Database filename."
+    )
+
+    parser.add_argument(
+        "-n", "--new", action="store_true",
+        help="Create new database file.")
+
+    parser.add_argument(
+        "-o", "--overwrite", action="store_true",
+        help="Overwrite existing database file."
+    )
+
+    parser.add_argument(
+        "-c", "--clear", action="store_true",
+        help="Clear database."
+    )
+
+    args = parser.parse_args()
+    abs_filename = os.path.abspath(args.filename)
+
+    if not abs_filename:
+        print("Missing database filename.")
+    elif args.new and not args.overwrite and os.path.isfile(abs_filename):
+        print("Database file already exists. Use -o to overwrite.")
+    elif args.new:
+        conn = sqlite3.connect(abs_filename)
+        with conn:
+            c = conn.cursor()
+            c.execute("DROP TABLE IF EXISTS requests")
+            c.execute("DROP TABLE IF EXISTS links")
+            c.execute("DROP TABLE IF EXISTS stats")
+            c.execute(
+                "CREATE TABLE requests(id TEXT, command TEXT, platform TEXT,"
+                " service TEXT, date TEXT, status TEXT)"
+            )
+            c.execute(
+                "CREATE TABLE links(link TEXT, platform TEXT, arch TEXT,"
+                " version TEXT, provider TEXT, status TEXT)"
+            )
+            c.execute(
+                "CREATE TABLE stats(num_requests NUMBER, platform TEXT, "
+                "command TEXT, service TEXT, date TEXT)"
+            )
+        print("Database {} created.".format(abs_filename))
+    elif args.clear:
+        print("Shredding database file.")
+
+        if not abs_filename:
+            print("Database file does not exist.")
+
+        else:
+            move(abs_filename, "{}.tmp".format(abs_filename))
+
+            if os.path.isfile("{}.tmp".format(abs_filename)):
+                print("Database moved to {}.tmp.".format(
+                    abs_filename
+                ))
+
+                conn = sqlite3.connect(abs_filename)
+                with conn:
+                    c = conn.cursor()
+                    c.execute("DROP TABLE IF EXISTS requests")
+                    c.execute("DROP TABLE IF EXISTS links")
+                    c.execute("DROP TABLE IF EXISTS stats")
+                    c.execute(
+                        "CREATE TABLE requests(id TEXT, command TEXT, "
+                        "platform TEXT, service TEXT, date TEXT, status TEXT,"
+                        "PRIMARY KEY(id, date))"
+                    )
+                    c.execute(
+                        "CREATE TABLE links(link TEXT, platform TEXT, "
+                        "arch TEXT, version TEXT, provider TEXT, status TEXT,"
+                        "PRIMARY KEY(platform, arch, version, provider, status))"
+                    )
+                    c.execute(
+                        "CREATE TABLE stats(date TEXT PRIMARY KEY, "
+                        "num_requests INTEGER, platform TEXT, command TEXT, "
+                        "service TEXT)"
+                    )
+                    print("New database {} created.".format(abs_filename))
+
+                    cmd = subprocess.call(
+                        [
+                            "shred", "-z", "-n", "100", "-u", "{}.tmp".format(
+                                abs_filename
+                            )
+                        ]
+                    )
+
+                    if cmd:
+                        sys.exit("Error while shredding database file.")
+                    else:
+                        print("Database file {}.tmp shredded.".format(abs_filename))
+            else:
+                print("Could not create temporary database file.")
+
+
+
+if __name__ == "__main__":
+    print_header()
+    main()
+    print_footer

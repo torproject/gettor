@@ -39,13 +39,10 @@ class DB(object):
     """
 
     def __init__(self, dbname):
-    	"""Create a new db object.
-
-        :param: dbname (string) the path of the database.
-
+        """Create a new db object.
+            :param: dbname (string) the path of the database.
         """
         self.dbname = dbname
-
 
     def connect(self):
         """ """

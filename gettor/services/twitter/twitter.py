@@ -16,7 +16,7 @@ import re
 import tweepy
 import logging
 import gettext
-import ConfigParser
+import configparser
 
 import core
 import utils
