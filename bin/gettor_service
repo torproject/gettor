@@ -11,6 +11,7 @@
 # :license: This is Free Software. See LICENSE for license information.
 
 source venv/bin/activate
+alias twistd3="venv/bin/twistd"
 
 case "$1" in
 start)

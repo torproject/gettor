@@ -1,0 +1,49 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
+# This file is part of GetTor, a Tor Browser distribution system.
+#
+# :authors: isra <ilv@torproject.org>
+#           see also AUTHORS file
+#
+# :license: This is Free Software. See LICENSE for license information.
+
+import sys
+sys.path.insert(0, '..')
+
+from twisted.python import log
+from twisted.internet import defer, reactor
+
+from gettor import EMAIL_PARSER_LOGFILE
+from gettor.parse.email import EmailParser, AddressError, DKIMError
+
+@defer.inlineCallbacks
+def process_email(message):
+
+    try:
+        ep = EmailParser("gettor+test@torproject.org")
+        yield defer.maybeDeferred(
+            ep.parse, message
+        ).addCallback(ep.parse_callback).addErrback(ep.parse_errback)
+
+    except AddressError as e:
+            log.err("Address error: {}".format(e), system="process email")
+            reactor.stop()
+
+    except DKIMError as e:
+            log.err("DKIM error: {}".format(e), system="process email")
+            reactor.stop()
+
+    reactor.stop()
+
+def main():
+    incoming_email = sys.stdin.read()
+    reactor.callWhenRunning(process_email, incoming_email)
+    reactor.run()
+
+
+if __name__ == '__main__':
+    log.startLogging(open(EMAIL_PARSER_LOGFILE, 'a'))
+    log.msg("New email request received.", system="process email")
+    main()
+    log.msg("Email request processed.", system="process email")

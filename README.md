@@ -30,6 +30,24 @@ Here is a list of the main goals the new GetTor should accomplish:
  * Language and provider friendly. It should be easy to support new languages
  and to add new providers for storing packages and generate links.
 
+Installing GetTor
+=================
+
+WORKON_HOME=${HOME}/.virtualenvs
+export WORKON_HOME
+mkdir -p $WORKON_HOME
+source $(which virtualenvwrapper.sh)
+git clone https://git.torproject.org/gettor.git && cd gettor
+mkvirtualenv -a $PWD -r requirements.txt --unzip-setuptools --setuptools gettor
+
+From now on, to use BridgeDB's virtualenv, just do ``$ workon gettor``
+(after sourcing virtualenvwrapper.sh, as before). To exit the virtualenv
+without exiting the shell, do ``$ deactivate``.
+
+export PYTHONPATH=$PYTHONPATH:${VIRTUAL_ENV}/lib/python/site-packages
+
+$ ./bin/gettor_service start
+
 
 How does the new GetTor works?
 ==============================
@@ -65,7 +83,10 @@ this:
 --- END FILE ---
 
 You can also check providers/dropbox.links for a better example.
-
+WORKON_HOME=${HOME}/.virtualenvs
+         export WORKON_HOME
+         mkdir -p $WORKON_HOME
+         source $(which virtualenvwrapper.sh)
 *Core*: the heart of GetTor. Receives requests for links for a certain OS and
 language and respond accordingly. It also presents an easy way for scripts
 to create links file.
@@ -86,7 +107,7 @@ if necessary and respond to the user in the specified language. Unfinished.
 to keep count of the number of requests per person and avoid malicious users
 that try to collapse the service. It also keeps count of how many requests
 GetTor has received during its lifetime. A lot of other data was being saved
-in the original gsoc project, but it was changed to save the minimum. 
+in the original gsoc project, but it was changed to save the minimum.
 
 *Blacklist*: Provide a mechanism to avoid flood and deny interaction to
 malicious users.
@@ -119,7 +140,7 @@ should use the trac[0] and select the GetTor component. Some neat ideas we
 could use are the following:
 
  * Report bugs!
- * Create script for new providers, namely: Google Drive, Github. Check 
+ * Create script for new providers, namely: Google Drive, Github. Check
 providers.txt
  * Create a new module for distributing links. Check distribution_methods.txt
  * Finish the Twitter module.
@@ -131,4 +152,3 @@ References
 ===========
 
 [0] https://trac.torproject.org/projects/tor/query?status=accepted&status=assigned&status=needs_information&status=needs_review&status=needs_revision&status=new&status=reopened&component=GetTor&col=id&col=summary&col=component&col=status&col=type&col=priority&col=milestone&order=priority
-
