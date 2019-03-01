@@ -15,14 +15,14 @@ from twisted.internet import defer, reactor
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from gettor.parse.email import EmailParser, AddressError, DKIMError
-
-EMAIL_PARSER_LOGFILE = "/srv/gettor.torproject.org/home/gettor-hiro/log/email_parser.log"
+from gettor.utils import options
 
 @defer.inlineCallbacks
 def process_email(message):
+    settings = options.parse_settings()
 
     try:
-        ep = EmailParser("gettor+test@torproject.org")
+        ep = EmailParser(settings, "gettor+test@torproject.org")
         yield defer.maybeDeferred(
             ep.parse, message
         ).addCallback(ep.parse_callback).addErrback(ep.parse_errback)
@@ -44,7 +44,9 @@ def main():
 
 
 if __name__ == '__main__':
-    log.startLogging(open(EMAIL_PARSER_LOGFILE, 'a'))
+    settings = options.parse_settings()
+    email_parser_logfile = settings.get("email_parser_logfile")
+    log.startLogging(open(email_parser_logfile, 'a'))
     log.msg("New email request received.", system="process email")
     main()
     log.msg("Email request processed.", system="process email")

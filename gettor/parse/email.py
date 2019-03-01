@@ -27,8 +27,7 @@ from twisted.python import log
 from twisted.internet import defer
 from twisted.enterprise import adbapi
 
-from .. import PLATFORMS, EMAIL_REQUESTS_LIMIT
-from ..db import SQLite3
+from ..utils.db import SQLite3
 
 
 class AddressError(Exception):
@@ -48,12 +47,13 @@ class DKIMError(Exception):
 class EmailParser(object):
     """Class for parsing email requests."""
 
-    def __init__(self, to_addr=None, dkim=False):
+    def __init__(self, settings, to_addr=None, dkim=False):
         """
         Constructor.
 
         param (Boolean) dkim: Set dkim verification to True or False.
         """
+        self.settings = settings
         self.dkim = dkim
         self.to_addr = to_addr
 
@@ -72,6 +72,7 @@ class EmailParser(object):
         :return dict with email address and command (`links` or `help`).
         """
 
+        platforms = self.settings.get("platforms")
         log.msg("Building email message from string.", system="email parser")
         msg = message_from_string(msg_str)
 
@@ -141,7 +142,7 @@ class EmailParser(object):
         if subject:
             subject = subject.group(1)
             for word in re.split(r"\s+", subject.strip()):
-                if word.lower() in PLATFORMS:
+                if word.lower() in platforms:
                     request["command"] = "links"
                     request["platform"] = word.lower()
                     break
@@ -151,7 +152,7 @@ class EmailParser(object):
 
         if not request["command"]:
             for word in re.split(r"\s+", body_str.strip()):
-                if word.lower() in PLATFORMS:
+                if word.lower() in platforms:
                     request["command"] = "links"
                     request["platform"] = word.lower()
                     break
@@ -174,7 +175,7 @@ class EmailParser(object):
         :return: deferred whose callback/errback will log database query
         execution details.
         """
-
+        email_requests_limit = self.settings.get("email_requests_limit")
         log.msg(
             "Found request for {}.".format(request['command']),
             system="email parser"
@@ -190,7 +191,7 @@ class EmailParser(object):
                 id=hid.hexdigest(), service=request['service']
             )
 
-            if num_requests[0][0] > EMAIL_REQUESTS_LIMIT:
+            if num_requests[0][0] > email_requests_limit:
                 log.msg(
                     "Discarded. Too many requests from {}.".format(
                         hid.hexdigest
