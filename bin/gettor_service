@@ -10,12 +10,9 @@
 #
 # :license: This is Free Software. See LICENSE for license information.
 
-source venv/bin/activate
-alias twistd3="venv/bin/twistd"
-
 case "$1" in
 start)
-   twistd3 --python=scripts/gettor --logfile=log/gettor.log --pidfile=gettor.pid
+   twistd --python=scripts/gettor --logfile=log/gettor.log --pidfile=gettor.pid
    ;;
 stop)
    kill -INT `cat gettor.pid`

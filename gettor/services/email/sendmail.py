@@ -21,7 +21,7 @@ from email import mime
 from twisted.internet import defer
 from twisted.mail.smtp import sendmail
 
-from ...utils.db import DB
+from ...utils.db import SQLite3 as DB
 from ...utils.commons import log
 
 

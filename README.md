@@ -33,7 +33,7 @@ Here is a list of the main goals the new GetTor should accomplish:
 Installing GetTor
 =================
 
-WORKON_HOME=${HOME}/.virtualenvs
+WORKON_HOME=${HOME}/venv
 export WORKON_HOME
 mkdir -p $WORKON_HOME
 source $(which virtualenvwrapper.sh)
@@ -46,6 +46,7 @@ without exiting the shell, do ``$ deactivate``.
 
 export PYTHONPATH=$PYTHONPATH:${VIRTUAL_ENV}/lib/python/site-packages
 
+$ ./scripts/create_db
 $ ./bin/gettor_service start
 
 
