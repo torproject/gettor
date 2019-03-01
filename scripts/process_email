@@ -9,13 +9,14 @@
 # :license: This is Free Software. See LICENSE for license information.
 
 import sys
-sys.path.insert(0, '..')
-
+import os
 from twisted.python import log
 from twisted.internet import defer, reactor
 
-from gettor import EMAIL_PARSER_LOGFILE
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from gettor.parse.email import EmailParser, AddressError, DKIMError
+
+EMAIL_PARSER_LOGFILE = "/srv/gettor.torproject.org/home/gettor-hiro/log/email_parser.log"
 
 @defer.inlineCallbacks
 def process_email(message):
