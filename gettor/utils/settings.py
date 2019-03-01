@@ -56,7 +56,17 @@ class Settings(object):
                     self._settings = json.load(f)
             except:
                 pass
-
+        else:
+            self._settings = {
+              "platforms": ["linux", "osx", "windows"],
+              "dbname": "/srv/gettor.torproject.org/home/gettor-hiro/gettor.db",
+              "email_parser_logfile": "/srv/gettor.torproject.org/home/gettor-hiro/log/email_parser.log",
+              "email_requests_limit": 5,
+              "sendmail_interval": 10,
+              "sendmail_addr": "gettor+test@torproject.org",
+              "sendmail_host": "localhost",
+              "sendmail_port": 587
+            }
 
     def get(self, key):
         return self._settings[key]

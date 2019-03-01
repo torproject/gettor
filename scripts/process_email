@@ -38,6 +38,7 @@ def process_email(message):
     reactor.stop()
 
 def main():
+    log.msg("Reading new email.", system="process email")
     incoming_email = sys.stdin.read()
     reactor.callWhenRunning(process_email, incoming_email)
     reactor.run()

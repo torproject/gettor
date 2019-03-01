@@ -1,4 +1,6 @@
 {
+  "links_body": "GetTor Test. Please be kind.",
+  "links_subject": "GetTor Email Test",
   "help_debug": "Log application errors to stdout",
   "help_config": "Custom config file location (optional)",
   "smtp_links_subject": "[GetTor] Links for your request",

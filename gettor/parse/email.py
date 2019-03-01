@@ -101,7 +101,7 @@ class EmailParser(object):
             )
             raise AddressError("Invalid email address {}".format(msg['From']))
 
-        hid = hashlib.sha256(norm_addr)
+        hid = hashlib.sha256(norm_addr.encode('utf-8'))
         log.msg(
             "Request from {}".format(hid.hexdigest()), system="email parser"
         )
@@ -135,7 +135,8 @@ class EmailParser(object):
 
         request = {
             "id": norm_addr,
-            "command": None, "platform": None,
+            "command": None,
+            "platform": None,
             "service": "email"
         }
 
@@ -151,7 +152,7 @@ class EmailParser(object):
                     break
 
         if not request["command"]:
-            for word in re.split(r"\s+", body_str.strip()):
+            for word in re.split(r"\s+", msg_str.strip()):
                 if word.lower() in platforms:
                     request["command"] = "links"
                     request["platform"] = word.lower()
@@ -183,9 +184,10 @@ class EmailParser(object):
 
         if request["command"]:
             now_str = datetime.now().strftime("%Y%m%d%H%M%S")
-            conn = SQLite3()
+            dbname = self.settings.get("dbname")
+            conn = SQLite3(dbname)
 
-            hid = hashlib.sha256(request['id'])
+            hid = hashlib.sha256(request['id'].encode('utf-8'))
             # check limits first
             num_requests = yield conn.get_num_requests(
                 id=hid.hexdigest(), service=request['service']

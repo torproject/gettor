@@ -18,11 +18,14 @@ import hashlib
 import configparser
 from email import encoders
 from email import mime
+from email.mime.text import MIMEText
+
 from twisted.internet import defer
 from twisted.mail.smtp import sendmail
 
 from ...utils.db import SQLite3 as DB
 from ...utils.commons import log
+from ...utils import strings
 
 
 class SMTPError(Exception):
@@ -31,7 +34,7 @@ class SMTPError(Exception):
     """
     pass
 
-
+from email.mime.text import MIMEText
 class Sendmail(object):
     """
     Class for sending email replies to `help` and `links` requests.
@@ -86,22 +89,21 @@ class Sendmail(object):
         message = MIMEText(body)
 
         message['Subject'] = subject
-        message['From'] = SENDMAIL_ADDR
+        message['From'] = self.settings.get("sendmail_addr")
         message['To'] = email_addr
 
         log.debug("Calling asynchronous sendmail.")
 
         return sendmail(
-            SENDMAIL_HOST, SENDMAIL_ADDR, email_addr, message,
-            port=SENDMAIL_PORT,
-            requireAuthentication=True, requireTransportSecurity=True
+            self.settings.get("sendmail_host"), self.settings.get("sendmail_addr"), email_addr, message,
+            requireTransportSecurity=True
         ).addCallback(self.sendmail_callback).addErrback(self.sendmail_errback)
 
 
 
     @defer.inlineCallbacks
     def get_new(self):
-        """
+        """strings.load_strings("en")
         Get new requests to process. This will define the `main loop` of
         the Sendmail service.
         """
@@ -131,7 +133,7 @@ class Sendmail(object):
                     id = request[0]
                     date = request[4]
 
-                    hid = hashlib.sha256(id)
+                    hid = hashlib.sha256(id.encode('utf-8'))
                     log.info(
                         "Sending help message to {}.".format(
                             hid.hexdigest()
@@ -161,11 +163,7 @@ class Sendmail(object):
                 log.info("Got new links request.")
 
                 # for now just english
-                en = gettext.translation(
-                    'email', localedir='locales', languages=['en']
-                )
-                en.install()
-                _ = en.gettext
+                strings.load_strings("en")
 
                 for request in link_requests:
                     id = request[0]
@@ -194,11 +192,11 @@ class Sendmail(object):
                         else:
                             link_msg = link_str
 
-                    body_msg = _("links_body")
+                    body_msg = strings._("links_body")
                     body_msg = body_msg.format(links=link_msg)
-                    subject_msg = _("links_subject")
+                    subject_msg = strings._("links_subject")
 
-                    hid = hashlib.sha256(id)
+                    hid = hashlib.sha256(id.encode('utf-8'))
                     log.info(
                         "Sending links to {}.".format(
                             hid.hexdigest()
