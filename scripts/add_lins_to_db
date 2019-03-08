@@ -57,12 +57,17 @@ def main():
   versions = webFile.read().decode('utf-8')
   version = versions.split("&#34;")[1]
 
-  gitlab = "https://gitlab.com/hiromipaw/torbrowser/raw/releases/"
+  providers = {
+    "osx": "https://gitlab.com/hiromipaw/torbrowser/raw/releases/",
+    "windows": "https://gitlab.com/hiromipaw/torbrowser/raw/releases/",
+    "linux": "https://gitlab.com/hiromipaw/torbrowser/raw/releases/"
+  }
+
 
   prefixes = {
-    "osx": "https://gitlab.com/hiromipaw/torbrowser/raw/releases/TorBrowser-",
-    "windows": "https://gitlab.com/hiromipaw/torbrowser/raw/releases/torbrowser-install-",
-    "linux": "https://gitlab.com/hiromipaw/torbrowser/raw/releases/tor-browser-linux64-"
+    "osx": "TorBrowser-",
+    "windows": "torbrowser-install-",
+    "linux": "tor-browser-linux64-"
   }
 
   versions = {"windows": version, 'linux': version, 'osx': version}
@@ -74,7 +79,7 @@ def main():
   }
 
   keys = set().union(suffixes, versions, prefixes)
-  releases = {k: "".join(dic.get(k, version) for dic in (prefixes, versions, suffixes))  for k in keys}
+  releases = {k: "".join(dic.get(k, version) for dic in (providers, prefixes, versions, suffixes))  for k in keys}
 
 
   if not abs_filename:

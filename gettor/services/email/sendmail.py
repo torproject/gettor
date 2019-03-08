@@ -187,8 +187,7 @@ class Sendmail(object):
                         else:
                             link_msg = link_str
 
-                    body_msg = strings._("links_body")
-                    body_msg = body_msg.format(links=link_msg)
+                    body_msg = strings._("links_body").format(platform, link_msg)
                     subject_msg = strings._("links_subject")
 
                     hid = hashlib.sha256(id.encode('utf-8'))
