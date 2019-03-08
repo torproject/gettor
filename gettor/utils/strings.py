@@ -72,13 +72,20 @@ def get_resource_path(filename, path):
     return os.path.join(prefix, filename)
 
 def get_version():
-    # The current version
+    """
+    The current version
+    """
+
     version = ""
     with open(get_resource_path('version.txt', '../share')) as f:
         version = f.read().strip()
     return version
 
 def get_locales():
+    """
+    Get available_locales
+    """
+    
     filename = get_resource_path("available_locales.json", '../share/locale')
     locales = {}
     with open(filename, encoding='utf-8') as f:

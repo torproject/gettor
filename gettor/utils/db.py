@@ -16,7 +16,7 @@ from twisted.enterprise import adbapi
 
 class SQLite3(object):
 	"""
-
+	This class handles the database connections and operations.
 	"""
 	def __init__(self, dbname):
 		"""Constructor."""
@@ -25,18 +25,26 @@ class SQLite3(object):
 		)
 
 	def query_callback(self, results=None):
-		""" """
+		"""
+		Query callback
+		Log that the database query has been executed and return results
+		"""
 		log.msg("Database query executed successfully.")
 		return results
 
 	def query_errback(self, error=None):
-		""" """
+		"""
+        Query error callback
+		Logs database error
+		"""
 		if error:
 			log.msg("Database error: {}".format(error))
 		return None
 
 	def new_request(self, id, command, service, platform, date, status):
-		""" """
+		"""
+		Perform a new request to the database
+		"""
 		query = "INSERT INTO requests VALUES(?, ?, ?, ?, ?, ?)"
 
 		return self.dbpool.runQuery(
@@ -44,7 +52,9 @@ class SQLite3(object):
 		).addCallback(self.query_callback).addErrback(self.query_errback)
 
 	def get_requests(self, status, command, service):
-		""" """
+		"""
+		Perform a SELECT request to the database
+		"""
 		query = "SELECT * FROM requests WHERE service=? AND command=? AND "\
 		"status = ?"
 
@@ -53,7 +63,9 @@ class SQLite3(object):
 		).addCallback(self.query_callback).addErrback(self.query_errback)
 
 	def get_num_requests(self, id, service):
-		""" """
+		"""
+		Get number of requests for statistics
+		"""
 		query = "SELECT COUNT(rowid) FROM requests WHERE id=? AND service=?"
 
 		return self.dbpool.runQuery(
@@ -61,7 +73,9 @@ class SQLite3(object):
 		).addCallback(self.query_callback).addErrback(self.query_errback)
 
 	def update_request(self, id, hid, status, service, date):
-		""" """
+		"""
+		Update request record in the database
+		"""
 		query = "UPDATE requests SET id=?, status=? WHERE id=? AND "\
 		"service=? AND date=?"
 
@@ -70,7 +84,9 @@ class SQLite3(object):
 		).addCallback(self.query_callback).addErrback(self.query_errback)
 
 	def update_stats(self, command, service, platform=None):
-		""" """
+		"""
+		Update statistics to the database
+		"""
 		now_str = datetime.now().strftime("%Y%m%d")
 		query = "REPLACE INTO stats(num_requests, platform, "\
 		"command, service, date) VALUES(COALESCE((SELECT num_requests FROM stats "\
@@ -81,7 +97,9 @@ class SQLite3(object):
 		).addCallback(self.query_callback).addErrback(self.query_errback)
 
 	def get_links(self, platform, status):
-		""" """
+		"""
+		Get links from the database per platform
+		"""
 		query = "SELECT * FROM links WHERE platform=? AND status=?"
 		return self.dbpool.runQuery(
 			query, (platform, status)

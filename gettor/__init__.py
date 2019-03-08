@@ -12,6 +12,8 @@ the Tor Browser.
 
 from .utils import strings
 
-
+"""
+This is where version and available locales get loaded.
+"""
 __version__ = strings.get_version()
 __locales__ = strings.get_locales()

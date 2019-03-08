@@ -10,7 +10,9 @@ the Tor Browser.
 :license: see included LICENSE for information
 """
 
-"""This module sets up GetTor and starts the servers running."""
+"""
+This sets up GetTor and starts the servers running.
+"""
 
 import sys
 
@@ -22,7 +24,7 @@ from .services.email.sendmail import Sendmail
 
 def run(gettor, app):
     """
-        This is GetTor's main entry point and main runtime loop.
+    This is GetTor's main entry point and main runtime loop.
     """
     settings = options.parse_settings()
 

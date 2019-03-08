@@ -22,7 +22,10 @@ import core
 import utils
 import blacklist
 
-"""Twitter channel for distributing links to download Tor Browser."""
+"""
+Twitter channel for distributing links to download Tor Browser.
+Needs to be refactored to work with twisted and updates to twitter apis
+"""
 
 OS = {
     'osx': 'Mac OS X',

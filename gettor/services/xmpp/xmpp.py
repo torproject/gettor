@@ -28,7 +28,10 @@ import utils
 import blacklist
 
 
-"""XMPP module for processing requests."""
+"""
+XMPP module for processing requests.
+Needs to be refactored to work with twisted
+"""
 
 OS = {
     'osx': 'Mac OS X',

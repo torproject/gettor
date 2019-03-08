@@ -1,0 +1,64 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
+# This file is part of GetTor, a Tor Browser distribution system.
+#
+# :authors: hiro <hiro@torproject.org>
+#           see also AUTHORS file
+#
+# :license: This is Free Software. See LICENSE for license information.
+
+import os
+import sys
+import sqlite3
+import urllib import request
+
+def main():
+  args = parser.parse_args()
+  abs_filename = os.path.abspath(args.filename)
+
+  webFile = request.urlopen("https://lektor-staging.torproject.org/tpo/staging/projects/torbrowser/RecommendedTBBVersions/")
+  versions = webfile.read().decode('utf-8')
+  version = versions.split("&#34;")[1]
+
+  gitlab = "https://gitlab.com/hiromipaw/torbrowser/raw/releases/"
+
+  prefixes = {
+    "osx": "TorBrowser-",
+    "windows": "torbrowser-install-",
+    "linux": "tor-browser-linux64-"
+  }
+
+  versions = {"windows": version, 'linux': version, 'osx': version}
+
+  suffixes = {
+    "osx": "-osx64_en-US.dmg",
+    "windows": "_en-US.exe",
+    "linux": "_en-US.tar.xz"
+  }
+
+  keys = set().union(suffixes, versions, prefixes)
+  releases = {k: "".join(dic.get(k, version) for dic in (prefixes, versions, suffixes))  for k in keys}
+
+
+  if not abs_filename:
+      print("Missing database filename.")
+  elif args.new and not args.overwrite and os.path.isfile(abs_filename):
+      print("Database file already exists.")
+  elif args.new:
+      conn = sqlite3.connect(abs_filename)
+      with conn:
+          c = conn.cursor()
+          """
+          Here we drop previous links TABLE but probably it would be better to just update old links to INACTIVE
+          """
+          c.execute("DROP TABLE IF EXISTS links")
+          c.execute(
+              "CREATE TABLE links(link TEXT, platform TEXT, arch TEXT,"
+              " version TEXT, provider TEXT, status TEXT)"
+          )
+          for k in keys:
+              c.execute(
+                  "INSERT INTO links(link, platform, arch, version, provider, status)"
+                  "VALUES ('%s', '%s' '64', '%s', 'gitlab', 'ACTIVE')" %(releases.get(key), k, version)
+              )

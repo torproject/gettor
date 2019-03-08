@@ -22,7 +22,10 @@ from time import gmtime, strftime
 import core
 import utils
 
-"""GetTor RESTful API"""
+"""
+GetTor RESTful API
+This part of GetTor has not been integrated into twisted-gettor just yet.
+"""
 
 # currently supported locales for Tor Browser
 LC = ['ar', 'de', 'en-US', 'es-ES', 'fa', 'fr', 'it', 'ko', 'nl', 'pl',
@@ -123,7 +126,7 @@ class HTTP(object):
         except ValueError, e:
             return False
         return True
-    
+
     def _write_json(self, path, content):
         """
         """
@@ -376,9 +379,9 @@ class HTTP(object):
 
     def build(self):
         """ Build RESTful API. """
-        
+
         print "Building API"
-        
+
         # resources
         self._write_json(
             os.path.join(self.tree, 'api'),
@@ -388,7 +391,7 @@ class HTTP(object):
         api_path = os.path.join(self.tree, 'api-content')
         if not os.path.isdir(api_path):
             os.mkdir(api_path)
-        
+
         # providers
         self._write_json(
             os.path.join(api_path, 'providers'),
@@ -415,7 +418,7 @@ class HTTP(object):
 
             if not os.path.isdir(provider_path):
                 os.mkdir(provider_path)
-            
+
             for osys in self.links[provider]:
                 self._write_json(
                     os.path.join(provider_path, osys),
@@ -424,11 +427,11 @@ class HTTP(object):
 
                 provider_os_path = os.path.join(
                     provider_path, "%s-content" % osys
-                )            
+                )
 
                 if not os.path.isdir(provider_os_path):
                     os.mkdir(provider_os_path)
-                
+
                 for lc in self.links[provider][osys]:
                     self._write_json(
                         os.path.join(provider_os_path, lc),
@@ -440,7 +443,7 @@ class HTTP(object):
             os.path.join(api_path, 'latest'),
             self.lv
         )
-        
+
         lv_path = os.path.join(api_path, 'latest-content')
         if not os.path.isdir(lv_path):
             os.mkdir(lv_path)
@@ -453,7 +456,7 @@ class HTTP(object):
                 os.path.join(lv_path, release),
                 self.lv[release]
             )
-            
+
             release_path = os.path.join(
                 lv_path,
                 "%s-content" % release
@@ -461,7 +464,7 @@ class HTTP(object):
 
             if not os.path.isdir(release_path):
                 os.mkdir(release_path)
-            
+
             for osys in self.lv[release]['downloads']:
                 self._write_json(
                     os.path.join(release_path, osys),
@@ -475,7 +478,7 @@ class HTTP(object):
 
                 if not os.path.isdir(release_os_path):
                     os.mkdir(release_os_path)
-                
+
                 for lc in self.lv[release]['downloads'][osys]:
                     self._write_json(
                         os.path.join(release_os_path, lc),

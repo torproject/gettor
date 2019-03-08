@@ -103,7 +103,7 @@ class Sendmail(object):
 
     @defer.inlineCallbacks
     def get_new(self):
-        """strings.load_strings("en")
+        """
         Get new requests to process. This will define the `main loop` of
         the Sendmail service.
         """
@@ -117,17 +117,15 @@ class Sendmail(object):
             status="ONHOLD", command="links", service="email"
         )
 
+        """
+        Load strings for translations
+        """
+        # for now just english
+        strings.load_strings("en")
 
         if help_requests:
             try:
                 log.info("Got new help request.")
-
-                # for now just english
-                en = gettext.translation(
-                    'email', localedir='locales', languages=['en']
-                )
-                en.install()
-                _ = en.gettext
 
                 for request in help_requests:
                     id = request[0]
@@ -142,8 +140,8 @@ class Sendmail(object):
 
                     yield self.sendmail(
                         email_addr=id,
-                        subject=_("help_subject"),
-                        body=_("help_body")
+                        subject=strings._("help_subject"),
+                        body=strings._("help_body")
                     )
 
                     yield self.conn.update_stats(
@@ -161,9 +159,6 @@ class Sendmail(object):
         elif link_requests:
             try:
                 log.info("Got new links request.")
-
-                # for now just english
-                strings.load_strings("en")
 
                 for request in link_requests:
                     id = request[0]

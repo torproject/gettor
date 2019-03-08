@@ -10,6 +10,14 @@
 #
 # :license: This is Free Software. See LICENSE for license information.
 
+
+################################################################################
+#                                                                              #
+# This is how GetTor is started as a twisted application.                      #
+# The script allows to start, stop, restart GetTor and get its status.         #
+#                                                                              #
+################################################################################
+
 case "$1" in
 start)
    twistd --python=scripts/gettor --logfile=log/gettor.log --pidfile=gettor.pid

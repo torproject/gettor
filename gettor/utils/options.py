@@ -25,6 +25,10 @@ def load_settings(config=None):
     return settings
 
 def parse_settings():
+    """
+    Parse settings and loads strings in a given locale
+    This function needs to be rewritten considering passing a locale and
+    returing translated strings
+    """
     strings.load_strings("en")
-
     return load_settings(config=False)
