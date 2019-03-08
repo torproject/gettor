@@ -11,22 +11,58 @@
 import os
 import sys
 import sqlite3
-import urllib import request
+import argparse
+from urllib import request
+
+def print_header():
+    header = """
+                             __     __
+                            /\ \__ /\ \__
+                  __      __\ \ ,_\\\ \ ,_\   ____   _  __
+                /'_ `\  /'__`\ \ \/ \ \ \/  / __ `\/\`'__\
+               /\ \L\ \/\  __/\ \ \_ \ \ \ /\ \L\  \ \ \/
+               \ \____ \ \____\\\__\ \ \ \__\ \_____/\ \_\
+                \/___L\ \/____/ \/__/  \/__/\/___/  \/_/
+                 /\_____/
+                 \_/___/
+
+    """
+    print("")
+    print("@"*100)
+    print("@"*100)
+    print(header)
+    print("@"*100)
+    print("")
+
+def print_footer():
+    print("")
+    print("@"*100)
+    print("@"*100)
+    print("")
 
 def main():
+  parser = argparse.ArgumentParser(
+    description="Tool to create the gettor SQLite database."
+  )
+
+  parser.add_argument(
+    "-f", "--filename", default="gettor.db", metavar="gettor.db",
+    help="Database filename."
+  )
+
   args = parser.parse_args()
   abs_filename = os.path.abspath(args.filename)
 
   webFile = request.urlopen("https://lektor-staging.torproject.org/tpo/staging/projects/torbrowser/RecommendedTBBVersions/")
-  versions = webfile.read().decode('utf-8')
+  versions = webFile.read().decode('utf-8')
   version = versions.split("&#34;")[1]
 
   gitlab = "https://gitlab.com/hiromipaw/torbrowser/raw/releases/"
 
   prefixes = {
-    "osx": "TorBrowser-",
-    "windows": "torbrowser-install-",
-    "linux": "tor-browser-linux64-"
+    "osx": "https://gitlab.com/hiromipaw/torbrowser/raw/releases/TorBrowser-",
+    "windows": "https://gitlab.com/hiromipaw/torbrowser/raw/releases/torbrowser-install-",
+    "linux": "https://gitlab.com/hiromipaw/torbrowser/raw/releases/tor-browser-linux64-"
   }
 
   versions = {"windows": version, 'linux': version, 'osx': version}
@@ -43,9 +79,7 @@ def main():
 
   if not abs_filename:
       print("Missing database filename.")
-  elif args.new and not args.overwrite and os.path.isfile(abs_filename):
-      print("Database file already exists.")
-  elif args.new:
+  else:
       conn = sqlite3.connect(abs_filename)
       with conn:
           c = conn.cursor()
@@ -60,5 +94,11 @@ def main():
           for k in keys:
               c.execute(
                   "INSERT INTO links(link, platform, arch, version, provider, status)"
-                  "VALUES ('%s', '%s' '64', '%s', 'gitlab', 'ACTIVE')" %(releases.get(key), k, version)
+                  "VALUES ('%s', '%s', '64', '%s', 'gitlab', 'ACTIVE')" %(releases.get(k), k, version)
               )
+
+
+if __name__ == "__main__":
+    print_header()
+    main()
+    print_footer

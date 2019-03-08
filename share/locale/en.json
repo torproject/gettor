@@ -1,6 +1,6 @@
 {
-  "links_body": "GetTor Test. Please be kind.",
-  "links_subject": "GetTor Email Test",
+  "links_body": "GetTor Test. Please be kind. \n \n You can download GetTor from the following links: \n \n %s",
+  "links_subject": "GetTor Email Test.",
   "help_body": "GetTor Help Test. Please be kind.",
   "help_subject": "GetTor Help Email Test",
   "help_debug": "Log application errors to stdout",
