@@ -32,22 +32,42 @@ Here is a list of the main goals the new GetTor should accomplish:
 
 Installing GetTor
 =================
-
+```sh
 WORKON_HOME=${HOME}/venv
 export WORKON_HOME
 mkdir -p $WORKON_HOME
 source $(which virtualenvwrapper.sh)
 git clone https://git.torproject.org/gettor.git && cd gettor
 mkvirtualenv -a $PWD -r requirements.txt --unzip-setuptools --setuptools gettor
+```
 
-From now on, to use BridgeDB's virtualenv, just do ``$ workon gettor``
+From now on, to use GetTor's virtualenv, just do ``$ workon gettor``
 (after sourcing virtualenvwrapper.sh, as before). To exit the virtualenv
 without exiting the shell, do ``$ deactivate``.
 
+```sh
 export PYTHONPATH=$PYTHONPATH:${VIRTUAL_ENV}/lib/python/site-packages
+```
 
+```sh
 $ ./scripts/create_db
 $ ./bin/gettor_service start
+```
+
+Running tests
+=================
+
+GetTor includes PyTest unit tests. To run the tests, first install some dependencies:
+
+```sh
+pip3 install -r .test.requirements.txt
+```
+
+Then you can run `pytest` against the `tests/` directory.
+
+```sh
+pytest tests/
+```
 
 
 How does the new GetTor works?
