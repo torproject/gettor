@@ -92,7 +92,7 @@ def get_locales():
         locales = json.load(f)
     return locales
 
-def load_strings(current_locale):
+def load_strings(current_locale='en'):
     """
     Loads translated strings and fallback to English
     if the translation does not exist.
@@ -112,7 +112,7 @@ def load_strings(current_locale):
     strings = {}
     for s in translations[current_locale]:
         strings[s] = translations[current_locale][s]
-    
+
 
 
 def translated(k):
