@@ -209,6 +209,7 @@ class EmailParser(object):
                     id=request['id'],
                     command=request['command'],
                     platform=request['platform'],
+                    language=request['language'],
                     service=request['service'],
                     date=now_str,
                     status="ONHOLD",

@@ -102,7 +102,7 @@ def main():
                   for l in languages:
                       release_link = releases.get(k).replace("en-US", l)
                       c.execute(
-                        "INSERT INTO links(link, platform, arch, version, provider, status)"
+                        "INSERT INTO links(link, platform, language, arch, version, provider, status)"
                         "VALUES ('%s', '%s', '64', '%s', '%s', 'ACTIVE')" %(providers.get(p) + release_link, k, version, p))
 
 

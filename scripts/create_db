@@ -83,15 +83,15 @@ def main():
             c.execute("DROP TABLE IF EXISTS stats")
             c.execute(
                 "CREATE TABLE requests(id TEXT, command TEXT, platform TEXT,"
-                " service TEXT, date TEXT, status TEXT)"
+                " language TEXT, service TEXT, date TEXT, status TEXT)"
             )
             c.execute(
-                "CREATE TABLE links(link TEXT, platform TEXT, arch TEXT,"
-                " version TEXT, provider TEXT, status TEXT)"
+                "CREATE TABLE links(link TEXT, platform TEXT, language TEXT,"
+                " arch TEXT, version TEXT, provider TEXT, status TEXT)"
             )
             c.execute(
-                "CREATE TABLE stats(num_requests NUMBER, platform TEXT, "
-                "command TEXT, service TEXT, date TEXT)"
+                "CREATE TABLE stats(num_requests NUMBER, platform TEXT,"
+                " language TEXT, command TEXT, service TEXT, date TEXT)"
             )
         print("Database {} created.".format(abs_filename))
     elif args.clear:
@@ -116,17 +116,17 @@ def main():
                     c.execute("DROP TABLE IF EXISTS stats")
                     c.execute(
                         "CREATE TABLE requests(id TEXT, command TEXT, "
-                        "platform TEXT, service TEXT, date TEXT, status TEXT,"
+                        "platform TEXT, language TEXT, service TEXT, date TEXT, status TEXT,"
                         "PRIMARY KEY(id, date))"
                     )
                     c.execute(
-                        "CREATE TABLE links(link TEXT, platform TEXT, "
+                        "CREATE TABLE links(link TEXT, platform TEXT, language TEXT,"
                         "arch TEXT, version TEXT, provider TEXT, status TEXT,"
                         "PRIMARY KEY(platform, arch, version, provider, status))"
                     )
                     c.execute(
                         "CREATE TABLE stats(date TEXT PRIMARY KEY, "
-                        "num_requests INTEGER, platform TEXT, command TEXT, "
+                        "num_requests INTEGER, platform TEXT, language TEXT, command TEXT, "
                         "service TEXT)"
                     )
                     print("New database {} created.".format(abs_filename))

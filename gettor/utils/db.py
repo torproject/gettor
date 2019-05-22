@@ -41,14 +41,14 @@ class SQLite3(object):
 			log.msg("Database error: {}".format(error))
 		return None
 
-	def new_request(self, id, command, service, platform, date, status):
+	def new_request(self, id, command, service, platform, language, date, status):
 		"""
 		Perform a new request to the database
 		"""
 		query = "INSERT INTO requests VALUES(?, ?, ?, ?, ?, ?)"
 
 		return self.dbpool.runQuery(
-			query, (id, command, platform, service, date, status)
+			query, (id, command, platform, language, service, date, status)
 		).addCallback(self.query_callback).addErrback(self.query_errback)
 
 	def get_requests(self, status, command, service):

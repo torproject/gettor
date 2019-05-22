@@ -164,7 +164,7 @@ class Sendmail(object):
 
                     log.info("Getting links for {}.".format(platform))
                     links = yield self.conn.get_links(
-                        platform=platform, status="ACTIVE"
+                        platform=platform, language=language, status="ACTIVE"
                     )
 
                     # build message
