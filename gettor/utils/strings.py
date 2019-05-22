@@ -85,7 +85,7 @@ def get_locales():
     """
     Get available_locales
     """
-    
+
     filename = get_resource_path("available_locales.json", '../share/locale')
     locales = {}
     with open(filename, encoding='utf-8') as f:
@@ -109,15 +109,10 @@ def load_strings(current_locale):
         with open(filename, encoding='utf-8') as f:
             translations[locale] = json.load(f)
 
-    # Build strings
-    default_locale = 'en'
-
     strings = {}
-    for s in translations[default_locale]:
-        if s in translations[current_locale] and translations[current_locale][s] != "":
-            strings[s] = translations[current_locale][s]
-        else:
-            strings[s] = translations[default_locale][s]
+    for s in translations[current_locale]:
+        strings[s] = translations[current_locale][s]
+    
 
 
 def translated(k):

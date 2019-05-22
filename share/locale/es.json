@@ -7,7 +7,7 @@
   "help_config": "Custom config file location (optional)",
   "smtp_links_subject": "[GetTor] Links for your request",
   "smtp_mirrors_subject": "[GetTor] Mirrors",
-  "smtp_help_subject": "[GetTor] Help",
+  "smtp_help_subject": "[GetTor] Ayuda",
   "smtp_unsupported_locale_subject": "[GetTor] Unsupported locale",
   "smtp_unsupported_locale_msg": "The locale you requested '{}' is not supported.",
   "smtp_vlinks_msg": "You requested Tor Browser for {}.\n\nYou will need only one of the links below to download the bundle. If a link does not work for you, try the next one.\n\n{}\n\n \n--\nGetTor",

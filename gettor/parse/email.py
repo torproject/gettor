@@ -154,7 +154,7 @@ class EmailParser(object):
                     request["command"] = "help"
                     break
 
-        if not request["command"] and not request["language"]:
+        if not request["command"] or not request["language"]:
             for word in re.split(r"\s+", msg_str.strip()):
                 if word.lower() in languages:
                     request["language"] = word.lower()
