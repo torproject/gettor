@@ -53,14 +53,13 @@ def main():
   args = parser.parse_args()
   abs_filename = os.path.abspath(args.filename)
 
-  webFile = request.urlopen("https://lektor-staging.torproject.org/tpo/staging/projects/torbrowser/RecommendedTBBVersions/")
-  versions = webFile.read().decode('utf-8')
-  version = versions.split("&#34;")[1]
+  webFile = request.urlopen("https://www.torproject.org/projects/torbrowser/RecommendedTBBVersions/")
+  versions = webFile.read().decode('utf-8').translate({ord(c): None for c in '[]\n" '})
+  version = versions.split(",")[4]
 
   providers = {
-    "osx": "https://gitlab.com/hiromipaw/torbrowser/raw/releases/",
-    "windows": "https://gitlab.com/hiromipaw/torbrowser/raw/releases/",
-    "linux": "https://gitlab.com/hiromipaw/torbrowser/raw/releases/"
+    "gitlab": "https://gitlab.com/thetorproject/gettorbrowser/raw/releases/",
+    "github": "https://github.com/TheTorProject/gettorbrowser/raw/torbrowser-releases/"
   }
 
 
@@ -78,8 +77,8 @@ def main():
     "linux": "_en-US.tar.xz"
   }
 
-  keys = set().union(suffixes, versions, prefixes)
-  releases = {k: "".join(dic.get(k, version) for dic in (providers, prefixes, versions, suffixes))  for k in keys}
+  keys = {'osx', 'windows', 'linux'}
+  releases = {k: "".join(dic.get(k, version) for dic in (prefixes, versions, suffixes))  for k in keys}
 
 
   if not abs_filename:
@@ -97,10 +96,11 @@ def main():
               " version TEXT, provider TEXT, status TEXT)"
           )
           for k in keys:
-              c.execute(
-                  "INSERT INTO links(link, platform, arch, version, provider, status)"
-                  "VALUES ('%s', '%s', '64', '%s', 'gitlab', 'ACTIVE')" %(releases.get(k), k, version)
-              )
+              for p in providers:
+                  c.execute(
+                    "INSERT INTO links(link, platform, arch, version, provider, status)"
+                    "VALUES ('%s', '%s', '64', '%s', '%s', 'ACTIVE')" %(providers.get(p) + releases.get(k), k, version, p))
+                  )
 
 
 if __name__ == "__main__":
