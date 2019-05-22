@@ -59,11 +59,11 @@ class Settings(object):
         else:
             self._settings = {
               "platforms": ["linux", "osx", "windows"],
-              "dbname": "/srv/gettor.torproject.org/home/gettor-hiro/gettor.db",
-              "email_parser_logfile": "/srv/gettor.torproject.org/home/gettor-hiro/log/email_parser.log",
+              "dbname": "/srv/gettor.torproject.org/home/gettor/gettor.db",
+              "email_parser_logfile": "/srv/gettor.torproject.org/home/gettor/log/email_parser.log",
               "email_requests_limit": 5,
               "sendmail_interval": 10,
-              "sendmail_addr": "gettor+test@torproject.org",
+              "sendmail_addr": "gettor@torproject.org",
               "sendmail_host": "localhost",
               "sendmail_port": 587
             }
