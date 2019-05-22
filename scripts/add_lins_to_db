@@ -77,9 +77,11 @@ def main():
     "linux": "_en-US.tar.xz"
   }
 
-  keys = {'osx', 'windows', 'linux'}
-  releases = {k: "".join(dic.get(k, version) for dic in (prefixes, versions, suffixes))  for k in keys}
+  keys = ['osx', 'windows', 'linux']
 
+  languages = ['en-US', 'es-ES', 'pt-BR']
+
+  releases = {k: "".join(dic.get(k, version) for dic in (prefixes, versions, suffixes))  for k in keys}
 
   if not abs_filename:
       print("Missing database filename.")
@@ -97,9 +99,11 @@ def main():
           )
           for k in keys:
               for p in providers:
-                  c.execute(
-                    "INSERT INTO links(link, platform, arch, version, provider, status)"
-                    "VALUES ('%s', '%s', '64', '%s', '%s', 'ACTIVE')" %(providers.get(p) + releases.get(k), k, version, p))
+                  for l in languages:
+                      release_link = releases.get(k).replace("en-US", l)
+                      c.execute(
+                        "INSERT INTO links(link, platform, arch, version, provider, status)"
+                        "VALUES ('%s', '%s', '64', '%s', '%s', 'ACTIVE')" %(providers.get(p) + release_link, k, version, p))
 
 
 if __name__ == "__main__":

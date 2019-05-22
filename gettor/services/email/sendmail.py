@@ -117,13 +117,8 @@ class Sendmail(object):
             status="ONHOLD", command="links", service="email"
         )
 
-        """
-        Load strings for translations
-        """
-        # for now just english
-        strings.load_strings("en")
-
         if help_requests:
+            strings.load_strings("en")
             try:
                 log.info("Got new help request.")
 
@@ -164,6 +159,8 @@ class Sendmail(object):
                     id = request[0]
                     date = request[4]
                     platform = request[2]
+                    language = request[3]
+                    strings.load_strings(language)
 
                     log.info("Getting links for {}.".format(platform))
                     links = yield self.conn.get_links(

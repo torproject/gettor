@@ -73,6 +73,7 @@ class EmailParser(object):
         """
 
         platforms = self.settings.get("platforms")
+        languages = self.settings.get("languages")
         log.msg("Building email message from string.", system="email parser")
         msg = message_from_string(msg_str)
 
@@ -137,26 +138,29 @@ class EmailParser(object):
             "id": norm_addr,
             "command": None,
             "platform": None,
+            "language": None,
             "service": "email"
         }
 
         if subject:
             subject = subject.group(1)
             for word in re.split(r"\s+", subject.strip()):
+                if word.lower() in languages:
+                    request["language"] = word.lower()
                 if word.lower() in platforms:
                     request["command"] = "links"
                     request["platform"] = word.lower()
-                    break
                 if word.lower() == "help":
                     request["command"] = "help"
                     break
 
-        if not request["command"]:
+        if not request["command"] and not request["language"]:
             for word in re.split(r"\s+", msg_str.strip()):
+                if word.lower() in languages:
+                    request["language"] = word.lower()
                 if word.lower() in platforms:
                     request["command"] = "links"
                     request["platform"] = word.lower()
-                    break
                 if word.lower() == "help":
                     request["command"] = "help"
                     break

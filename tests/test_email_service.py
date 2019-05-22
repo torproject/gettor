@@ -20,6 +20,17 @@ class EmailServiceTests(unittest.TestCase):
     def test_get_interval(self):
         self.assertEqual(self.settings.get("sendmail_interval"), self.sm_client.get_interval())
 
+    def test_help_email_parser(self):
+        ep = conftests.EmailParser(self.settings, "gettor@torproject.org")
+        request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n Subject: help\n Reply-To: hiro@torproject.org \nTo: gettor@torproject.org")
+        self.assertEqual(request["command"], "help")
+
+    def test_language_email_parser(self):
+        ep = conftests.EmailParser(self.settings, "gettor@torproject.org")
+        request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n Subject: osx en\r\n Reply-To: hiro@torproject.org \nTo: gettor@torproject.org\n osx English")
+        self.assertEqual(request["command"], "links")
+        self.assertEqual(request["platform"], "osx")
+        self.assertEqual(request["language"], "en")
 
 
 if __name__ == "__main__":

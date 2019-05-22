@@ -59,6 +59,7 @@ class Settings(object):
         else:
             self._settings = {
               "platforms": ["linux", "osx", "windows"],
+              "languages": ["en", "es", "pt"],
               "dbname": "/srv/gettor.torproject.org/home/gettor/gettor.db",
               "email_parser_logfile": "/srv/gettor.torproject.org/home/gettor/log/email_parser.log",
               "email_requests_limit": 5,
