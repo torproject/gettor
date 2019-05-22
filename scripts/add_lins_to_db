@@ -100,7 +100,7 @@ def main():
                   c.execute(
                     "INSERT INTO links(link, platform, arch, version, provider, status)"
                     "VALUES ('%s', '%s', '64', '%s', '%s', 'ACTIVE')" %(providers.get(p) + releases.get(k), k, version, p))
-                  )
+                    )
 
 
 if __name__ == "__main__":
