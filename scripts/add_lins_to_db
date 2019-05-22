@@ -94,7 +94,7 @@ def main():
           """
           c.execute("DROP TABLE IF EXISTS links")
           c.execute(
-              "CREATE TABLE links(link TEXT, platform TEXT, arch TEXT,"
+              "CREATE TABLE links(link TEXT, platform TEXT, language TEXT, arch TEXT,"
               " version TEXT, provider TEXT, status TEXT)"
           )
           for k in keys:
