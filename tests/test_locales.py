@@ -25,6 +25,10 @@ class EmailServiceTests(unittest.TestCase):
         conftests.strings.load_strings("en")
         self.assertEqual(conftests.strings._("smtp_mirrors_subject"), "[GetTor] Mirrors")
 
+    def test_load_default_strings(self):
+        conftests.strings.load_strings(None)
+        self.assertEqual(conftests.strings._("smtp_mirrors_subject"), "[GetTor] Mirrors")
+
     def test_load_es_strings(self):
         conftests.strings.load_strings("es")
         self.assertEqual(conftests.strings._("smtp_help_subject"), "[GetTor] Ayuda")

@@ -92,22 +92,24 @@ def get_locales():
         locales = json.load(f)
     return locales
 
-def load_strings(current_locale='en'):
+def load_strings(current_locale):
     """
     Loads translated strings and fallback to English
     if the translation does not exist.
     """
     global strings, translations
 
+
     # Load all translations
     translations = {}
     available_locales = get_locales()
 
-    for locale in available_locales:
+    if current_locale not in available_locales:
+        current_locale = "en"
 
-        filename = get_resource_path("{}.json".format(locale), '../share/locale')
-        with open(filename, encoding='utf-8') as f:
-            translations[locale] = json.load(f)
+    filename = get_resource_path("{}.json".format(current_locale), '../share/locale')
+    with open(filename, encoding='utf-8') as f:
+        translations[current_locale] = json.load(f)
 
     strings = {}
     for s in translations[current_locale]:
