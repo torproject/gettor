@@ -45,7 +45,7 @@ class SQLite3(object):
 		"""
 		Perform a new request to the database
 		"""
-		query = "INSERT INTO requests VALUES(?, ?, ?, ?, ?, ?)"
+		query = "INSERT INTO requests VALUES(?, ?, ?, ?, ?, ?, ?)"
 
 		return self.dbpool.runQuery(
 			query, (id, command, platform, language, service, date, status)
@@ -96,11 +96,11 @@ class SQLite3(object):
 			query, (now_str,platform, command, service, now_str)
 		).addCallback(self.query_callback).addErrback(self.query_errback)
 
-	def get_links(self, platform, status):
+	def get_links(self, platform, language, status):
 		"""
 		Get links from the database per platform
 		"""
-		query = "SELECT * FROM links WHERE platform=? AND status=?"
+		query = "SELECT * FROM links WHERE platform=? AND language=? AND status=?"
 		return self.dbpool.runQuery(
-			query, (platform, status)
+			query, (platform, language, status)
 		).addCallback(self.query_callback).addErrback(self.query_errback)
