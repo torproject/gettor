@@ -157,30 +157,34 @@ class Sendmail(object):
 
                 for request in link_requests:
                     id = request[0]
-                    date = request[4]
+                    date = request[5]
                     platform = request[2]
                     language = request[3]
 
                     if not language:
                         language = 'en'
 
+                    locales = { 'en': 'en-US',
+                                'es': 'es-ES',
+                                'pt': 'pt-BR'}
                     strings.load_strings(language)
+                    locale = locales[language]
 
                     log.info("Getting links for {}.".format(platform))
                     links = yield self.conn.get_links(
-                        platform=platform, language=language, status="ACTIVE"
+                        platform=platform, language=locale, status="ACTIVE"
                     )
 
                     # build message
                     link_msg = None
                     for link in links:
-                        provider = link[4]
-                        version = link[3]
-                        arch = link[2]
+                        provider = link[5]
+                        version = link[4]
+                        arch = link[3]
                         url = link[0]
 
-                        link_str = "Tor Browser {} for {}-{} ({}): {}".format(
-                            version, platform, arch, provider, url
+                        link_str = "Tor Browser {} for {}-{}-{} ({}): {}".format(
+                            version, platform, locale, arch, provider, url
                         )
 
                         if link_msg:
