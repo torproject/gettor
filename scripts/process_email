@@ -22,7 +22,7 @@ def process_email(message):
     settings = options.parse_settings()
 
     try:
-        ep = EmailParser(settings, "gettor+test@torproject.org")
+        ep = EmailParser(settings, "gettor@torproject.org")
         yield defer.maybeDeferred(
             ep.parse, message
         ).addCallback(ep.parse_callback).addErrback(ep.parse_errback)
