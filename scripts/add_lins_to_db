@@ -55,7 +55,7 @@ def main():
 
   webFile = request.urlopen("https://www.torproject.org/projects/torbrowser/RecommendedTBBVersions/")
   versions = webFile.read().decode('utf-8').translate({ord(c): None for c in '[]\n" '})
-  version = versions.split(",")[4]
+  version = versions.split(",")[0]
 
   providers = {
     "gitlab": "https://gitlab.com/thetorproject/gettorbrowser/raw/releases/",
