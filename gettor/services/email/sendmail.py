@@ -160,6 +160,10 @@ class Sendmail(object):
                     date = request[4]
                     platform = request[2]
                     language = request[3]
+
+                    if not language:
+                        language = 'en'
+
                     strings.load_strings(language)
 
                     log.info("Getting links for {}.".format(platform))
