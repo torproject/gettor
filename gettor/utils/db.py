@@ -90,10 +90,10 @@ class SQLite3(object):
 		now_str = datetime.now().strftime("%Y%m%d")
 		query = "REPLACE INTO stats(num_requests, platform, language, "\
 		"command, service, date) VALUES(COALESCE((SELECT num_requests FROM stats "\
-		"WHERE date=?)+1, 0), ?, ?, ?, ?, ?) "\
+		"WHERE platform=? AND language=? AND date=?)+1, 0), ?, ?, ?, ?, ?) "\
 
 		return self.dbpool.runQuery(
-			query, (now_str, platform, language, command, service, now_str)
+			query, (platform, language, now_str, platform, language, command, service, now_str)
 		).addCallback(self.query_callback).addErrback(self.query_errback)
 
 	def get_links(self, platform, language, status):
