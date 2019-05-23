@@ -88,18 +88,12 @@ class SQLite3(object):
 		Update statistics to the database
 		"""
 		now_str = datetime.now().strftime("%Y%m%d")
-
-		# This query isn't the nicest until upsert isn't supported
-		
-		query = "BEGIN;"\
-    		"INSERT OR IGNORE INTO stats(num_requests, platform, language, "\
-			"command, service, date) VALUES (0, ?, ?, ?, ?, ?); "\
-			"UPDATE stats SET num_requests = num_requests + 1 WHERE platform=? "\
-			"AND language=? AND command=? AND service=? AND date=?; "\
-			"COMMIT;"
+		query = "INSERT INTO stats(num_requests, platform, language, command, "\
+		        "service, date) VALUES (1, ?, ?, ?, ?, ?) ON CONFLICT(platform, "\
+				"language, command, service, date) DO UPDATE SET num_requests=num_requests+1"
 
 		return self.dbpool.runQuery(
-			query, (platform, language, command, service, now_str, platform, language, command, service, now_str)
+			query, (platform, language, command, service, now_str)
 		).addCallback(self.query_callback).addErrback(self.query_errback)
 
 	def get_links(self, platform, language, status):
