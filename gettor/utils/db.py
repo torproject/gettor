@@ -83,17 +83,17 @@ class SQLite3(object):
 			query, (hid, status, id, service, date)
 		).addCallback(self.query_callback).addErrback(self.query_errback)
 
-	def update_stats(self, command, service, platform=None):
+	def update_stats(self, command, service, platform=None, language='en'):
 		"""
 		Update statistics to the database
 		"""
 		now_str = datetime.now().strftime("%Y%m%d")
-		query = "REPLACE INTO stats(num_requests, platform, "\
+		query = "REPLACE INTO stats(num_requests, platform, language, "\
 		"command, service, date) VALUES(COALESCE((SELECT num_requests FROM stats "\
-		"WHERE date=?)+1, 0), ?, ?, ?, ?) "\
+		"WHERE date=?)+1, 0), ?, ?, ?, ?, ?) "\
 
 		return self.dbpool.runQuery(
-			query, (now_str,platform, command, service, now_str)
+			query, (now_str, platform, language, command, service, now_str)
 		).addCallback(self.query_callback).addErrback(self.query_errback)
 
 	def get_links(self, platform, language, status):
