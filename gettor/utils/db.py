@@ -88,12 +88,12 @@ class SQLite3(object):
 		Update statistics to the database
 		"""
 		now_str = datetime.now().strftime("%Y%m%d")
-		query = "REPLACE INTO stats(num_requests, platform, language, "\
-		"command, service, date) VALUES(COALESCE((SELECT num_requests FROM stats "\
-		"WHERE platform=? AND language=? AND date=?)+1, 0), ?, ?, ?, ?, ?) "\
+		query = "INSERT INTO stats(num_requests, platform, language, command, "\
+		        "service, date) VALUES (1, ?, ?, ?, ?, ?) ON CONFLICT(platform, "\
+				"language, command, service, date) DO UPDATE SET num_requests=num_requests+1"
 
 		return self.dbpool.runQuery(
-			query, (platform, language, now_str, platform, language, command, service, now_str)
+			query, (platform, language, command, service, now_str)
 		).addCallback(self.query_callback).addErrback(self.query_errback)
 
 	def get_links(self, platform, language, status):

@@ -6,7 +6,7 @@ from twisted.internet import task
 
 from . import conftests
 
-class EmailServiceTests(unittest.TestCase):
+class LocalesTests(unittest.TestCase):
 
     # Fail any tests which take longer than 15 seconds.
     timeout = 15

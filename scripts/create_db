@@ -91,7 +91,8 @@ def main():
             )
             c.execute(
                 "CREATE TABLE stats(num_requests NUMBER, platform TEXT,"
-                " language TEXT, command TEXT, service TEXT, date TEXT)"
+                " language TEXT, command TEXT, service TEXT, date,"
+                " PRIMARY KEY (platform, language, command, service, date))"
             )
         print("Database {} created.".format(abs_filename))
     elif args.clear:
@@ -125,9 +126,9 @@ def main():
                         "PRIMARY KEY(platform, arch, version, provider, status))"
                     )
                     c.execute(
-                        "CREATE TABLE stats(date TEXT PRIMARY KEY, "
-                        "num_requests INTEGER, platform TEXT, language TEXT, command TEXT, "
-                        "service TEXT)"
+                        "CREATE TABLE stats(date TEXT, num_requests INTEGER, "
+                        "platform TEXT, language TEXT, command TEXT, service TEXT,"
+                        "PRIMARY KEY (platform, language, command, service, date))"
                     )
                     print("New database {} created.".format(abs_filename))
 
