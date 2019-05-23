@@ -124,7 +124,7 @@ class Sendmail(object):
 
                 for request in help_requests:
                     id = request[0]
-                    date = request[4]
+                    date = request[5]
 
                     hid = hashlib.sha256(id.encode('utf-8'))
                     log.info(
@@ -164,11 +164,10 @@ class Sendmail(object):
                     if not language:
                         language = 'en'
 
-                    locales = { 'en': 'en-US',
-                                'es': 'es-ES',
-                                'pt': 'pt-BR'}
+                    locales = strings.get_locales()
+
                     strings.load_strings(language)
-                    locale = locales[language]
+                    locale = locales[language]['locale']
 
                     log.info("Getting links for {}.".format(platform))
                     links = yield self.conn.get_links(

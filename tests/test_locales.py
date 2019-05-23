@@ -18,9 +18,6 @@ class EmailServiceTests(unittest.TestCase):
     def tearDown(self):
         print("tearDown()")
 
-    def test_get_available_locales(self):
-        self.assertEqual({"en": "English", "es": "Español", "pt": "Português Brasil"}, self.locales)
-
     def test_load_en_strings(self):
         conftests.strings.load_strings("en")
         self.assertEqual(conftests.strings._("smtp_mirrors_subject"), "[GetTor] Mirrors")
@@ -32,6 +29,10 @@ class EmailServiceTests(unittest.TestCase):
     def test_load_es_strings(self):
         conftests.strings.load_strings("es")
         self.assertEqual(conftests.strings._("smtp_help_subject"), "[GetTor] Ayuda")
+
+    def test_locale_supported(self):
+        self.assertEqual(self.locales['en']['language'], "English")
+        self.assertEqual(self.locales['es']['locale'], "es-ES")
 
 if __name__ == "__main__":
     unittest.main()

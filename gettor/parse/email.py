@@ -28,7 +28,7 @@ from twisted.internet import defer
 from twisted.enterprise import adbapi
 
 from ..utils.db import SQLite3
-
+from ..utils import strings
 
 class AddressError(Exception):
     """
@@ -57,26 +57,7 @@ class EmailParser(object):
         self.dkim = dkim
         self.to_addr = to_addr
 
-
-    def parse(self, msg_str):
-        """
-        Parse message content. Check if email address is well formed, if DKIM
-        signature is valid, and prevent service flooding. Finally, look for
-        commands to process the request. Current commands are:
-
-            - links: request links for download.
-            - help: help request.
-
-        :param msg_str (str): incomming message as string.
-
-        :return dict with email address and command (`links` or `help`).
-        """
-
-        platforms = self.settings.get("platforms")
-        languages = self.settings.get("languages")
-        log.msg("Building email message from string.", system="email parser")
-        msg = message_from_string(msg_str)
-
+    def normalize(self, msg):
         # Normalization will convert <Alice Wonderland> alice@wonderland.net
         # into alice@wonderland.net
         name, norm_addr = parseaddr(msg['From'])
@@ -85,7 +66,10 @@ class EmailParser(object):
             "Normalizing and validating FROM email address.",
             system="email parser"
         )
+        return name, norm_addr, to_name, norm_to_addr
 
+
+    def validate(self, norm_addr, msg):
         # Validate_email will do a bunch of regexp to see if the email address
         # is well address. Additional options for validate_email are check_mx
         # and verify, which check if the SMTP host and email address exist.
@@ -95,6 +79,8 @@ class EmailParser(object):
                 "Email address normalized and validated.",
                 system="email parser"
             )
+            return True
+
         else:
             log.err(
                 "Error normalizing/validating email address.",
@@ -102,17 +88,8 @@ class EmailParser(object):
             )
             raise AddressError("Invalid email address {}".format(msg['From']))
 
-        hid = hashlib.sha256(norm_addr.encode('utf-8'))
-        log.msg(
-            "Request from {}".format(hid.hexdigest()), system="email parser"
-        )
 
-        if self.to_addr:
-            if self.to_addr != norm_to_addr:
-                log.msg("Got request for a different instance of gettor")
-                log.msg("Intended recipient: {}".format(norm_to_addr))
-                return {}
-
+    def dkim_verify(self, msg_str, norm_addr):
         # DKIM verification. Simply check that the server has verified the
         # message's signature
         if self.dkim:
@@ -121,6 +98,7 @@ class EmailParser(object):
             # string, so DKIM will fail. Use the original string instead
             if dkim.verify(msg_str):
                 log.msg("Valid DKIM signature.", system="email parser")
+                return True
             else:
                 log.msg("Invalid DKIM signature.", system="email parser")
                 username, domain = norm_addr.split("@")
@@ -129,7 +107,12 @@ class EmailParser(object):
                         hid.hexdigest(), domain
                     )
                 )
+        # Is this even useful like this?
+        else:
+            return True
 
+
+    def build_request(self, msg_str, norm_addr, languages, platforms):
         # Search for commands keywords
         subject_re = re.compile(r"Subject: (.*)\r\n")
         subject = subject_re.search(msg_str)
@@ -166,6 +149,54 @@ class EmailParser(object):
                     break
 
         return request
+
+    def parse(self, msg_str):
+        """
+        Parse message content. Check if email address is well formed, if DKIM
+        signature is valid, and prevent service flooding. Finally, look for
+        commands to process the request. Current commands are:
+
+            - links: request links for download.
+            - help: help request.
+
+        :param msg_str (str): incomming message as string.
+
+        :return dict with email address and command (`links` or `help`).
+        """
+
+        log.msg("Building email message from string.", system="email parser")
+
+        platforms = self.settings.get("platforms")
+        languages = [*strings.get_locales().keys()]
+        msg = message_from_string(msg_str)
+
+        name, norm_addr, to_name, norm_to_addr = self.normalize(msg)
+
+        try:
+            self.validate(norm_addr, msg)
+        except AddressError as e:
+            log.message("Address error: {}".format(e.args))
+
+        hid = hashlib.sha256(norm_addr.encode('utf-8'))
+        log.msg(
+            "Request from {}".format(hid.hexdigest()), system="email parser"
+        )
+
+        if self.to_addr:
+            if self.to_addr != norm_to_addr:
+                log.msg("Got request for a different instance of gettor")
+                log.msg("Intended recipient: {}".format(norm_to_addr))
+                return {}
+
+        try:
+            self.dkim_verify(msg_str, norm_addr)
+        except ValueError as e:
+            log.msg("DKIM error: {}".format(e.args))
+
+        request = self.build_request(msg_str, norm_addr, languages, platforms)
+
+        return request
+
 
     @defer.inlineCallbacks
     def parse_callback(self, request):

@@ -1,5 +1,14 @@
 {
-  "en": "English",
-  "es": "Español",
-  "pt": "Português Brasil"
+  "en": {
+      "language": "English",
+      "locale": "en-US"
+  },
+  "es": {
+      "language": "Español",
+      "locale": "es-ES"
+  },
+  "pt": {
+    "language": "Português Brasil",
+    "locale": "pt-BR"
+  }
 }
