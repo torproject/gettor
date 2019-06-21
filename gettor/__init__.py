@@ -10,7 +10,7 @@ the Tor Browser.
 :license: see included LICENSE for information
 """
 
-from .utils import strings
+from gettor.utils import strings
 
 """
 This is where version and available locales get loaded.
