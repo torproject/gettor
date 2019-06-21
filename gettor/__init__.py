@@ -9,8 +9,9 @@ the Tor Browser.
             (c) 2014, all entities within the AUTHORS file
 :license: see included LICENSE for information
 """
-
-from ..gettor.utils import strings
+import os.path
+import sys
+from .utils import strings
 
 """
 This is where version and available locales get loaded.

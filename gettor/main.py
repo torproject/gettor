@@ -14,13 +14,11 @@ the Tor Browser.
 This sets up GetTor and starts the servers running.
 """
 
-import sys
-
 from .utils.commons import log
 from .utils import options
+
 from .services import BaseService
 from .services.email.sendmail import Sendmail
-
 
 def run(gettor, app):
     """
