@@ -17,15 +17,16 @@ from urllib import request
 
 TOR_BROWSER_DOWNLOADS = "https://aus1.torproject.org/torbrowser/update_3/release/downloads.json"
 
+
 def print_header():
-    header = """
+    header = r"""
                              __     __
                             /\ \__ /\ \__
-                  __      __\ \ ,_\\\ \ ,_\   ____   _  __
+                  __      __\ \ ,_\\\ \ ,_\  ____   _  __
                 /'_ `\  /'__`\ \ \/ \ \ \/  / __ `\/\`'__\
                /\ \L\ \/\  __/\ \ \_ \ \ \ /\ \L\  \ \ \/
-               \ \____ \ \____\\\__\ \ \ \__\ \_____/\ \_\
-                \/___L\ \/____/ \/__/  \/__/\/___/  \/_/
+               \ \____ \ \____\\ \__\ \ \__\ \_____/\ \_\
+                \/___L\ \/____/ \/__/  \/__/\/____/  \/_/
                  /\_____/
                  \_/___/
 
@@ -37,11 +38,13 @@ def print_header():
     print("@"*100)
     print("")
 
+
 def print_footer():
     print("")
     print("@"*100)
     print("@"*100)
     print("")
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -69,7 +72,6 @@ def main():
         "github": "https://github.com/TheTorProject/gettorbrowser/raw/torbrowser-releases/"
     }
 
-
     prefixes = {
         "osx": "TorBrowser-",
         "windows": "torbrowser-install-",
@@ -94,7 +96,8 @@ def main():
     with conn:
         c = conn.cursor()
         """
-        Here we drop previous links TABLE but probably it would be better to just update old links to INACTIVE
+        Here we drop previous links TABLE but probably it would be better to
+        just update old links to INACTIVE
         """
         c.execute("DROP TABLE IF EXISTS links")
         c.execute(
@@ -107,7 +110,7 @@ def main():
                     release_link = releases.get(k).replace("en-US", l)
                     c.execute(
                         "INSERT INTO links(link, platform, language, arch, version, provider, status)"
-                        "VALUES ('%s', '%s', '%s', '64', '%s', '%s', 'ACTIVE')" %(providers.get(p) + release_link, k, l, version, p))
+                        "VALUES ('%s', '%s', '%s', '64', '%s', '%s', 'ACTIVE')" % (providers.get(p) + release_link, k, l, version, p))
 
 
 if __name__ == "__main__":
