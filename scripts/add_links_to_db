@@ -10,9 +10,12 @@
 
 import os
 import sys
+import json
 import sqlite3
 import argparse
 from urllib import request
+
+TOR_BROWSER_DOWNLOADS = "https://aus1.torproject.org/torbrowser/update_3/release/downloads.json"
 
 def print_header():
     header = """
@@ -53,9 +56,13 @@ def main():
     args = parser.parse_args()
     abs_filename = os.path.abspath(args.filename)
 
-    webFile = request.urlopen("https://www.torproject.org/projects/torbrowser/RecommendedTBBVersions/")
-    versions = webFile.read().decode('utf-8').translate({ord(c): None for c in '[]\n" '})
-    version = versions.split(",")[-12]
+    webFile = request.urlopen(TOR_BROWSER_DOWNLOADS)
+    content = webFile.read()
+    jsonObj = json.loads(content)
+    version = jsonObj.get("version", None)
+    if version is None:
+        print("Could not fetch version from {}.".format(TOR_BROWSER_DOWNLOADS))
+        sys.exit(1)
 
     providers = {
         "gitlab": "https://gitlab.com/thetorproject/gettorbrowser/raw/releases/",
