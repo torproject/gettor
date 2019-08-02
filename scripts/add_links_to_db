@@ -90,27 +90,24 @@ def main():
 
     releases = {k: "".join(dic.get(k, version) for dic in (prefixes, versions, suffixes))  for k in keys}
 
-    if not abs_filename:
-        print("Missing database filename.")
-    else:
-        conn = sqlite3.connect(abs_filename)
-        with conn:
-            c = conn.cursor()
-            """
-            Here we drop previous links TABLE but probably it would be better to just update old links to INACTIVE
-            """
-            c.execute("DROP TABLE IF EXISTS links")
-            c.execute(
-                "CREATE TABLE links(link TEXT, platform TEXT, language TEXT, arch TEXT,"
-                " version TEXT, provider TEXT, status TEXT)"
-            )
-            for k in keys:
-                for p in providers:
-                    for l in languages:
-                        release_link = releases.get(k).replace("en-US", l)
-                        c.execute(
-                          "INSERT INTO links(link, platform, language, arch, version, provider, status)"
-                          "VALUES ('%s', '%s', '%s', '64', '%s', '%s', 'ACTIVE')" %(providers.get(p) + release_link, k, l, version, p))
+    conn = sqlite3.connect(abs_filename)
+    with conn:
+        c = conn.cursor()
+        """
+        Here we drop previous links TABLE but probably it would be better to just update old links to INACTIVE
+        """
+        c.execute("DROP TABLE IF EXISTS links")
+        c.execute(
+            "CREATE TABLE links(link TEXT, platform TEXT, language TEXT, arch TEXT,"
+            " version TEXT, provider TEXT, status TEXT)"
+        )
+        for k in keys:
+            for p in providers:
+                for l in languages:
+                    release_link = releases.get(k).replace("en-US", l)
+                    c.execute(
+                        "INSERT INTO links(link, platform, language, arch, version, provider, status)"
+                        "VALUES ('%s', '%s', '%s', '64', '%s', '%s', 'ACTIVE')" %(providers.get(p) + release_link, k, l, version, p))
 
 
 if __name__ == "__main__":
