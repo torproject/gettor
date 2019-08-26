@@ -1,0 +1,47 @@
+#!/bin/bash
+#
+# This file is part of GetTor, a Tor Browser distribution system.
+#
+# :authors: hiro <hiro@torproject.org>
+#           see also AUTHORS file
+#
+# :copyright:   (c) 2008-2019, The Tor Project, Inc.
+#
+# :license: This is Free Software. See LICENSE for license information.
+
+cd ~/releases
+git checkout -B releases
+rm -f torbrowser-* TorBrowser-* tor-browser-*
+
+for row in $(
+    curl -s 'https://aus1.torproject.org/torbrowser/update_3/release/downloads.json' |
+    jq -r '.downloads'
+  ); do
+    r=$(
+      echo ${row} |
+      egrep -o 'https?://[^ ]+' |
+      tr -d '",'
+    );
+    if [[ $r = *[!\ ]* ]]; then
+      wget $r
+    fi;
+done
+
+git add .
+git commit -m '[dist ci] commit from CI runner - update with new torbrowser downloads'
+diffs=$(git diff origin/releases)
+if [ -z "$diffs" ]; then
+    echo "No new releases"
+else
+    git push -f --follow-tags origin releases
+fi
+
+git fetch --all
+git checkout -b torbrowser-releases
+
+diffs=$(git diff github/torbrowser-releases)
+if [ -z "$diffs" ]; then
+    echo "No new releases"
+else
+    git push -f --follow-tags github torbrowser-releases
+fi
