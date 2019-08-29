@@ -1,0 +1,15 @@
+#!/bin/bash
+#
+# This file is part of GetTor, a Tor Browser distribution system.
+#
+# :authors: hiro <hiro@torproject.org>
+#           see also AUTHORS file
+#
+# :copyright:   (c) 2008-2019, The Tor Project, Inc.
+#
+# :license: This is Free Software. See LICENSE for license information.
+
+cd ~/gettor
+mkdir -p csv
+sqlite3 -header -csv gettor.db "select * from stats;" > csv/$(date "+%Y-%m-%d").csv
+./scripts/add_links_to_db -f gettor.db
