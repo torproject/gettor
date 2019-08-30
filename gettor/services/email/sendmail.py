@@ -140,7 +140,8 @@ class Sendmail(object):
                     )
 
                     yield self.conn.update_stats(
-                        command="help", service="email"
+                        command="help", , platform='', language='en',
+                        service="email"
                     )
 
                     yield self.conn.update_request(
