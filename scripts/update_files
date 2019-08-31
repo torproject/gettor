@@ -10,6 +10,7 @@
 # :license: This is Free Software. See LICENSE for license information.
 
 cd ~/releases
+git checkout releases
 rm -f torbrowser-* TorBrowser-* tor-browser-*
 
 for row in $(
