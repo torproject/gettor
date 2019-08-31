@@ -11,5 +11,5 @@
 
 cd ~/gettor
 mkdir -p csv
-sqlite3 -header -csv gettor.db "select * from stats;" > csv/$(date "+%Y-%m-%d").csv
+sqlite3 -header -csv gettor.db "select * from stats;" > csv/$(date "+%Y-%m-%d-%T").csv
 ./scripts/add_links_to_db -f gettor.db
