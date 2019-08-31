@@ -61,7 +61,7 @@ def main():
 
     webFile = request.urlopen(TOR_BROWSER_DOWNLOADS)
     content = webFile.read()
-    jsonObj = json.loads(content)
+    jsonObj = json.loads(content.json())
     version = jsonObj.get("version", None)
     if version is None:
         print("Could not fetch version from {}.".format(TOR_BROWSER_DOWNLOADS))
