@@ -34,6 +34,7 @@ for row in $(
           git push -f --follow-tags origin releases
       fi
       git checkout -b torbrowser-releases
+      git merge releases
       diffs=$(git diff github/torbrowser-releases)
       if [ -z "$diffs" ]; then
           echo "No new releases"
