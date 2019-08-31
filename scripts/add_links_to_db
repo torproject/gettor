@@ -75,20 +75,54 @@ def main():
     prefixes = {
         "osx": "TorBrowser-",
         "windows": "torbrowser-install-",
-        "linux": "tor-browser-linux64-"
+        "linux64": "tor-browser-linux64-",
+        "linux32": "tor-browser-linux32-"
     }
 
-    versions = {"windows": version, 'linux': version, 'osx': version}
+    versions = {"windows": version, 'linux32': version, 'linux64': version, 'osx': version}
 
     suffixes = {
         "osx": "-osx64_en-US.dmg",
         "windows": "_en-US.exe",
-        "linux": "_en-US.tar.xz"
+        "linux32": "_en-US.tar.xz",
+        "linux64": "_en-US.tar.xz"
     }
 
-    keys = ['osx', 'windows', 'linux']
+    keys = ['osx', 'windows', 'linux32', 'linux64']
 
-    languages = ['en-US', 'es-ES', 'pt-BR']
+    languages = [
+        'en-US',
+        'es-ES',
+        'pt-BR',
+        'ar',
+        'ca',
+        'cs',
+        'da',
+        'de',
+        'el',
+        'es-AR',
+        'fa',
+        'fr',
+        'ga-IE',
+        'he',
+        'hu',
+        'id',
+        'is',
+        'it',
+        'ja',
+        'ka',
+        'ko',
+        'nb-NO',
+        'nl',
+        'pl',
+        'pt-BR',
+        'ru',
+        'sv-SE',
+        'tr',
+        'vi',
+        'zh-CN',
+        'zh-TW'
+    ]
 
     releases = {k: "".join(dic.get(k, version) for dic in (prefixes, versions, suffixes))  for k in keys}
 
