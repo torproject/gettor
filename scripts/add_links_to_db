@@ -75,20 +75,18 @@ def main():
     prefixes = {
         "osx": "TorBrowser-",
         "windows": "torbrowser-install-",
-        "linux64": "tor-browser-linux64-",
-        "linux32": "tor-browser-linux32-"
+        "linux": "tor-browser-linux64-"
     }
 
-    versions = {"windows": version, 'linux32': version, 'linux64': version, 'osx': version}
+    versions = {"windows": version, 'linux': version, 'osx': version}
 
     suffixes = {
         "osx": "-osx64_en-US.dmg",
         "windows": "_en-US.exe",
-        "linux32": "_en-US.tar.xz",
-        "linux64": "_en-US.tar.xz"
+        "linux": "_en-US.tar.xz"
     }
 
-    keys = ['osx', 'windows', 'linux32', 'linux64']
+    keys = ['osx', 'windows', 'linux']
 
     languages = [
         'en-US',

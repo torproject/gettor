@@ -12,5 +12,5 @@
   "smtp_unsupported_locale_msg": "The locale you requested '{}' is not supported.",
   "smtp_vlinks_msg": "You requested Tor Browser for {}.\n\nYou will need only one of the links below to download the bundle. If a link does not work for you, try the next one.\n\n{}\n\n \n--\nGetTor",
   "smtp_mirrors_msg": "Hi! this is the GetTor robot.\n\nThank you for your request. Attached to this email you will find\nan updated list of mirrors of Tor Project's website.",
-  "smtp_help_msg": "Hi! This is the GetTor robot. I am here to help you download the\nlatest version of Tor Browser.\n\nPlease reply to this message with one of the options below:\n\nwindows\nlinux64\nlinux32\nosx\nmirrors\n\nI will then send you the download instructions.\n\nIf you are unsure, just send a blank reply to this message."
+  "smtp_help_msg": "Hi! This is the GetTor robot. I am here to help you download the\nlatest version of Tor Browser.\n\nPlease reply to this message with one of the options below:\n\nwindows\nlinux\nosx\nmirrors\n\nI will then send you the download instructions.\n\nIf you are unsure, just send a blank reply to this message."
 }
