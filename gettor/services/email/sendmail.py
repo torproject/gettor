@@ -182,6 +182,7 @@ class Sendmail(object):
                         version = link[4]
                         arch = link[3]
                         url = link[0]
+                        file = link[6]
 
                         link_str = "Tor Browser {} for {}-{}-{} ({}): {}".format(
                             version, platform, locale, arch, provider, url
@@ -192,7 +193,7 @@ class Sendmail(object):
                         else:
                             link_msg = link_str
 
-                    body_msg = strings._("links_body").format(platform, link_msg)
+                    body_msg = strings._("links_body").format(platform, link_msg, file)
                     subject_msg = strings._("links_subject")
 
                     hid = hashlib.sha256(id.encode('utf-8'))
