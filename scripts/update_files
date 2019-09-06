@@ -25,7 +25,7 @@ for row in $(
     if [[ $r = *[!\ ]* ]]; then
       wget $r
       git fetch --all
-      git checkout releases
+      git checkout -b releases
       git add .
       git commit -m '[dist ci] commit from CI runner - update with new torbrowser downloads'
       diffs=$(git diff origin/releases)
@@ -34,8 +34,7 @@ for row in $(
       else
           git push -f --follow-tags origin releases
       fi
-      git checkout torbrowser-releases
-      git merge releases
+      git checkout -b torbrowser-releases
       diffs=$(git diff github/torbrowser-releases)
       if [ -z "$diffs" ]; then
           echo "No new releases"
