@@ -53,4 +53,5 @@ rclone delete gdrive:releases
 
 for f in $(ls); do
   rclone copy $f gdrive:releases
+  ia upload <identifier> - --remote-name=$f --metadata="title:New Tor Browser release ${f}."
 done
