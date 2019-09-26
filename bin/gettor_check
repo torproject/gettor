@@ -1,0 +1,24 @@
+#!/bin/bash
+#
+# This file is part of GetTor, a Tor Browser distribution system.
+#
+# :authors: Hiro <hiro@torproject.org>
+#           see also AUTHORS file
+#
+# :copyright:   (c) 2008-2019, The Tor Project, Inc.
+#
+# :license: This is Free Software. See LICENSE for license information.
+
+cd ;
+virtualenv gettor/venv
+source gettor/venv/bin/activate
+
+python3 gettor/scripts/check_service $1
+
+# store exit status
+status=$?
+
+if test $status -ne 0
+then
+  ./bin/gettor_service start
+fi

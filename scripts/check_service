@@ -1,0 +1,135 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
+# This file is part of GetTor, a Tor Browser distribution system.
+#
+# :authors: hiro <hiro@torproject.org>
+#           see also AUTHORS file
+#
+# :license: This is Free Software. See LICENSE for license information.
+
+import sys
+import smtplib
+import time
+import imaplib
+import email
+import time
+
+# Standard Nagios return codes
+OK, WARNING, CRITICAL, UNKNOWN = range(4)
+
+ORG_EMAIL   = "@gmail.com"
+FROM_EMAIL  = "test.gettor.browser" + ORG_EMAIL
+SMTP_SERVER = "imap.gmail.com"
+SMTP_PORT   = 993
+
+MESSAGE_FROM = "gettor@torproject.org"
+MESSAGE_SUBJECT = "[GetTor] Links for your request"
+MESSAGE_BODY = "https://gitlab.com/thetorproject/"
+
+STATUS_FILE = "/srv/gettor.torproject.org/check/status"
+
+# -------------------------------------------------
+#
+# Utility to read email from Gmail Using Python
+#
+# ------------------------------------------------
+
+def test_email_from_gmail(password):
+    try:
+        mail = imaplib.IMAP4_SSL(SMTP_SERVER)
+        mail.login(FROM_EMAIL, password)
+        mail.select('INBOX')
+
+        type, data = mail.search(None, 'ALL')
+        mail_ids = data[0]
+
+        id_list = mail_ids.split()
+        first_email_id = int(str(id_list[0], 'utf-8'))
+        latest_email_id = int(str(id_list[-1], 'utf-8'))
+
+        for i in range(int(latest_email_id), int(first_email_id), -1):
+            typ, data = mail.fetch(str(i), '(RFC822)')
+
+            for response_part in data:
+                if isinstance(response_part, tuple):
+                    m = str(response_part[1], 'utf-8')
+                    msg = email.message_from_string(m)
+                    email_subject = "{}".format(msg['subject'])
+                    email_from = "{}".format(msg['from'])
+                    email_body = "{}".format(msg.as_string())
+
+                    if (MESSAGE_FROM == email_from) and (MESSAGE_SUBJECT == email_subject) and (MESSAGE_BODY in email_body):
+                        mail.store(str(i), '+FLAGS', '\\Deleted')
+                        return OK, "Found correct gettor email."
+                    else:
+                        print('if not working')
+                        mail.store(str(i), '+FLAGS', '\\Deleted')
+
+
+
+
+        return WARNING, "No emails from gettor found"
+
+    except Exception as e:
+        return CRITICAL, str(e)
+
+def send_email_from_gmail(password):
+    sent_from = FROM_EMAIL
+    sent_to = [MESSAGE_FROM]
+    subject = 'windows en'
+    body = 'windows en'
+
+    email_text = """From: %s\nTo: %s\nSubject: %s\n\n%s
+    """ % (sent_from, ", ".join(sent_to), subject, body)
+
+    try:
+        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        server.ehlo()
+        server.login(sent_from, password)
+        server.sendmail(sent_from, to, email_text)
+        server.close()
+    except Exception as e:
+        return UNKNOWN, str(e)
+
+if __name__ == "__main__":
+    status, message = None, None
+
+    host = None
+    use_https = False
+
+    if len(sys.argv) == 2:
+        password = sys.argv[1]
+    else:
+        password = "yourPassword"
+
+    status_file = open(STATUS_FILE,'w')
+
+    try:
+        status, message = send_email_from_gmail(password)
+    except Exception as e:
+        status = CRITICAL
+        message = repr(e)
+        sys.exit(status)
+
+    time.sleep(180)
+
+    try:
+        status, message = test_email_from_gmail(password)
+    except KeyboardInterrupt:
+        status, message = CRITICAL, "Caught Control-C..."
+    except Exception as e:
+        status = CRITICAL
+        message = repr(e)
+    finally:
+        if status == OK:
+            status_file.write("OK: %s" % message)
+        elif status == WARNING:
+            status_file.write("WARNING: %s" % message)
+        elif status == CRITICAL:
+            status_file.write("CRITICAL: %s" % message)
+        else:
+            status_file.write("UNKNOWN: %s" % message)
+            status = UNKNOWN
+
+        sys.exit(status)
