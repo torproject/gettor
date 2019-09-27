@@ -22,3 +22,4 @@ if test $status -ne 0
 then
   /home/gettor/gettor/bin/gettor_service start
 fi
+deactivate
