@@ -19,7 +19,7 @@ git push github --delete torbrowser-releases
 git fetch --all --prune
 
 git add .
-
+git commit -am 'Create release branch'
 git checkout -b torbrowser-releases
 git push -f --follow-tags github torbrowser-releases
 git checkout git checkout -b releases
