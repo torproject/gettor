@@ -87,7 +87,7 @@ def send_email_from_gmail(password):
         server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
         server.ehlo()
         server.login(sent_from, password)
-        server.sendmail(sent_from, to, email_text)
+        server.sendmail(sent_from, sent_to, email_text)
         server.close()
     except Exception as e:
         return UNKNOWN, str(e)
