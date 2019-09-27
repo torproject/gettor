@@ -20,5 +20,5 @@ status=$?
 
 if test $status -ne 0
 then
-  ./bin/gettor_service start
+  ./home/gettor/bin/gettor_service start
 fi
