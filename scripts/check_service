@@ -110,6 +110,7 @@ if __name__ == "__main__":
     except Exception as e:
         status = CRITICAL
         message = repr(e)
+        status_file.write("CRITICAL: %s" % message)
         sys.exit(status)
 
     time.sleep(180)
