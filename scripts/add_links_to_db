@@ -142,7 +142,7 @@ def main():
                     release_link = releases.get(k).replace("en-US", l)
                     c.execute(
                         "INSERT INTO links(link, platform, language, arch, version, provider, status)"
-                        "VALUES ('%s', '%s', '%s', '64', '%s', '%s', 'ACTIVE')" % (providers.get(p) + release_link, k, l, version, p))
+                        "VALUES ('%s', '%s', '%s', '64', '%s', '%s', 'ACTIVE', '%s')" % (providers.get(p) + release_link, k, l, version, p, release_link))
 
 
 if __name__ == "__main__":

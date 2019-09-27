@@ -182,17 +182,21 @@ class Sendmail(object):
                         version = link[4]
                         arch = link[3]
                         url = link[0]
+                        file = link[6]
+                        sig_url = url + ".asc"
 
-                        link_str = "Tor Browser {} for {}-{}-{} ({}): {}".format(
+                        link_str = "Tor Browser {} for {}-{}-{} ({}): {}\n".format(
                             version, platform, locale, arch, provider, url
                         )
+
+                        link_str += "Signature file: {}\n".format(sig_url)
 
                         if link_msg:
                             link_msg = "{}\n{}".format(link_msg, link_str)
                         else:
                             link_msg = link_str
 
-                    body_msg = strings._("links_body").format(platform, link_msg)
+                    body_msg = strings._("links_body").format(platform, link_msg, file)
                     subject_msg = strings._("links_subject")
 
                     hid = hashlib.sha256(id.encode('utf-8'))

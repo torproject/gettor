@@ -10,8 +10,13 @@
 # :license: This is Free Software. See LICENSE for license information.
 
 cd ~/releases
-git checkout releases
-rm -f torbrowser-* TorBrowser-* tor-browser-*
+git checkout master
+git branch -D releases
+git push origin --delete releases
+git branch -D torbrowser-releases
+git push github --delete torbrowser-releases
+
+git fetch --all --prune
 
 for row in $(
     curl -s 'https://aus1.torproject.org/torbrowser/update_3/release/downloads.json' |
@@ -25,7 +30,7 @@ for row in $(
     if [[ $r = *[!\ ]* ]]; then
       wget $r
       git fetch --all
-      git checkout releases
+      git checkout -b releases
       git add .
       git commit -m '[dist ci] commit from CI runner - update with new torbrowser downloads'
       diffs=$(git diff origin/releases)
@@ -34,8 +39,7 @@ for row in $(
       else
           git push -f --follow-tags origin releases
       fi
-      git checkout torbrowser-releases
-      git merge releases
+      git checkout -b torbrowser-releases
       diffs=$(git diff github/torbrowser-releases)
       if [ -z "$diffs" ]; then
           echo "No new releases"
@@ -43,4 +47,13 @@ for row in $(
           git push -f --follow-tags github torbrowser-releases
       fi
     fi;
+done
+
+rclone delete gdrive:releases
+
+for f in $(ls); do
+  # Update Google Drive
+  rclone copy $f gdrive:releases
+  # Update Internet Archive
+  ia upload <identifier> - --remote-name=$f --metadata="title:New Tor Browser release ${f}."
 done

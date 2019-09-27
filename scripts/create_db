@@ -87,7 +87,7 @@ def main():
             )
             c.execute(
                 "CREATE TABLE links(link TEXT, platform TEXT, language TEXT,"
-                " arch TEXT, version TEXT, provider TEXT, status TEXT)"
+                " arch TEXT, version TEXT, provider TEXT, status TEXT, file TEXT)"
             )
             c.execute(
                 "CREATE TABLE stats(num_requests NUMBER, platform TEXT,"
@@ -122,7 +122,7 @@ def main():
                     )
                     c.execute(
                         "CREATE TABLE links(link TEXT, platform TEXT, language TEXT,"
-                        "arch TEXT, version TEXT, provider TEXT, status TEXT,"
+                        "arch TEXT, version TEXT, provider TEXT, status TEXT, file TEXT"
                         "PRIMARY KEY(platform, arch, version, provider, status))"
                     )
                     c.execute(
