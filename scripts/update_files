@@ -58,5 +58,5 @@ for f in $(ls); do
   # Update Google Drive
   rclone copy $f gdrive:releases
   # Update Internet Archive
-  ia upload <identifier> - --remote-name=$f --metadata="title:New Tor Browser release ${f}." --metadata="mediatype:movies"
+  ia upload $f - --remote-name=$f --metadata="title:New Tor Browser release ${f}." --metadata="mediatype:movies"
 done
