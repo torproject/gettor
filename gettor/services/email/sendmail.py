@@ -182,7 +182,7 @@ class Sendmail(object):
                         version = link[4]
                         arch = link[3]
                         url = link[0]
-                        file = link[6]
+                        file = link[7]
                         sig_url = url + ".asc"
 
                         link_str = "Tor Browser {} for {}-{}-{} ({}): {}\n".format(
