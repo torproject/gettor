@@ -68,7 +68,7 @@ def main():
         sys.exit(1)
 
     providers = {
-        "gitlab": "https://gitlab.com/thetorproject/gettorbrowser/raw/releases/",
+        "gitlab": "https://gitlab.com/thetorproject/gettorbrowser/raw/torbrowser-releases/",
         "github": "https://github.com/TheTorProject/gettorbrowser/raw/torbrowser-releases/"
     }
 

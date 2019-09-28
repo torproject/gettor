@@ -20,9 +20,8 @@ git fetch --all --prune
 
 git add .
 git commit -am 'Create release branch'
-git checkout -b releases
-git push -f --follow-tags origin releases
 git checkout -b torbrowser-releases
+git push -f --follow-tags origin torbrowser-releases
 git push -f --follow-tags github torbrowser-releases
 
 
