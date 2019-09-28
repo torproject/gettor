@@ -20,10 +20,11 @@ git fetch --all --prune
 
 git add .
 git commit -am 'Create release branch'
-git checkout -b torbrowser-releases
-git push -f --follow-tags github torbrowser-releases
 git checkout -b releases
 git push -f --follow-tags origin releases
+git checkout -b torbrowser-releases
+git push -f --follow-tags github torbrowser-releases
+
 
 for row in $(
     curl -s 'https://aus1.torproject.org/torbrowser/update_3/release/downloads.json' |
