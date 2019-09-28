@@ -11,8 +11,6 @@
 
 cd ~/releases
 git checkout master
-git branch -D releases
-git push origin --delete releases
 git branch -D torbrowser-releases
 git push github --delete torbrowser-releases
 
@@ -36,18 +34,15 @@ for row in $(
     );
     if [[ $r = *[!\ ]* ]]; then
       git fetch --all
-      git checkout releases
       wget $r
       git add .
       git commit -m '[dist ci] commit from CI runner - update with new torbrowser downloads'
-      diffs=$(git diff origin/releases)
+      diffs=$(git diff origin/torbrowser-releases)
       if [ -z "$diffs" ]; then
           echo "No new releases"
       else
-          git push -f --follow-tags origin releases
+          git push -f --follow-tags origin torbrowser-releases
       fi
-      git checkout torbrowser-releases
-      git merge releases
       diffs=$(git diff github/torbrowser-releases)
       if [ -z "$diffs" ]; then
           echo "No new releases"
