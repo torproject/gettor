@@ -9,7 +9,7 @@
 #
 # :license: This is Free Software. See LICENSE for license information.
 
-cd ;
+cd /home/gettor/gettor/;
 virtualenv /home/gettor/gettor/venv
 source /home/gettor/gettor/venv/bin/activate
 
