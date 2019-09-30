@@ -106,7 +106,6 @@ if __name__ == "__main__":
         status = UNKNOWN
         message = repr(e)
         status_file.write("UNKNOWN: %s" % message)
-        sys.exit(status)
 
     time.sleep(600)
 
