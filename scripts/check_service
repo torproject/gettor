@@ -74,7 +74,7 @@ def test_email_from_gmail(password):
 
 def send_email_from_gmail(password):
     sent_from = FROM_EMAIL
-    sent_to = [MESSAGE_FROM]
+    sent_to = ["{}".format(MESSAGE_FROM)]
     subject = 'windows en'
     body = 'windows en'
 
