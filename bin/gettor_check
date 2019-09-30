@@ -16,10 +16,10 @@ source /home/gettor/gettor/venv/bin/activate
 python3 /home/gettor/gettor/scripts/check_service $1
 
 # store exit status
-status=$?
-
-if test $status -ne 0
-then
-  /home/gettor/gettor/bin/gettor_service start
-fi
-deactivate
+# status=$?
+#
+# if test $status -ne 0
+# then
+#   /home/gettor/gettor/bin/gettor_service start
+# fi
+# deactivate
