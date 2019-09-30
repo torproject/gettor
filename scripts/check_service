@@ -120,13 +120,13 @@ if __name__ == "__main__":
         message = repr(e)
     finally:
         if status == OK:
-            status_file.write("OK: 0\n%s" % message)
+            status_file.write("0\nOK: %s" % message)
         elif status == WARNING:
-            status_file.write("WARNING: 1\n%s" % message)
+            status_file.write("1\nWARNING: %s" % message)
         elif status == CRITICAL:
-            status_file.write("CRITICAL: 2\n%s" % message)
+            status_file.write("2\nCRITICAL: %s" % message)
         else:
-            status_file.write("UNKNOWN: 3\n%s" % message)
+            status_file.write("3\nUNKNOWN: %s" % message)
             status = UNKNOWN
 
         sys.exit(status)
