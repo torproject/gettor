@@ -61,6 +61,7 @@ def test_email_from_gmail(password):
 
                     if (MESSAGE_FROM == email_from) and (MESSAGE_SUBJECT == email_subject) and (MESSAGE_BODY in email_body):
                         mail.store(str(i), '+FLAGS', '\\Deleted')
+                        return OK, "GetTor is good and sending emails with working links"
                     else:
                         mail.store(str(i), '+FLAGS', '\\Deleted')
 
