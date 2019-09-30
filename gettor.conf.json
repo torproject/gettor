@@ -2,7 +2,7 @@
   "platforms": ["linux", "osx", "windows"],
   "dbname": "/srv/gettor.torproject.org/home/gettor/gettor.db",
   "email_parser_logfile": "/srv/gettor.torproject.org/home/gettor/log/email_parser.log",
-  "email_requests_limit": 5,
+  "email_requests_limit": 30,
   "sendmail_interval": 10,
   "sendmail_addr": "gettor@torproject.org",
   "sendmail_host": "localhost",
