@@ -78,8 +78,7 @@ def send_email_from_gmail(password):
     subject = 'windows en'
     body = 'windows en'
 
-    email_text = """From: %s\nTo: %s\nSubject: %s\n\n%s
-    """ % (sent_from, ", ".join(sent_to), subject, body)
+    email_text = """From: %s\nTo: %s\nSubject: %s\n\n%s""" % (sent_from, ", ".join(sent_to), subject, body)
 
     try:
         mail = smtplib.SMTP_SSL('smtp.gmail.com', 465)
