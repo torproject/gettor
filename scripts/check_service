@@ -93,9 +93,6 @@ def send_email_from_gmail(password):
 if __name__ == "__main__":
     status, message = None, None
 
-    host = None
-    use_https = False
-
     if len(sys.argv) == 2:
         password = sys.argv[1]
     else:
