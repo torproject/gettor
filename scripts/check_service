@@ -66,7 +66,7 @@ def test_email_from_gmail(password):
 
 
 
-
+        mail.close()
         return WARNING, "No emails from gettor found"
 
     except Exception as e:
@@ -82,11 +82,11 @@ def send_email_from_gmail(password):
     """ % (sent_from, ", ".join(sent_to), subject, body)
 
     try:
-        server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-        server.ehlo()
-        server.login(sent_from, password)
-        server.sendmail(sent_from, sent_to, email_text)
-        server.close()
+        mail = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+        mail.ehlo()
+        mail.login(sent_from, password)
+        mail.sendmail(sent_from, sent_to, email_text)
+        mail.close()
     except Exception as e:
         return UNKNOWN, str(e)
 
