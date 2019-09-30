@@ -86,6 +86,7 @@ def send_email_from_gmail(password):
         mail.login(sent_from, password)
         mail.sendmail(sent_from, sent_to, email_text)
         mail.close()
+        return OK, "Test email sent"
     except Exception as e:
         return UNKNOWN, str(e)
 
