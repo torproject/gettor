@@ -103,9 +103,9 @@ if __name__ == "__main__":
     try:
         status, message = send_email_from_gmail(password)
     except Exception as e:
-        status = CRITICAL
+        status = UNKNOWN
         message = repr(e)
-        status_file.write("CRITICAL: %s" % message)
+        status_file.write("UNKNOWN: %s" % message)
         sys.exit(status)
 
     time.sleep(600)
