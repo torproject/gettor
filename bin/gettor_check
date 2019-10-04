@@ -9,17 +9,12 @@
 #
 # :license: This is Free Software. See LICENSE for license information.
 
-cd /home/gettor/gettor/;
-virtualenv /home/gettor/gettor/venv
-source /home/gettor/gettor/venv/bin/activate
-
 python3 /home/gettor/gettor/scripts/check_service $1
 
-# store exit status
-# status=$?
-#
-# if test $status -ne 0
-# then
-#   /home/gettor/gettor/bin/gettor_service start
-# fi
-# deactivate
+store exit status
+status=$?
+
+if test $status -ne 0
+then
+  /home/gettor/gettor/bin/gettor_service start
+fi
