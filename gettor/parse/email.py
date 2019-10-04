@@ -15,7 +15,6 @@ from __future__ import absolute_import
 import re
 import dkim
 import hashlib
-import validate_email
 
 from datetime import datetime
 import configparser
@@ -29,6 +28,7 @@ from twisted.enterprise import adbapi
 
 from ..utils.db import SQLite3
 from ..utils import strings
+from ..utils import validate_email
 
 class AddressError(Exception):
     """
