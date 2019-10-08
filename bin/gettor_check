@@ -16,5 +16,6 @@ status=$?
 
 if test $status -ne 0
 then
+  cd /home/gettor/gettor
   /home/gettor/gettor/bin/gettor_service start
 fi
