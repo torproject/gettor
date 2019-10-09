@@ -53,7 +53,7 @@ class Settings(object):
         if os.path.exists(self.filename):
             try:
                 with open(self.filename, 'r') as f:
-                    self._settings = json.load(f)
+                  self._settings = json.load(f)
             except:
                 pass
         else:
@@ -65,7 +65,12 @@ class Settings(object):
               "sendmail_interval": 10,
               "sendmail_addr": "gettor@torproject.org",
               "sendmail_host": "localhost",
-              "sendmail_port": 587
+              "sendmail_port": 587,
+              "consumer_key": "",
+              "consumer_secret": "",
+              "access_key": "",
+              "access_secret": "",
+              "twitter_handle": "get_tor"
             }
 
     def get(self, key):
