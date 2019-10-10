@@ -15,10 +15,13 @@ from __future__ import absolute_import
 import gettext
 import hashlib
 
+
 import configparser
 
 from twisted.internet import defer
 
+from ...parse.twitter import TwitterParser
+from ...utils.twitter import Twitter
 from ...utils.db import SQLite3 as DB
 from ...utils.commons import log
 from ...utils import strings
@@ -31,16 +34,13 @@ class Twitterdm(object):
         """
         Constructor. It opens and stores a connection to the database.
         :dbname: reads from configs
+
         """
         self.settings = settings
         dbname = self.settings.get("dbname")
-        consumer_key = self.settings.get("consumer_key")
-        consumer_secret = self.settings.get("consumer_secret")
-        access_key = self.settings.get("access_key")
-        access_secret = self.settings.get("access_secret")
-        twitter_handle = self.settings.get("twitter_handle")
-
+        self.twitter = Twitter(settings)
         self.conn = DB(dbname)
+
 
     def get_interval(self):
         """
@@ -59,6 +59,7 @@ class Twitterdm(object):
         """
         log.info("Message sent successfully.")
 
+
     def twitter_errback(self, error):
         """
         Errback if we don't/can't send the message.
@@ -67,25 +68,158 @@ class Twitterdm(object):
         raise Error("{}".format(error))
 
 
-    def twitter_msg_list(self):
-
-
-
-    def twitterdm(self):
+    def twitterdm(self, twitter_id, message):
         """
         Send a twitter message for each message received. It creates a plain
         text message, and sends it via twitter APIs
 
-        :param twitter_handle (str): email address of the recipient.
-        :param text (str): subject of the message.
+        :param twitter_id (str): twitter_id of the recipient.
+        :param message (str): text of the message.
 
         :return: deferred whose callback/errback will handle the API execution
         details.
         """
 
+        return self.twitter.post_message(
+            twitter_id, message
+        ).addCallback(self.twitterdm_callback).addErrback(self.twitterdm_errback)
+
+    @defer.inlineCallbacks
+    def get_new(self):
+        """
+        Get new requests to process. This will define the `main loop` of
+        the Twitter service.
+        """
+
         log.debug("Retrieve list of messages")
+        data = self.twitter.twitter_data()
 
-        log.debug("Creating message")
+        for e in data['events']:
 
+            message_id = { 'id': e['id'], 'twitter_handle': e['message_create']['sender_id'] }
 
-        log.debug("Calling twitter APIs.")
+            log.debug("Parsing message")
+            tp = TwitterParser(settings, message_id)
+            yield defer.maybeDeferred(
+                tp.parse, e['message_create']['message_data']['text'], message_id
+            ).addCallback(tp.parse_callback).addErrback(tp.parse_errback)
+
+        # Manage help and links messages separately
+        help_requests = yield self.conn.get_requests(
+            status="ONHOLD", command="help", service="twitter"
+        )
+
+        link_requests = yield self.conn.get_requests(
+            status="ONHOLD", command="links", service="twtter"
+        )
+
+        if help_requests:
+            strings.load_strings("en")
+            try:
+                log.info("Got new help request.")
+
+                for request in help_requests:
+                    ids = json.load(request[0])
+                    message_id = ids['id']
+                    twitter_id = ids['twitter_handle']
+                    date = request[5]
+
+                    hid = hashlib.sha256(twitter_id.encode('utf-8'))
+                    log.info(
+                        "Sending help message to {}.".format(
+                            hid.hexdigest()
+                        )
+                    )
+
+                    yield self.twitterdm(
+                        twitter_id=twitter_id,
+                        body=strings._("help_body")
+                    )
+
+                    yield self.conn.update_stats(
+                        command="help", platform='', language='en',
+                        service="twitter"
+                    )
+
+                    yield self.conn.update_request(
+                        id=request[0], hid=hid.hexdigest(), status="SENT",
+                        service="twitter", date=date
+                    )
+
+            except Error as e:
+                log.info("Error sending twitter message: {}.".format(e))
+
+        elif link_requests:
+            try:
+                log.info("Got new links request.")
+
+                for request in link_requests:
+                    ids = json.load(request[0])
+                    message_id = ids['id']
+                    twitter_id = ids['twitter_handle']
+                    date = request[5]
+                    platform = request[2]
+                    language = request[3]
+
+                    if not language:
+                        language = 'en'
+
+                    locales = strings.get_locales()
+
+                    strings.load_strings(language)
+                    locale = locales[language]['locale']
+
+                    log.info("Getting links for {}.".format(platform))
+                    links = yield self.conn.get_links(
+                        platform=platform, language=locale, status="ACTIVE"
+                    )
+
+                    # build message
+                    link_msg = None
+                    for link in links:
+                        provider = link[5]
+                        version = link[4]
+                        arch = link[3]
+                        url = link[0]
+                        file = link[7]
+                        sig_url = url + ".asc"
+
+                        link_str = "Tor Browser {} for {}-{}-{} ({}): {}\n".format(
+                            version, platform, locale, arch, provider, url
+                        )
+
+                        link_str += "Signature file: {}\n".format(sig_url)
+
+                        if link_msg:
+                            link_msg = "{}\n{}".format(link_msg, link_str)
+                        else:
+                            link_msg = link_str
+
+                    body_msg = strings._("links_body").format(platform, link_msg, file)
+
+                    hid = hashlib.sha256(twitter_id.encode('utf-8'))
+                    log.info(
+                        "Sending links to {}.".format(
+                            hid.hexdigest()
+                        )
+                    )
+
+                    yield self.twitterdm(
+                        email_addr=twitter_id,
+                        body=body_msg
+                    )
+
+                    yield self.conn.update_stats(
+                        command="links", platform=platform, language=locale,
+                        service="twitter"
+                    )
+
+                    yield self.conn.update_request(
+                        id=request[0], hid=hid.hexdigest(), status="SENT",
+                        service="twitter", date=date
+                    )
+
+            except Error as e:
+                log.info("Error sending message: {}.".format(e))
+        else:
+            log.debug("No pending twitter requests. Keep waiting.")

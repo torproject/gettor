@@ -19,6 +19,7 @@ from .utils import options
 
 from .services import BaseService
 from .services.email.sendmail import Sendmail
+from .services.twitter.twitterdm import Twitterdm
 
 def run(gettor, app):
     """
@@ -34,5 +35,14 @@ def run(gettor, app):
     )
 
     gettor.addService(sendmail_service)
+
+    gettor.setServiceParent(app)
+
+
+    twitter_service = BaseService(
+        "twitterdm", twitterdm.get_interval(), twitterdm
+    )
+
+    gettor.addService(twitter_service)
 
     gettor.setServiceParent(app)
