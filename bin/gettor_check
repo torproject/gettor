@@ -11,7 +11,7 @@
 
 python3 /home/gettor/gettor/scripts/check_service $1
 
-store exit status
+#store exit status
 status=$?
 
 if test $status -ne 0
