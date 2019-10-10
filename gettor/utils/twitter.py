@@ -11,7 +11,6 @@
 # :license: This is Free Software. See LICENSE for license information.
 
 from requests_oauthlib import OAuth1Session
-import json
 
 class Twitter(object):
     """
@@ -58,4 +57,5 @@ class Twitter(object):
             }
         }
 
-        data = self.twitter_client.post(self.twitter_new_message_endpoint, message)
+        data = self.twitter_client.post(twitter_new_message_endpoint, json=message)
+        return data

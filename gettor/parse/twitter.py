@@ -80,7 +80,7 @@ class TwitterParser(object):
         platforms = self.settings.get("platforms")
         languages = [*strings.get_locales().keys()]
 
-        hid = hashlib.sha256(twitter_id.encode('utf-8'))
+        hid = hashlib.sha256(str(twitter_id).encode('utf-8'))
         log.msg(
             "Request from {}".format(hid.hexdigest()), system="twitter parser"
         )
@@ -114,7 +114,7 @@ class TwitterParser(object):
             dbname = self.settings.get("dbname")
             conn = SQLite3(dbname)
 
-            hid = hashlib.sha256(request['id'].encode('utf-8'))
+            hid = hashlib.sha256(str(request['id']).encode('utf-8'))
             # check limits first
             num_requests = yield conn.get_num_requests(
                 id=hid.hexdigest(), service=request['service']
@@ -129,7 +129,7 @@ class TwitterParser(object):
 
             else:
                 conn.new_request(
-                    id=request['id'],
+                    id=str(request['id']),
                     command=request['command'],
                     platform=request['platform'],
                     language=request['language'],

@@ -14,7 +14,7 @@ from __future__ import absolute_import
 
 import gettext
 import hashlib
-
+import json
 
 import configparser
 
@@ -65,7 +65,7 @@ class Twitterdm(object):
         Errback if we don't/can't send the message.
         """
         log.debug("Could not send message.")
-        raise Error("{}".format(error))
+        raise RuntimeError("{}".format(error))
 
 
     def twitterdm(self, twitter_id, message):
@@ -80,9 +80,13 @@ class Twitterdm(object):
         details.
         """
 
-        return self.twitter.post_message(
+        post_data = self.twitter.post_message(
             twitter_id, message
-        ).addCallback(self.twitterdm_callback).addErrback(self.twitterdm_errback)
+        )
+        if post_data.status_code == 200:
+            self.twitter_callback
+        else:
+            self.twitter_errback
 
     @defer.inlineCallbacks
     def get_new(self):
@@ -96,10 +100,10 @@ class Twitterdm(object):
 
         for e in data['events']:
 
-            message_id = { 'id': e['id'], 'twitter_handle': e['message_create']['sender_id'] }
+            message_id = { "id": e['id'], "twitter_handle": e['message_create']['sender_id'] }
 
             log.debug("Parsing message")
-            tp = TwitterParser(settings, message_id)
+            tp = TwitterParser(self.settings, message_id)
             yield defer.maybeDeferred(
                 tp.parse, e['message_create']['message_data']['text'], message_id
             ).addCallback(tp.parse_callback).addErrback(tp.parse_errback)
@@ -119,7 +123,7 @@ class Twitterdm(object):
                 log.info("Got new help request.")
 
                 for request in help_requests:
-                    ids = json.load(request[0])
+                    ids = json.loads("{}".format(request[0].replace("'", '"')))
                     message_id = ids['id']
                     twitter_id = ids['twitter_handle']
                     date = request[5]
@@ -133,7 +137,7 @@ class Twitterdm(object):
 
                     yield self.twitterdm(
                         twitter_id=twitter_id,
-                        body=strings._("help_body")
+                        message=strings._("help_body")
                     )
 
                     yield self.conn.update_stats(
@@ -146,7 +150,7 @@ class Twitterdm(object):
                         service="twitter", date=date
                     )
 
-            except Error as e:
+            except RuntimeError as e:
                 log.info("Error sending twitter message: {}.".format(e))
 
         elif link_requests:
@@ -219,7 +223,7 @@ class Twitterdm(object):
                         service="twitter", date=date
                     )
 
-            except Error as e:
+            except RuntimeError as e:
                 log.info("Error sending message: {}.".format(e))
         else:
             log.debug("No pending twitter requests. Keep waiting.")

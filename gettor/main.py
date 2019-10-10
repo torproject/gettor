@@ -28,6 +28,7 @@ def run(gettor, app):
     settings = options.parse_settings()
 
     sendmail = Sendmail(settings)
+    twitterdm = Twitterdm(settings)
 
     log.info("Starting services.")
     sendmail_service = BaseService(

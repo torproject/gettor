@@ -5,6 +5,7 @@
   "email_requests_limit": 30,
   "twitter_requests_limit": 1,
   "sendmail_interval": 10,
+  "twitter_interval": 10,
   "sendmail_addr": "gettor@torproject.org",
   "sendmail_host": "localhost",
   "sendmail_port": 587,
