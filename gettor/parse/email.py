@@ -198,6 +198,23 @@ class EmailParser(object):
         return request
 
 
+    def check_num_requests(self, request_id, request_service, limit):
+        now_str = datetime.now().strftime("%Y%m%d%H%M%S")
+        dbname = self.settings.get("dbname")
+        conn = SQLite3(dbname)
+
+        hid = hashlib.sha256(request['id'].encode('utf-8'))
+        # check limits first
+        num_requests = yield conn.get_num_requests(
+            id=hid.hexdigest(), service=request_service
+        )
+
+        if num_requests[0][0] < email_requests_limit:
+            return 1
+        else:
+            return 0
+
+
     @defer.inlineCallbacks
     def parse_callback(self, request):
         """
@@ -212,30 +229,13 @@ class EmailParser(object):
         execution details.
         """
         email_requests_limit = self.settings.get("email_requests_limit")
-        log.msg(
-            "Found request for {}.".format(request['command']),
-            system="email parser"
-        )
 
         if request["command"]:
-            now_str = datetime.now().strftime("%Y%m%d%H%M%S")
-            dbname = self.settings.get("dbname")
-            conn = SQLite3(dbname)
-
-            hid = hashlib.sha256(request['id'].encode('utf-8'))
-            # check limits first
-            num_requests = yield conn.get_num_requests(
-                id=hid.hexdigest(), service=request['service']
+            log.msg(
+                "Found request for {}.".format(request['command']),
+                system="email parser"
             )
-
-            if num_requests[0][0] > email_requests_limit:
-                log.msg(
-                    "Discarded. Too many requests from {}.".format(
-                        hid.hexdigest
-                    ), system="email parser"
-            )
-
-            else:
+            if check_num_requests(request['id'], request['service'], email_requests_limit):
                 conn.new_request(
                     id=request['id'],
                     command=request['command'],
@@ -245,6 +245,18 @@ class EmailParser(object):
                     date=now_str,
                     status="ONHOLD",
                 )
+            else:
+                log.msg(
+                    "Discarded. Too many requests from {}.".format(
+                        hid.hexdigest
+                    ), system="email parser"
+                )
+
+        else:
+            log.msg(
+                "Request not found",
+                system="email parser"
+            )
 
     def parse_errback(self, error):
         """

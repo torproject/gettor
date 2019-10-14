@@ -100,14 +100,18 @@ if __name__ == "__main__":
     else:
         password = "yourPassword"
 
-    status_file = open(STATUS_FILE,'w')
+    status_file = open(STATUS_FILE, 'r')
+    message = status_file.read()
+    status_file.close()
 
     try:
         status, message = send_email_from_gmail(password)
     except Exception as e:
         status = UNKNOWN
         message = repr(e)
-        status_file.write("UNKNOWN: %s" % message)
+        status_file = open(STATUS_FILE,'w')
+        status_file.write("UNKNOWN\n3: %s" % message)
+        status_file.close()
 
     time.sleep(600)
 
@@ -119,6 +123,7 @@ if __name__ == "__main__":
         status = CRITICAL
         message = repr(e)
     finally:
+        status_file = open(STATUS_FILE,'w')
         if status == OK:
             status_file.write("OK\n0: %s" % message)
         elif status == WARNING:
@@ -128,5 +133,7 @@ if __name__ == "__main__":
         else:
             status_file.write("UNKNOWN\n3: %s" % message)
             status = UNKNOWN
+
+        status_file.close()
 
         sys.exit(status)
