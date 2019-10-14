@@ -198,7 +198,7 @@ class EmailParser(object):
         return request
 
 
-    def check_num_request(self, request_id, request_service, limit):
+    def check_num_requests(self, request_id, request_service, limit):
         now_str = datetime.now().strftime("%Y%m%d%H%M%S")
         dbname = self.settings.get("dbname")
         conn = SQLite3(dbname)
@@ -235,7 +235,7 @@ class EmailParser(object):
                 "Found request for {}.".format(request['command']),
                 system="email parser"
             )
-            if check_num_request(request['id'], request['service'], email_request_limit):
+            if check_num_requests(request['id'], request['service'], email_requests_limit):
                 conn.new_request(
                     id=request['id'],
                     command=request['command'],
