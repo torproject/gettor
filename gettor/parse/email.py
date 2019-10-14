@@ -205,9 +205,14 @@ class EmailParser(object):
 
         hid = hashlib.sha256(request['id'].encode('utf-8'))
         # check limits first
-        num_requests = yield conn.get_num_requests(
-            id=hid.hexdigest(), service=request_service
-        )
+        num_requests = limit
+
+        if hid.hexdigest() == self.settings.get('test_hid'):
+            num_requests = 1
+        else:
+            num_requests = yield conn.get_num_requests(
+                id=hid.hexdigest(), service=request_service
+            )
 
         if num_requests[0][0] < email_requests_limit:
             return 1
