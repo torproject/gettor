@@ -120,14 +120,7 @@ class TwitterParser(object):
                 id=hid.hexdigest(), service=request['service']
             )
 
-            if num_requests[0][0] > twitter_requests_limit:
-                log.msg(
-                    "Discarded. Too many requests from {}.".format(
-                        hid.hexdigest
-                    ), system="twitter parser"
-            )
-
-            else:
+            if num_requests[0][0] < twitter_requests_limit:
                 conn.new_request(
                     id=str(request['id']),
                     command=request['command'],
@@ -137,6 +130,14 @@ class TwitterParser(object):
                     date=now_str,
                     status="ONHOLD",
                 )
+
+            else:
+                log.msg(
+                    "Discarded. Too many requests from {}.".format(
+                        hid.hexdigest
+                    ), system="twitter parser"
+                )
+
 
     def parse_errback(self, error):
         """
