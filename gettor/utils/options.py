@@ -31,4 +31,4 @@ def parse_settings():
     returing translated strings
     """
     strings.load_strings("en")
-    return load_settings(config=False)
+    return load_settings(config='gettor.conf.json')

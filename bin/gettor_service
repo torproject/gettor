@@ -20,7 +20,7 @@
 
 case "$1" in
 start)
-   twistd3 --python=scripts/gettor --logfile=log/gettor.log --pidfile=gettor.pid
+   twistd3 --python=scripts/gettor --logfile=log/gettor.log --pidfile=gettor.pid --config=gettor.conf.json
    ;;
 stop)
    kill -INT `cat gettor.pid`
