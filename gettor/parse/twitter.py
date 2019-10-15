@@ -120,6 +120,10 @@ class TwitterParser(object):
                 id=hid.hexdigest(), service=request['service']
             )
 
+            num_requests += yield conn.get_num_requests(
+                id=request['id'], service=request['service']
+            )
+
             if num_requests[0][0] < twitter_requests_limit:
                 conn.new_request(
                     id=str(request['id']),
