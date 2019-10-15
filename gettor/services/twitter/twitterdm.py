@@ -79,7 +79,7 @@ class Twitterdm(object):
         :return: deferred whose callback/errback will handle the API execution
         details.
         """
-        return send_tweet()
+        return self.send_tweet()
 
 
     def send_tweet(self):
