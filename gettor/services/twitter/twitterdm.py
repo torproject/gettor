@@ -79,10 +79,10 @@ class Twitterdm(object):
         :return: deferred whose callback/errback will handle the API execution
         details.
         """
-        return self.send_tweet()
+        return self.send_tweet(twitter_id, message)
 
 
-    def send_tweet(self):
+    def send_tweet(self, twitter_id, message):
         post_data = self.twitter.post_message(
             twitter_id, message
         )
