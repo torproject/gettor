@@ -13,7 +13,7 @@
   "consumer_secret": "",
   "access_key": "",
   "access_secret": "",
-  "test_hid" = "",
+  "test_hid": "",
   "twitter_handle": "get_tor",
   "twitter_messages_endpoint": "https://api.twitter.com/1.1/direct_messages/events/list.json",
   "twitter_new_message_endpoint": "https://api.twitter.com/1.1/direct_messages/events/new.json"
