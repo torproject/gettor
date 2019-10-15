@@ -57,5 +57,5 @@ class Twitter(object):
             }
         }
 
-        data = self.twitter_client.post(twitter_new_message_endpoint, json=message)
+        data = self.twitter_client.post(self.twitter_new_message_endpoint, json=message)
         return data
