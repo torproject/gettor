@@ -217,7 +217,7 @@ class Twitterdm(object):
 
                     yield self.twitterdm(
                         twitter_id=twitter_id,
-                        body=body_msg
+                        message=body_msg
                     )
 
                     yield self.conn.update_stats(
