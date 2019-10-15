@@ -216,7 +216,7 @@ class Twitterdm(object):
                     )
 
                     yield self.twitterdm(
-                        email_addr=twitter_id,
+                        twitter_id=twitter_id,
                         body=body_msg
                     )
 
