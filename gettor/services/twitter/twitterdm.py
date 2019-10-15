@@ -158,7 +158,7 @@ class Twitterdm(object):
                 log.info("Got new links request.")
 
                 for request in link_requests:
-                    ids = json.load(request[0])
+                    ids = json.loads("{}".format(request[0].replace("'", '"')))
                     message_id = ids['id']
                     twitter_id = ids['twitter_handle']
                     date = request[5]
