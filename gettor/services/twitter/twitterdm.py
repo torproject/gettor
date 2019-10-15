@@ -79,7 +79,10 @@ class Twitterdm(object):
         :return: deferred whose callback/errback will handle the API execution
         details.
         """
+        return send_tweet()
 
+
+    def send_tweet(self):
         post_data = self.twitter.post_message(
             twitter_id, message
         )
@@ -87,6 +90,8 @@ class Twitterdm(object):
             self.twitter_callback
         else:
             self.twitter_errback
+
+        return post_data
 
     @defer.inlineCallbacks
     def get_new(self):
@@ -114,7 +119,7 @@ class Twitterdm(object):
         )
 
         link_requests = yield self.conn.get_requests(
-            status="ONHOLD", command="links", service="twtter"
+            status="ONHOLD", command="links", service="twitter"
         )
 
         if help_requests:
@@ -123,7 +128,7 @@ class Twitterdm(object):
                 log.info("Got new help request.")
 
                 for request in help_requests:
-                    ids = json.loads("{}".format(request[0].replace("'", '"')))
+                    ids = json.loads("{}".format(request[0]))
                     message_id = ids['id']
                     twitter_id = ids['twitter_handle']
                     date = request[5]
@@ -158,7 +163,7 @@ class Twitterdm(object):
                 log.info("Got new links request.")
 
                 for request in link_requests:
-                    ids = json.loads("{}".format(request[0].replace("'", '"')))
+                    ids = json.loads("{}".format(request[0]))
                     message_id = ids['id']
                     twitter_id = ids['twitter_handle']
                     date = request[5]
