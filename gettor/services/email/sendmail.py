@@ -177,6 +177,8 @@ class Sendmail(object):
 
                     # build message
                     link_msg = None
+                    file = ""
+                    
                     for link in links:
                         provider = link[5]
                         version = link[4]
