@@ -121,7 +121,7 @@ class TwitterParser(object):
             )
 
             num_requests += yield conn.get_num_requests(
-                id=request['id'], service=request['service']
+                id=str(request['id']), service=request['service']
             )
 
             if num_requests[0][0] < twitter_requests_limit:
