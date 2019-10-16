@@ -241,7 +241,7 @@ class EmailParser(object):
                 system="email parser"
             )
             check = yield self.too_many_requests(request['id'], hid, request['service'], email_requests_limit):
-            if check
+            if check:
                 log.msg(
                     "Discarded. Too many requests from {}.".format(
                         hid.hexdigest()

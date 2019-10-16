@@ -130,7 +130,6 @@ class TwitterParser(object):
                         hid.hexdigest()
                     ), system="twitter parser"
                 )
-
             else:
                 conn.new_request(
                     id=str(request['id']),
