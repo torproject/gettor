@@ -93,8 +93,7 @@ class Twitterdm(object):
             time.sleeps(30)
 
         else:
-            raise RuntimeError as e:
-                log.info("Error sending message: {}.".format(e))
+            raise RuntimeError("Error sending message: (%s)" % str(e))
 
         return post_data
 
