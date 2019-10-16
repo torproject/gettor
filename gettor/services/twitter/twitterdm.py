@@ -90,7 +90,7 @@ class Twitterdm(object):
             twitter_id, message
         )
         if post_data.status_code == 200:
-            time.sleeps(30)
+            time.sleeps(61)
 
         else:
             raise RuntimeError("Error sending message: (%s)" % str(e))
