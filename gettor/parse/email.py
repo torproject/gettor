@@ -199,11 +199,7 @@ class EmailParser(object):
 
 
     def check_num_requests(self, request_id, request_service, limit):
-        now_str = datetime.now().strftime("%Y%m%d%H%M%S")
-        dbname = self.settings.get("dbname")
-        conn = SQLite3(dbname)
-
-        hid = hashlib.sha256(request['id'].encode('utf-8'))
+        hid = hashlib.sha256(request_id.encode('utf-8'))
         # check limits first
         num_requests = limit
 
@@ -234,6 +230,9 @@ class EmailParser(object):
         execution details.
         """
         email_requests_limit = self.settings.get("email_requests_limit")
+        now_str = datetime.now().strftime("%Y%m%d%H%M%S")
+        dbname = self.settings.get("dbname")
+        conn = SQLite3(dbname)
 
         if request["command"]:
             log.msg(
