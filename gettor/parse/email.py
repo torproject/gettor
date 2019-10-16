@@ -156,16 +156,16 @@ class EmailParser(object):
         num_requests = limit
 
         if hid.hexdigest() == self.settings.get('test_hid'):
-            return 0
+            return False
         else:
             num_requests = yield conn.get_num_requests(
                 id=hid.hexdigest(), service=request_service
             )
 
         if num_requests[0][0] < email_requests_limit:
-            return 0
+            return False
         else:
-            return 1
+            return True
 
 
     def parse(self, msg_str):
