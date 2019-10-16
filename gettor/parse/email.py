@@ -240,7 +240,7 @@ class EmailParser(object):
                 "Found request for {}.".format(request['command']),
                 system="email parser"
             )
-            if check_num_requests(request['id'], request['service'], email_requests_limit):
+            if self.check_num_requests(request['id'], request['service'], email_requests_limit):
                 conn.new_request(
                     id=request['id'],
                     command=request['command'],
