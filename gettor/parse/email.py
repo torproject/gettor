@@ -242,7 +242,7 @@ class EmailParser(object):
             )
 
             check = self.too_many_requests(
-                request['id'], hid, request_service, num_request, email_requests_limit
+                request['id'], hid, request_service, num_requests, email_requests_limit
             )
 
             if check:
