@@ -156,7 +156,7 @@ class EmailParser(object):
         num_requests = limit
 
         if hid.hexdigest() == self.settings.get('test_hid'):
-            num_requests = 0
+            return 0
         else:
             num_requests = yield conn.get_num_requests(
                 id=hid.hexdigest(), service=request_service
