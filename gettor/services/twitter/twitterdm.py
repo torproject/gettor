@@ -15,6 +15,7 @@ from __future__ import absolute_import
 import gettext
 import hashlib
 import json
+import time
 
 import configparser
 
@@ -87,6 +88,7 @@ class Twitterdm(object):
             twitter_id, message
         )
         if post_data.status_code == 200:
+            time.sleeps(30)
             self.twitter_callback
         else:
             self.twitter_errback
