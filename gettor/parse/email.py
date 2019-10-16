@@ -252,7 +252,7 @@ class EmailParser(object):
             else:
                 log.msg(
                     "Discarded. Too many requests from {}.".format(
-                        hid.hexdigest
+                        hid.hexdigest()
                     ), system="email parser"
                 )
 
