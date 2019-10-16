@@ -228,6 +228,7 @@ class EmailParser(object):
         now_str = datetime.now().strftime("%Y%m%d%H%M%S")
         dbname = self.settings.get("dbname")
         hid = hashlib.sha256(request['id'].encode('utf-8'))
+        request_service = request['service']
         conn = SQLite3(dbname)
 
         if request["command"]:
@@ -241,7 +242,7 @@ class EmailParser(object):
             )
 
             check = self.too_many_requests(
-                request['id'], hid, request['service'], num_request, email_requests_limit
+                request['id'], hid, request_service, num_request, email_requests_limit
             )
 
             if check:
