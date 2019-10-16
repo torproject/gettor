@@ -151,21 +151,21 @@ class EmailParser(object):
         return request
 
 
-    def check_num_requests(self, request_id, hid, request_service, limit):
+    def too_many_requests(self, request_id, hid, request_service, limit):
         # check limit first
         num_requests = limit
 
         if hid.hexdigest() == self.settings.get('test_hid'):
-            num_requests = 1
+            num_requests = 0
         else:
             num_requests = yield conn.get_num_requests(
                 id=hid.hexdigest(), service=request_service
             )
 
         if num_requests[0][0] < email_requests_limit:
-            return 1
-        else:
             return 0
+        else:
+            return 1
 
 
     def parse(self, msg_str):
@@ -240,7 +240,14 @@ class EmailParser(object):
                 "Found request for {}.".format(request['command']),
                 system="email parser"
             )
-            if self.check_num_requests(request['id'], hid, request['service'], email_requests_limit):
+            check = yield self.too_many_requests(request['id'], hid, request['service'], email_requests_limit):
+            if check
+                log.msg(
+                    "Discarded. Too many requests from {}.".format(
+                        hid.hexdigest()
+                    ), system="email parser"
+                )
+            else:
                 conn.new_request(
                     id=request['id'],
                     command=request['command'],
@@ -250,13 +257,6 @@ class EmailParser(object):
                     date=now_str,
                     status="ONHOLD",
                 )
-            else:
-                log.msg(
-                    "Discarded. Too many requests from {}.".format(
-                        hid.hexdigest()
-                    ), system="email parser"
-                )
-
         else:
             log.msg(
                 "Request not found",
