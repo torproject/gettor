@@ -240,7 +240,7 @@ class EmailParser(object):
                 "Found request for {}.".format(request['command']),
                 system="email parser"
             )
-            check = yield self.too_many_requests(request['id'], hid, request['service'], email_requests_limit):
+            check = yield self.too_many_requests(request['id'], hid, request['service'], email_requests_limit)
             if check:
                 log.msg(
                     "Discarded. Too many requests from {}.".format(
