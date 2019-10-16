@@ -151,13 +151,10 @@ class EmailParser(object):
         return request
 
 
-    def too_many_requests(self, request_id, hid, request_service, num_request, limit):
-        # check limit first
-        num_requests = limit
-
+    def too_many_requests(self, request_id, hid, request_service, num_requests, limit):
         if hid.hexdigest() == self.settings.get('test_hid'):
             return False
-        elif num_requests[0][0] < email_requests_limit:
+        elif num_requests[0][0] < limit:
             return False
         else:
             return True
