@@ -138,7 +138,7 @@ class TwitterParser(object):
             else:
                 log.msg(
                     "Discarded. Too many requests from {}.".format(
-                        hid.hexdigest
+                        hid.hexdigest()
                     ), system="twitter parser"
                 )
 
