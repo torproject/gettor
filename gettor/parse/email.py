@@ -198,9 +198,8 @@ class EmailParser(object):
         return request
 
 
-    def check_num_requests(self, request_id, request_service, limit):
-        hid = hashlib.sha256(request_id.encode('utf-8'))
-        # check limits first
+    def check_num_requests(self, request_id, hid, request_service, limit):
+        # check limit first
         num_requests = limit
 
         if hid.hexdigest() == self.settings.get('test_hid'):
@@ -232,6 +231,7 @@ class EmailParser(object):
         email_requests_limit = self.settings.get("email_requests_limit")
         now_str = datetime.now().strftime("%Y%m%d%H%M%S")
         dbname = self.settings.get("dbname")
+        hid = hashlib.sha256(request['id'].encode('utf-8'))
         conn = SQLite3(dbname)
 
         if request["command"]:
@@ -239,7 +239,7 @@ class EmailParser(object):
                 "Found request for {}.".format(request['command']),
                 system="email parser"
             )
-            if self.check_num_requests(request['id'], request['service'], email_requests_limit):
+            if self.check_num_requests(request['id'], hid, request['service'], email_requests_limit):
                 conn.new_request(
                     id=request['id'],
                     command=request['command'],
