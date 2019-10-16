@@ -80,7 +80,9 @@ class Twitterdm(object):
         :return: deferred whose callback/errback will handle the API execution
         details.
         """
-        return self.send_tweet(twitter_id, message)
+        return self.send_tweet(
+            twitter_id, message
+        ).addCallback(self.twitter_callback).addErrback(self.twitter_errback)
 
 
     def send_tweet(self, twitter_id, message):
@@ -89,9 +91,10 @@ class Twitterdm(object):
         )
         if post_data.status_code == 200:
             time.sleeps(30)
-            self.twitter_callback
+
         else:
-            self.twitter_errback
+            raise RuntimeError as e:
+                log.info("Error sending message: {}.".format(e))
 
         return post_data
 

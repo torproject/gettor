@@ -100,7 +100,6 @@ class Sendmail(object):
         ).addCallback(self.sendmail_callback).addErrback(self.sendmail_errback)
 
 
-
     @defer.inlineCallbacks
     def get_new(self):
         """
@@ -178,7 +177,7 @@ class Sendmail(object):
                     # build message
                     link_msg = None
                     file = ""
-                    
+
                     for link in links:
                         provider = link[5]
                         version = link[4]
