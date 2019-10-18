@@ -152,13 +152,7 @@ class EmailParser(object):
 
 
     def too_many_requests(self, hid, num_requests, limit):
-        test_hid = self.settings.get('test_hid')
-        log.msg(
-            "test_hid {}".format(test_hid), system="email parser"
-        )
-        log.msg(
-            "hid {}".format(hid), system="email parser"
-        )
+        test_hid = self.settings.get("test_hid")
         if hid == test_hid:
             return False
         elif num_requests < limit:
@@ -250,8 +244,6 @@ class EmailParser(object):
             check = self.too_many_requests(
                 hid, num_requests[0][0], email_requests_limit
             )
-
-            log.msg("check: {}".format(check), system="email parser")
 
             if check:
                 log.msg(
