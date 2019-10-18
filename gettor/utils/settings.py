@@ -24,16 +24,16 @@ class Settings(object):
     """
     This class stores all of the settings for GetTor
     """
-    def __init__(self, config=False):
+    def __init__(self, config):
 
 
         # If a readable config file was provided, use that instead
         if config:
             if os.path.isfile(config):
                 self.filename = config
-
-        # Default config
-        self.filename = self.build_filename()
+        else:
+            # Default config
+            self.filename = self.build_filename()
 
         # Dictionary of available languages,
         # mapped to the language name, in that language
@@ -45,7 +45,7 @@ class Settings(object):
         """
         Returns the path of the settings file.
         """
-        return strings.get_resource_path('gettor.conf.json', strings.find_run_dir())
+        return strings.get_resource_path('/home/gettor/gettor/gettor.conf.json', strings.find_run_dir())
 
     def load(self):
         """

@@ -16,7 +16,7 @@ import argparse
 from .settings import Settings
 from . import strings
 
-def load_settings(config=None):
+def load_settings(config):
     """
     Loading settings, optionally from a custom config json file.
     """
@@ -31,4 +31,5 @@ def parse_settings():
     returing translated strings
     """
     strings.load_strings("en")
-    return load_settings(config='gettor.conf.json')
+    config = "/home/gettor/gettor/gettor.conf.json"
+    return load_settings(config)
