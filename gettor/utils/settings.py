@@ -15,6 +15,7 @@ import os
 import platform
 import locale
 
+from twisted.python import log
 
 from . import strings
 
