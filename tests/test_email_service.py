@@ -65,7 +65,7 @@ class EmailServiceTests(unittest.TestCase):
         hid = "80d7054da0d3826563c7babb5453e18f3e42f932e562c5ab0434aec9df7b0625"
         limit = self.settings.get("email_requests_limit")
         num_requests = 300
-        check = ep.too_many_requests(hid, num_requests, limit)
+        check = ep.too_many_requests(hid, self.settings.get("test_hid"), num_requests, limit)
         self.assertEqual(hid, self.settings.get("test_hid"))
         self.assertEqual(check, False)
 

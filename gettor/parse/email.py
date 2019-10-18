@@ -151,9 +151,7 @@ class EmailParser(object):
         return request
 
 
-    def too_many_requests(self, hid, num_requests, limit):
-        test_hid = self.settings.get("test_hid")
-
+    def too_many_requests(self, hid, test_hid, num_requests, limit):
         log.msg(
             "test_hid {}".format(test_hid), system="email parser"
         )
@@ -230,6 +228,7 @@ class EmailParser(object):
         email_requests_limit = self.settings.get("email_requests_limit")
         now_str = datetime.now().strftime("%Y%m%d%H%M%S")
         dbname = self.settings.get("dbname")
+        test_hid = self.settings.get("test_hid")
         conn = SQLite3(dbname)
 
         if request["command"]:
@@ -247,7 +246,7 @@ class EmailParser(object):
             )
 
             check = self.too_many_requests(
-                hid, num_requests[0][0], email_requests_limit
+                hid, test_hid, num_requests[0][0], email_requests_limit
             )
 
             if check:
