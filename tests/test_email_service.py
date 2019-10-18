@@ -66,7 +66,7 @@ class EmailServiceTests(unittest.TestCase):
         limit = self.settings.get("email_requests_limit")
         num_requests = 300
         check = ep.too_many_requests(hid, num_requests, limit)
-        self.assertEqual(hid, self.settings.get('test_hid'))
+        self.assertEqual(hid, self.settings.get("test_hid"))
         self.assertEqual(check, False)
 
     def test_language_email_parser(self):

@@ -81,9 +81,5 @@ class Settings(object):
               "twitter_new_message_endpoint": "https://api.twitter.com/1.1/direct_messages/events/new.json"
             }
 
-        log.msg(
-            "Settings loaded {}".format(self._settings), system="GetTor"
-        )
-
     def get(self, key):
         return self._settings[key]
