@@ -151,10 +151,10 @@ class EmailParser(object):
         return request
 
 
-    def too_many_requests(self, request_id, hid, request_service, num_requests, limit):
-        if hid.hexdigest() == self.settings.get('test_hid'):
+    def too_many_requests(self, hid, num_requests, limit):
+        if hid == self.settings.get('test_hid'):
             return False
-        elif num_requests[0][0] < limit:
+        elif num_requests < limit:
             return False
         else:
             return True
@@ -224,28 +224,30 @@ class EmailParser(object):
         email_requests_limit = self.settings.get("email_requests_limit")
         now_str = datetime.now().strftime("%Y%m%d%H%M%S")
         dbname = self.settings.get("dbname")
-        hid = hashlib.sha256(request['id'].encode('utf-8'))
-        request_service = request['service']
         conn = SQLite3(dbname)
 
         if request["command"]:
+
+            hid = hashlib.sha256(request['id'].encode('utf-8')).hexdigest()
+            request_service = request['service']
+
             log.msg(
                 "Found request for {}.".format(request['command']),
                 system="email parser"
             )
 
             num_requests = yield conn.get_num_requests(
-                id=hid.hexdigest(), service=request_service
+                id=hid, service=request_service
             )
 
             check = self.too_many_requests(
-                request['id'], hid, request_service, num_requests, email_requests_limit
+                hid, num_requests[0][0], email_requests_limit
             )
 
             if check:
                 log.msg(
                     "Discarded. Too many requests from {}.".format(
-                        hid.hexdigest()
+                        hid
                     ), system="email parser"
                 )
             else:

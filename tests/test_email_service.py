@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 import pytest
+import hashlib
+from datetime import datetime
 from twisted.trial import unittest
 from twisted.internet import defer, reactor
 from twisted.internet import task
@@ -57,6 +59,16 @@ class EmailServiceTests(unittest.TestCase):
         self.assertEqual(request["command"], "links")
         self.assertEqual(request["platform"], "osx")
         self.assertEqual(request["language"], "es")
+
+    def test_too_many_request_exclude(self):
+        ep = conftests.EmailParser(self.settings, "gettor@torproject.org")
+        hid = "80d7054da0d3826563c7babb5453e18f3e42f932e562c5ab0434aec9df7b0625"
+        request_service = "osx"
+        limit = self.settings.get("email_requests_limit")
+        num_requests = 300
+        check = ep.too_many_requests(hid, num_requests, limit)
+        self.assertEqual(hid, self.settings.get('test_hid'))
+        self.assertEqual(check, False)
 
     def test_language_email_parser(self):
         ep = conftests.EmailParser(self.settings, "gettor@torproject.org")
