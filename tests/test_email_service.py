@@ -63,7 +63,6 @@ class EmailServiceTests(unittest.TestCase):
     def test_too_many_request_exclude(self):
         ep = conftests.EmailParser(self.settings, "gettor@torproject.org")
         hid = "80d7054da0d3826563c7babb5453e18f3e42f932e562c5ab0434aec9df7b0625"
-        request_service = "osx"
         limit = self.settings.get("email_requests_limit")
         num_requests = 300
         check = ep.too_many_requests(hid, num_requests, limit)
