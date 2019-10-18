@@ -244,6 +244,10 @@ class EmailParser(object):
                 hid, num_requests[0][0], email_requests_limit
             )
 
+            log.msg("check: {}".format(check), system="email parser")
+            log.msg("hid: {}".format(hid), system="email parser")
+            log.msg("request['id']: {}".format(request['id']), system="email parser")
+
             if check:
                 log.msg(
                     "Discarded. Too many requests from {}.".format(
