@@ -8,6 +8,9 @@
 # :copyright:   (c) 2008-2019, The Tor Project, Inc.
 #
 # :license: This is Free Software. See LICENSE for license information.
+#
+# Updates all the files in all the endpoints.
+#
 
 cd ~/releases
 git checkout master

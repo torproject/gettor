@@ -7,6 +7,14 @@
 #           see also AUTHORS file
 #
 # :license: This is Free Software. See LICENSE for license information.
+#
+# Creates gettor.db sqlite database.
+# run as: $ python3 scripts/create_db -n -c -o -f gettor.db
+# -n --new: create new database file
+# -c --clear: clear database
+# -o --overwrite: overwrite existing Database
+#
+
 
 import os
 import sys

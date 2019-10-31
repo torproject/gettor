@@ -7,6 +7,10 @@
 #           see also AUTHORS file
 #
 # :license: This is Free Software. See LICENSE for license information.
+#
+# When a mail hits postfix this is the script that will process it.
+# This is configured in the .forward file within the gettor home.
+#
 
 import sys
 import os

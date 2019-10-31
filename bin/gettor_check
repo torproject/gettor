@@ -9,6 +9,13 @@
 #
 # :license: This is Free Software. See LICENSE for license information.
 
+################################################################################
+#                                                                              #
+# This file is used to check if GetTor is working and sending links.           #
+# It sends an email to gmail and writes to a status file.                      #
+#                                                                              #
+################################################################################
+
 python3 /home/gettor/gettor/scripts/check_service $1
 
 #store exit status

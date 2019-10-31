@@ -7,6 +7,9 @@
 #           see also AUTHORS file
 #
 # :license: This is Free Software. See LICENSE for license information.
+#
+# Add links to Tor Browser bundles to GetTor.
+#
 
 import os
 import sys
