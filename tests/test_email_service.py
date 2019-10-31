@@ -13,7 +13,7 @@ class EmailServiceTests(unittest.TestCase):
     # Fail any tests which take longer than 15 seconds.
     timeout = 15
     def setUp(self):
-        self.settings = conftests.options.parse_settings()
+        self.settings = conftests.options.parse_settings("en","./gettor.conf.json")
         self.sm_client = conftests.sendmail.Sendmail(self.settings)
         self.locales = conftests.strings.get_locales()
 

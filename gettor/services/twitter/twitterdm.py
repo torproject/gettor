@@ -144,9 +144,13 @@ class Twitterdm(object):
                         )
                     )
 
+                    body_msg = strings._("help_body_intro")
+                    body_msg += strings._("help_body_paragraph")
+                    body_msg += strings._("help_body_support")
+
                     yield self.twitterdm(
                         twitter_id=twitter_id,
-                        message=strings._("help_body")
+                        message=body_msg
                     )
 
                     yield self.conn.update_stats(
@@ -210,7 +214,13 @@ class Twitterdm(object):
                         else:
                             link_msg = link_str
 
-                    body_msg = strings._("links_body").format(platform, link_msg, file)
+                        body_msg = strings._("links_body_platform").format(platform)
+                        body_msg += trings._("links_body_links").format(link_msg)
+                        body_msg += trings._("links_body_archive")
+                        body_msg += trings._("links_body_internet_archive")
+                        body_msg += trings._("links_body_google_drive")
+                        body_msg += trings._("links_body_internet_archive").format(file)
+                        body_msg += trings._("links_body_ending")
 
                     hid = hashlib.sha256(twitter_id.encode('utf-8'))
                     log.info(

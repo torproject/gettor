@@ -24,12 +24,11 @@ def load_settings(config):
     settings.load()
     return settings
 
-def parse_settings():
+def parse_settings(locale, config):
     """
     Parse settings and loads strings in a given locale
     This function needs to be rewritten considering passing a locale and
     returing translated strings
     """
-    strings.load_strings("en")
-    config = "/home/gettor/gettor/gettor.conf.json"
+    strings.load_strings(locale)
     return load_settings(config)

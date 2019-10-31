@@ -132,10 +132,14 @@ class Sendmail(object):
                         )
                     )
 
+                    body_msg = strings._("help_body_intro")
+                    body_msg += strings._("help_body_paragraph")
+                    body_msg += strings._("help_body_support")
+
                     yield self.sendmail(
                         email_addr=id,
                         subject=strings._("help_subject"),
-                        body=strings._("help_body")
+                        body=body_msg
                     )
 
                     yield self.conn.update_stats(
@@ -197,7 +201,14 @@ class Sendmail(object):
                         else:
                             link_msg = link_str
 
-                    body_msg = strings._("links_body").format(platform, link_msg, file)
+                    body_msg = strings._("links_body_platform").format(platform)
+                    body_msg += trings._("links_body_links").format(link_msg)
+                    body_msg += trings._("links_body_archive")
+                    body_msg += trings._("links_body_internet_archive")
+                    body_msg += trings._("links_body_google_drive")
+                    body_msg += trings._("links_body_internet_archive").format(file)
+                    body_msg += trings._("links_body_ending")
+
                     subject_msg = strings._("links_subject")
 
                     hid = hashlib.sha256(id.encode('utf-8'))

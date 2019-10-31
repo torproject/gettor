@@ -25,7 +25,9 @@ def run(gettor, app):
     """
     This is GetTor's main entry point and main runtime loop.
     """
-    settings = options.parse_settings()
+    config = "/home/gettor/gettor/gettor.conf.json"
+
+    settings = options.parse_settings("en", config)
 
     sendmail = Sendmail(settings)
     twitterdm = Twitterdm(settings)

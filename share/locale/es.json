@@ -1,16 +1,21 @@
 {
-  "links_body": "You requested Tor Browser for {}.\n\nYou will need only one of the links below to download the bundle. If a link does not work for you, try the next one.\n\n{}\n\nShould you have issues with any of the links above you can access the following archives:\n\n- Internet Archive: https://archive.org/details/@gettor\n\n- Google Drive folder: https://drive.google.com/open?id=13CADQTsCwrGsIID09YQbNz2DfRMUoxUU\n\nDownload the file: {}\n\n \n--\nGetTor",
+  "links_body_platform": "You requested Tor Browser for {}.\n\n",
+  "links_body_links": "You will need only one of the links below to download the bundle. If a link does not work for you, try the next one.\n\n{}\n\n",
+  "links_body_archive": "Should you have issues with any of the links above you can access the following archives:\n\n",
+  "links_body_internet_archive": "- Internet Archive: https://archive.org/details/@gettor\n\n",
+  "links_body_google_drive": "- Google Drive folder: https://drive.google.com/open?id=13CADQTsCwrGsIID09YQbNz2DfRMUoxUU\n\n",
+  "links_body_internet_archive": "Download the file: {}\n\n",
+  "links_body_ending": "\n--\nGetTor",
   "links_subject": "[GetTor] Links for your request",
-  "help_body": "This is how you can request a tor browser bundle link.\n\n Send an email to: gettor@torproject.org\n\nIn the body of the email only write: <operating system> <language>.\n\nWe only support windows, osx and linux as operating systems.\n\nAt the moment please only use en as language.\n\n",
+  "help_body_intro": "This is how you can request a tor browser bundle link.\n\n",
+  "help_body_paragraph": "Send an email to: gettor@torproject.org\n\nIn the body of the email only write: <operating system> <language>.\n\n",
+  "help_body_support": "We only support windows, osx and linux as operating systems.\n\nAt the moment please only use en as language.\n\n",
   "help_subject": "[GetTor] Help Email",
   "help_debug": "Log application errors to stdout",
   "help_config": "Custom config file location (optional)",
   "smtp_links_subject": "[GetTor] Links for your request",
   "smtp_mirrors_subject": "[GetTor] Mirrors",
-  "smtp_help_subject": "[GetTor] Ayuda",
+  "smtp_help_subject": "[GetTor] Help",
   "smtp_unsupported_locale_subject": "[GetTor] Unsupported locale",
-  "smtp_unsupported_locale_msg": "The locale you requested '{}' is not supported.",
-  "smtp_vlinks_msg": "You requested Tor Browser for {}.\n\nYou will need only one of the links below to download the bundle. If a link does not work for you, try the next one.\n\n{}\n\nShould you have issues with any of the links above you can access the following Google Drive folder: https://drive.google.com/open?id=13CADQTsCwrGsIID09YQbNz2DfRMUoxUU\n\n Download the file: {}\n\n \n--\nGetTor",
-  "smtp_mirrors_msg": "Hi! this is the GetTor robot.\n\nThank you for your request. Attached to this email you will find\nan updated list of mirrors of Tor Project's website.",
-  "smtp_help_msg": "Hi! This is the GetTor robot. I am here to help you download the\nlatest version of Tor Browser.\n\nPlease reply to this message with one of the options below:\n\nwindows\nlinux\nosx\nmirrors\n\nI will then send you the download instructions.\n\nIf you are unsure, just send a blank reply to this message."
+  "smtp_unsupported_locale_msg": "The locale you requested '{}' is not supported."
 }

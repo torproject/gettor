@@ -10,7 +10,7 @@ class TwitterTests(unittest.TestCase):
     # Fail any tests which take longer than 15 seconds.
     timeout = 15
     def setUp(self):
-        self.settings = conftests.options.parse_settings()
+        self.settings = conftests.options.parse_settings("en","./gettor.conf.json")
         self.tw_client = conftests.twitter.Twitter(self.settings)
 
 
