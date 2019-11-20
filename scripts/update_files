@@ -23,8 +23,12 @@ def upload_files(release):
                 url = data['downloads'][arch][locale][asset]
                 filename = url.split('/')[-1]
                 print("Downloading " + filename)
-                subprocess.check_call(["/usr/bin/wget", url])
-                release.upload_asset(filename)
+                try:
+                    subprocess.check_call(["/usr/bin/wget", "--quiet", url])
+                    release.upload_asset(filename)
+                except:
+                    print("Error: failed to download "+url)
+
 
 
 def main(token):
