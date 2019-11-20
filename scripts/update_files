@@ -1,62 +1,51 @@
-#!/bin/bash
-#
-# This file is part of GetTor, a Tor Browser distribution system.
-#
-# :authors: hiro <hiro@torproject.org>
-#           see also AUTHORS file
-#
-# :copyright:   (c) 2008-2019, The Tor Project, Inc.
-#
-# :license: This is Free Software. See LICENSE for license information.
+#!/usr/bin/env python3
 
-cd ~/releases
-git checkout master
-git branch -D torbrowser-releases
-git push github --delete torbrowser-releases
+from github import Github
 
-git fetch --all --prune
+import sys
+import json
+import urllib
+import subprocess
 
-git add .
-git commit -am 'Create release branch'
-git checkout -b torbrowser-releases
-git push -f --follow-tags origin torbrowser-releases
-git push -f --follow-tags github torbrowser-releases
+REPO_NAME = "TheTorProject/gettorbrowser"
+
+def delete_old_releases(repo):
+    for release in repo.get_releases():
+        release.delete_release()
+
+#Download list of tor browser releases and upload them to github
+def upload_files(release):
+    url = urllib.request.urlopen("https://aus1.torproject.org/torbrowser/update_3/release/downloads.json")
+    data = json.loads(url.read().decode())
+    for arch in data['downloads']:
+        for locale in data['downloads'][arch]:
+            for asset in data['downloads'][arch][locale]:
+                url = data['downloads'][arch][locale][asset]
+                filename = url.split('/')[-1]
+                print("Downloading " + filename)
+                subprocess.check_call(["/usr/bin/wget", url])
+                release.upload_asset(filename)
 
 
-for row in $(
-    curl -s 'https://aus1.torproject.org/torbrowser/update_3/release/downloads.json' |
-    jq -r '.downloads'
-  ); do
-    r=$(
-      echo ${row} |
-      egrep -o 'https?://[^ ]+' |
-      tr -d '",'
-    );
-    if [[ $r = *[!\ ]* ]]; then
-      git fetch --all
-      wget $r
-      git add .
-      git commit -m '[dist ci] commit from CI runner - update with new torbrowser downloads'
-      diffs=$(git diff origin/torbrowser-releases)
-      if [ -z "$diffs" ]; then
-          echo "No new releases"
-      else
-          git push -f --follow-tags origin torbrowser-releases
-      fi
-      diffs=$(git diff github/torbrowser-releases)
-      if [ -z "$diffs" ]; then
-          echo "No new releases"
-      else
-          git push -f --follow-tags github torbrowser-releases
-      fi
-    fi;
-done
+def main(token):
 
-rclone delete gdrive:releases
+    #Initialize a new release
+    g = Github(token)
+    repo = g.get_repo(REPO_NAME)
 
-for f in $(ls); do
-  # Update Google Drive
-  rclone copy $f gdrive:releases
-  # Update Internet Archive
-  ia upload ${f} $f --remote-name=$f --metadata="title:${f}" --metadata="mediatype:software" --metadata="collection:open_source_software"
-done
+    delete_old_releases(repo)
+
+    #Create a new release
+    release = repo.create_git_release("torbrowser-release", "Tor Browser releases", "These releases were uploaded to be distributed with gettor.")
+    upload_files(release)
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: {} AUTH_TOKEN".format(sys.argv[0]), file=sys.stderr)
+        print("\nAUTH_TOKEN should be an authentication token for a user"
+              "with access to the gettor repository.", file=sys.stderr)
+        sys.exit(1)
+    token = sys.argv[1]
+
+    sys.exit(main(token))
