@@ -22,12 +22,12 @@ def upload_files(release):
             for asset in data['downloads'][arch][locale]:
                 url = data['downloads'][arch][locale][asset]
                 filename = url.split('/')[-1]
-                print("Downloading " + filename)
                 try:
                     subprocess.check_call(["/usr/bin/wget", "--quiet", url])
                     release.upload_asset(filename)
                 except:
                     print("Error: failed to download "+url)
+                    print("Please upload this file manually.")
 
 
 
