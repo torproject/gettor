@@ -9,6 +9,8 @@ import subprocess
 
 REPO_NAME = "TheTorProject/gettorbrowser"
 
+failure = False
+
 def delete_old_releases(repo):
     for release in repo.get_releases():
         release.delete_release()
@@ -28,6 +30,7 @@ def upload_files(release):
                 except:
                     print("Error: failed to download "+url)
                     print("Please upload this file manually.")
+                    failure = True
 
 
 
@@ -42,6 +45,9 @@ def main(token):
     #Create a new release
     release = repo.create_git_release("torbrowser-release", "Tor Browser releases", "These releases were uploaded to be distributed with gettor.")
     upload_files(release)
+
+    if failure:
+        sys.exit(1)
 
 
 if __name__ == "__main__":
