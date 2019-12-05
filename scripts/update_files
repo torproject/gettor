@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+#pip3 install PyGithub
+
 from github import Github
 
 import sys
@@ -11,8 +13,12 @@ REPO_NAME = "TheTorProject/gettorbrowser"
 
 failure = False
 
+failed_uploads = []
+
 def delete_old_releases(repo):
     for release in repo.get_releases():
+        for asset in release.get_assets():
+            asset.delete_asset()
         release.delete_release()
 
 #Download list of tor browser releases and upload them to github
@@ -28,10 +34,17 @@ def upload_files(release):
                     subprocess.check_call(["/usr/bin/wget", "--quiet", url])
                     release.upload_asset(filename)
                 except:
-                    print("Error: failed to download "+url)
-                    print("Please upload this file manually.")
-                    failure = True
-
+                    print("Error: failed to download "+url+". Will retry later.")
+                    failed_uploads.append(url)
+    #Retry failed uploads
+    for url in failed_uploads:
+        filename = url.split('/')[-1]
+        try:
+            subprocess.check_call(["/usr/bin/wget", "--quiet", url])
+            release.upload_asset(filename)
+        except:
+            print("Error: failed to download "+url+". Please upload this file manually.")
+            failure = True
 
 
 def main(token):
