@@ -39,7 +39,7 @@ def upload_files(release):
                     release.upload_asset(filename)
                     os.remove(filename)
                 except:
-                    print("Error: failed to download "+url+". Will retry later.")
+                    print("Error: failed to update "+url+". Will retry later.")
                     failed_uploads.append(url)
     #Retry failed uploads
     for url in failed_uploads:
@@ -49,7 +49,7 @@ def upload_files(release):
             release.upload_asset(filename)
             os.remove(filename)
         except:
-            print("Error: failed to download "+url+". Please upload this file manually.")
+            print("Error: failed to update "+url+". Please upload this file manually.")
             failure = True
 
 
