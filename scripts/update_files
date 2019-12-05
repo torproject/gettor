@@ -2,12 +2,16 @@
 
 #pip3 install PyGithub
 
+# Before running, place the authentication token for a user with push access to the repository
+# in an environment variable 'GITHUB_AUTH'
+
 from github import Github
 
 import sys
 import json
 import urllib
 import subprocess
+import os
 
 REPO_NAME = "TheTorProject/gettorbrowser"
 
@@ -33,6 +37,7 @@ def upload_files(release):
                 try:
                     subprocess.check_call(["/usr/bin/wget", "--quiet", url])
                     release.upload_asset(filename)
+                    os.remove(filename)
                 except:
                     print("Error: failed to download "+url+". Will retry later.")
                     failed_uploads.append(url)
@@ -42,6 +47,7 @@ def upload_files(release):
         try:
             subprocess.check_call(["/usr/bin/wget", "--quiet", url])
             release.upload_asset(filename)
+            os.remove(filename)
         except:
             print("Error: failed to download "+url+". Please upload this file manually.")
             failure = True
@@ -64,11 +70,10 @@ def main(token):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: {} AUTH_TOKEN".format(sys.argv[0]), file=sys.stderr)
-        print("\nAUTH_TOKEN should be an authentication token for a user"
-              "with access to the gettor repository.", file=sys.stderr)
+    if 'GITHUB_AUTH' not in os.environ:
+        print("Usage: {}".format(sys.argv[0]), file=sys.stderr)
+        print("\nThe authentication token for github should be placed in the environment"
+                "variable 'GITHUB_AUTH'", file=sys.stderr)
         sys.exit(1)
-    token = sys.argv[1]
-
+    token = os.environ['GITHUB_AUTH']
     sys.exit(main(token))
