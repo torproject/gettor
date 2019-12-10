@@ -23,6 +23,7 @@ git commit -am 'Create release branch'
 git checkout -b torbrowser-releases
 git push -f --follow-tags origin torbrowser-releases
 
+rclone delete gdrive:releases
 
 for row in $(
     curl -s 'https://aus1.torproject.org/torbrowser/update_3/release/downloads.json' |
@@ -34,6 +35,7 @@ for row in $(
       tr -d '",'
     );
     if [[ $r = *[!\ ]* ]]; then
+      # Update GitLab
       git fetch --all
       wget $r
       git add .
@@ -44,14 +46,17 @@ for row in $(
       else
           git push -f --follow-tags origin torbrowser-releases
       fi
+
+      f=${r##*/}
+
+      # Update Google Drive
+      rclone copy $f gdrive:releases
+
+      # Update Internet Archive
+      ia upload ${f} $f --remote-name=$f --metadata="title:${f}" --metadata="mediatype:software" --metadata="collection:open_source_software"
+
+      rm $f
+
     fi;
 done
 
-rclone delete gdrive:releases
-
-for f in $(ls); do
-  # Update Google Drive
-  rclone copy $f gdrive:releases
-  # Update Internet Archive
-  ia upload ${f} $f --remote-name=$f --metadata="title:${f}" --metadata="mediatype:software" --metadata="collection:open_source_software"
-done
