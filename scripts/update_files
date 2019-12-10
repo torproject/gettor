@@ -12,7 +12,6 @@
 cd ~/releases
 git checkout master
 git branch -D torbrowser-releases
-git push github --delete torbrowser-releases
 
 git fetch --all --prune
 
@@ -20,7 +19,6 @@ git add .
 git commit -am 'Create release branch'
 git checkout -b torbrowser-releases
 git push -f --follow-tags origin torbrowser-releases
-git push -f --follow-tags github torbrowser-releases
 
 
 for row in $(
@@ -42,12 +40,6 @@ for row in $(
           echo "No new releases"
       else
           git push -f --follow-tags origin torbrowser-releases
-      fi
-      diffs=$(git diff github/torbrowser-releases)
-      if [ -z "$diffs" ]; then
-          echo "No new releases"
-      else
-          git push -f --follow-tags github torbrowser-releases
       fi
     fi;
 done
