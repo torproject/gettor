@@ -1,0 +1,79 @@
+#!/usr/bin/env python3
+
+#pip3 install PyGithub
+
+# Before running, place the authentication token for a user with push access to the repository
+# in an environment variable 'GITHUB_AUTH'
+
+from github import Github
+
+import sys
+import json
+import urllib
+import subprocess
+import os
+
+REPO_NAME = "TheTorProject/gettorbrowser"
+
+failure = False
+
+failed_uploads = []
+
+def delete_old_releases(repo):
+    for release in repo.get_releases():
+        for asset in release.get_assets():
+            asset.delete_asset()
+        release.delete_release()
+
+#Download list of tor browser releases and upload them to github
+def upload_files(release):
+    url = urllib.request.urlopen("https://aus1.torproject.org/torbrowser/update_3/release/downloads.json")
+    data = json.loads(url.read().decode())
+    for arch in data['downloads']:
+        for locale in data['downloads'][arch]:
+            for asset in data['downloads'][arch][locale]:
+                url = data['downloads'][arch][locale][asset]
+                filename = url.split('/')[-1]
+                try:
+                    subprocess.check_call(["/usr/bin/wget", "--quiet", url])
+                    release.upload_asset(filename)
+                    os.remove(filename)
+                except:
+                    print("Error: failed to update "+url+". Will retry later.")
+                    failed_uploads.append(url)
+    #Retry failed uploads
+    for url in failed_uploads:
+        filename = url.split('/')[-1]
+        try:
+            subprocess.check_call(["/usr/bin/wget", "--quiet", url])
+            release.upload_asset(filename)
+            os.remove(filename)
+        except:
+            print("Error: failed to update "+url+". Please upload this file manually.")
+            failure = True
+
+
+def main(token):
+
+    #Initialize a new release
+    g = Github(token)
+    repo = g.get_repo(REPO_NAME)
+
+    delete_old_releases(repo)
+
+    #Create a new release
+    release = repo.create_git_release("torbrowser-release", "Tor Browser releases", "These releases were uploaded to be distributed with gettor.")
+    upload_files(release)
+
+    if failure:
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    if 'GITHUB_AUTH' not in os.environ:
+        print("Usage: {}".format(sys.argv[0]), file=sys.stderr)
+        print("\nThe authentication token for github should be placed in the environment"
+                "variable 'GITHUB_AUTH'", file=sys.stderr)
+        sys.exit(1)
+    token = os.environ['GITHUB_AUTH']
+    sys.exit(main(token))
