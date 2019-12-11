@@ -10,7 +10,7 @@ the Tor Browser.
             (c) 2014, all entities within the AUTHORS file
 :license: see included LICENSE for information
 
-This file starts GetTor as a twistd app. This is the fila that is called by
+This file starts GetTor as a twistd app. This is the file that is called by
 gettor_service.
 
 """

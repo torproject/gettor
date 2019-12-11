@@ -202,12 +202,12 @@ class Sendmail(object):
                             link_msg = link_str
 
                     body_msg = strings._("links_body_platform").format(platform)
-                    body_msg += trings._("links_body_links").format(link_msg)
-                    body_msg += trings._("links_body_archive")
-                    body_msg += trings._("links_body_internet_archive")
-                    body_msg += trings._("links_body_google_drive")
-                    body_msg += trings._("links_body_internet_archive").format(file)
-                    body_msg += trings._("links_body_ending")
+                    body_msg += strings._("links_body_links").format(link_msg)
+                    body_msg += strings._("links_body_archive")
+                    body_msg += strings._("links_body_internet_archive")
+                    body_msg += strings._("links_body_google_drive")
+                    body_msg += strings._("links_body_internet_archive").format(file)
+                    body_msg += strings._("links_body_ending")
 
                     subject_msg = strings._("links_subject")
 
