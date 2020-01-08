@@ -13,7 +13,7 @@ import urllib
 import subprocess
 import os
 
-REPO_NAME = "TheTorProject/gettorbrowser"
+REPO_NAME = "torproject/torbrowser-releases"
 
 failure = False
 
