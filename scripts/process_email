@@ -23,7 +23,8 @@ from gettor.utils import options
 
 @defer.inlineCallbacks
 def process_email(message):
-    settings = options.parse_settings()
+
+    settings = options.parse_settings("en", "/home/gettor/gettor/gettor.conf.json")
 
     try:
         ep = EmailParser(settings, "gettor@torproject.org")
@@ -49,7 +50,8 @@ def main():
 
 
 if __name__ == '__main__':
-    settings = options.parse_settings()
+
+    settings = options.parse_settings("en", "/home/gettor/gettor/gettor.conf.json")
     email_parser_logfile = settings.get("email_parser_logfile")
     log.startLogging(open(email_parser_logfile, 'a'))
     log.msg("New email request received.", system="process email")

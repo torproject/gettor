@@ -100,6 +100,52 @@ class Sendmail(object):
         ).addCallback(self.sendmail_callback).addErrback(self.sendmail_errback)
 
 
+    def build_help_body_message(self):
+        body_msg = strings._("help_body_intro")
+        body_msg += strings._("help_body_paragraph")
+        body_msg += strings._("help_body_support")
+
+        return body_msg
+
+
+    def build_link_strings(self, links, platform, locale):
+        """
+        Build the links strings
+        """
+
+        link_msg = None
+
+        for link in links:
+            provider = link[5]
+            version = link[4]
+            arch = link[3]
+            url = link[0]
+            file = link[7]
+            sig_url = url + ".asc"
+
+            link_str = "Tor Browser {} for {}-{}-{} ({}): {}\n".format(
+                version, platform, locale, arch, provider, url
+            )
+
+            link_str += "Signature file: {}\n".format(sig_url)
+
+            link_msg = "{}\n{}".format(link_msg, link_str)
+
+        return link_msg, file
+
+
+    def build_body_message(self, link_msg, platform, file):
+        body_msg = strings._("links_body_platform").format(platform)
+        body_msg += strings._("links_body_links").format(link_msg)
+        body_msg += strings._("links_body_archive")
+        body_msg += strings._("links_body_internet_archive")
+        body_msg += strings._("links_body_google_drive")
+        body_msg += strings._("links_body_internet_archive").format(file)
+        body_msg += strings._("links_body_ending")
+
+        return body_msg
+
+
     @defer.inlineCallbacks
     def get_new(self):
         """
@@ -132,9 +178,7 @@ class Sendmail(object):
                         )
                     )
 
-                    body_msg = strings._("help_body_intro")
-                    body_msg += strings._("help_body_paragraph")
-                    body_msg += strings._("help_body_support")
+                    body_msg = self.build_help_body_message()
 
                     yield self.sendmail(
                         email_addr=id,
@@ -179,36 +223,8 @@ class Sendmail(object):
                     )
 
                     # build message
-                    link_msg = None
-                    file = ""
-
-                    for link in links:
-                        provider = link[5]
-                        version = link[4]
-                        arch = link[3]
-                        url = link[0]
-                        file = link[7]
-                        sig_url = url + ".asc"
-
-                        link_str = "Tor Browser {} for {}-{}-{} ({}): {}\n".format(
-                            version, platform, locale, arch, provider, url
-                        )
-
-                        link_str += "Signature file: {}\n".format(sig_url)
-
-                        if link_msg:
-                            link_msg = "{}\n{}".format(link_msg, link_str)
-                        else:
-                            link_msg = link_str
-
-                    body_msg = strings._("links_body_platform").format(platform)
-                    body_msg += strings._("links_body_links").format(link_msg)
-                    body_msg += strings._("links_body_archive")
-                    body_msg += strings._("links_body_internet_archive")
-                    body_msg += strings._("links_body_google_drive")
-                    body_msg += strings._("links_body_internet_archive").format(file)
-                    body_msg += strings._("links_body_ending")
-
+                    link_msg, file = self.build_link_strings(links, platform, locale)
+                    body_msg = self.build_body_message(link_msg, platform, file)
                     subject_msg = strings._("links_subject")
 
                     hid = hashlib.sha256(id.encode('utf-8'))

@@ -15,7 +15,7 @@
   "help_config": "Custom config file location (optional)",
   "smtp_links_subject": "[GetTor] Links for your request",
   "smtp_mirrors_subject": "[GetTor] Mirrors",
-  "smtp_help_subject": "[GetTor] Help",
+  "smtp_help_subject": "[GetTor] Ayuda",
   "smtp_unsupported_locale_subject": "[GetTor] Unsupported locale",
   "smtp_unsupported_locale_msg": "The locale you requested '{}' is not supported."
 }

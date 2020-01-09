@@ -14,8 +14,20 @@ class EmailServiceTests(unittest.TestCase):
     timeout = 15
     def setUp(self):
         self.settings = conftests.options.parse_settings("en","./gettor.conf.json")
-        self.sm_client = conftests.sendmail.Sendmail(self.settings)
+        self.sm_client = conftests.Sendmail(self.settings)
         self.locales = conftests.strings.get_locales()
+        self.links = [
+            [
+                "https://gitlab.com/thetorproject/gettorbrowser/raw/torbrowser-releases/TorBrowser-9.0.3-osx64_en-US.dmg",
+                "osx",
+                "en-US",
+                "64",
+                "9.0.3",
+                "gitlab",
+                "ACTIVE",
+                "TorBrowser-9.0.3-osx64_en-US.dmg"
+            ]
+        ]
 
     def tearDown(self):
         print("tearDown()")
@@ -75,6 +87,27 @@ class EmailServiceTests(unittest.TestCase):
         self.assertEqual(request["command"], "links")
         self.assertEqual(request["platform"], "osx")
         self.assertEqual(request["language"], "en")
+
+    def test_sent_links_message(self):
+        ep = self.sm_client
+        links = self.links
+        link_msg, file = ep.build_link_strings(links, "osx", "en")
+        assert "https://gitlab.com/thetorproject/gettorbrowser/raw/torbrowser-releases/TorBrowser-9.0.3-osx64_en-US.dmg" in link_msg
+        assert "osx" in link_msg
+
+        self.assertEqual("TorBrowser-9.0.3-osx64_en-US.dmg", file)
+
+    def test_sent_body_message(self):
+        ep = self.sm_client
+        links = self.links
+        link_msg, file = ep.build_link_strings(links, "osx", "en")
+        body_msg = ep.build_body_message(link_msg, "osx", file)
+        assert "You requested Tor Browser for osx" in body_msg
+
+    def test_help_body_message(self):
+        ep = self.sm_client
+        help_msg = ep.build_help_body_message()
+        assert "This is how you can request a tor browser bundle link" in help_msg
 
 
 if __name__ == "__main__":

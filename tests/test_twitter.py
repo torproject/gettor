@@ -20,6 +20,7 @@ class TwitterTests(unittest.TestCase):
 
     def test_load_messages(self):
         data = self.tw_client.twitter_data()
+        print(data)
         assert data['events']
 
 

@@ -33,7 +33,8 @@ class Settings(object):
                 self.filename = config
         else:
             # Default config
-            self.filename = self.build_filename()
+            default_config = "/home/gettor/gettor/gettor.conf.json"
+            self.filename = self.build_filename(default_config)
 
         # Dictionary of available languages,
         # mapped to the language name, in that language
@@ -41,11 +42,11 @@ class Settings(object):
         self._version = strings.get_version()
         self._settings = {}
 
-    def build_filename(self):
+    def build_filename(self, file):
         """
         Returns the path of the settings file.
         """
-        return strings.get_resource_path('/home/gettor/gettor/gettor.conf.json', strings.find_run_dir())
+        return strings.get_resource_path(file, strings.find_run_dir())
 
     def load(self):
         """
