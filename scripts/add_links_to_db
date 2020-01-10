@@ -71,7 +71,7 @@ def main():
         sys.exit(1)
 
     providers = {
-        "gitlab": "https://gitlab.com/thetorproject/gettorbrowser/raw/torbrowser-releases/",
+        "gitlab": "https://gitlab.com/thetorproject/torbrowser-arch/raw/master/",
         "github": "https://github.com/torproject/torbrowser-releases/releases/download/torbrowser-release/"
     }
 
@@ -145,7 +145,8 @@ def main():
                     release_link = releases.get(k).replace("en-US", l)
                     c.execute(
                         "INSERT INTO links(link, platform, language, arch, version, provider, status, file)"
-                        "VALUES ('%s', '%s', '%s', '64', '%s', '%s', 'ACTIVE', '%s')" % (providers.get(p) + release_link, k, l, version, p, release_link))
+                        "VALUES ('%s', '%s', '%s', '64', '%s', '%s', 'ACTIVE', '%s')"
+                        % (providers.get(p).replace("arch", k) + release_link, k, l, version, p, release_link))
 
 
 if __name__ == "__main__":
