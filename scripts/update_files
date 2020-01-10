@@ -24,6 +24,7 @@ git checkout -b torbrowser-releases
 git push -f --follow-tags origin torbrowser-releases
 
 rclone delete gdrive:releases
+rclone cleanup gdrive:releases
 
 for row in $(
     curl -s 'https://aus1.torproject.org/torbrowser/update_3/release/downloads.json' |
