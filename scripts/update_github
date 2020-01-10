@@ -1,17 +1,22 @@
 #!/usr/bin/env python3
 
-#pip3 install PyGithub
+# Dependencies:
+#  pip3 install PyGithub
+#  pip3 install python-gitlab
 
-# Before running, place the authentication token for a user with push access to the repository
-# in an environment variable 'GITHUB_AUTH'
+# Before running, place the authentication token for a user with push access to
+# the Github repository in an environment variable 'GITHUB_AUTH' and a token to
+# access the GitLab repository in an environment variable 'GITLAB_AUTH'
 
 from github import Github
+from gitlab import Gitlab
 
 import sys
 import json
 import urllib
 import subprocess
 import os
+import base64
 
 REPO_NAME = "torproject/torbrowser-releases"
 
@@ -19,14 +24,73 @@ failure = False
 
 failed_uploads = []
 
-def delete_old_releases(repo):
-    for release in repo.get_releases():
-        for asset in release.get_assets():
-            asset.delete_asset()
-        release.delete_release()
+class GitlabRemote:
+    def __init__(self, token):
+        self.gl = Gitlab("https://gitlab.com", private_token=token)
+
+    def delete_old_projects(self):
+        projects = self.gl.projects.list(owned=True)
+        for project in projects:
+            project.delete()
+
+    def create_projects(self):
+        # Create one project for each platform
+        self.windows = self.gl.projects.create({'name': 'torbrowser-windows'})
+        self.mac = self.gl.projects.create({'name': 'torbrowser-osx'})
+        self.linux = self.gl.projects.create({'name': 'torbrowser-linux'})
+
+    def upload(self, filename, arch):
+        with open(filename, 'rb') as f:
+            contents = f.read()
+        data = {
+            'branch': 'master',
+            'commit_message': 'GetTor automated commit - update with new Tor Browser downloads',
+            'actions': [
+                {
+                    # Binary files need to be base64 encoded
+                    'action': 'create',
+                    'file_path': filename,
+                    'content': base64.b64encode(contents),
+                    'encoding': 'base64',
+                }
+            ]
+        }
+
+        if arch == 'linux32' or arch == 'linux64':
+            commit = self.linux.commits.create(data)
+        elif arch == 'win32' or arch == 'win64':
+            commit = self.windows.commits.create(data)
+        elif arch == 'osx64':
+            commit = self.mac.commits.create(data)
+        else:
+            # Something changed with the structure of the downloads json file
+            print("Unkown architecture: " + arch)
+            sys.exit(1)
+
+
+class GithubRemote:
+    def __init__(self, token):
+        g = Github(token)
+        self.repo = g.get_repo(REPO_NAME)
+
+    def delete_old_releases(self):
+        for release in self.repo.get_releases():
+            for asset in release.get_assets():
+                asset.delete_asset()
+            release.delete_release()
+
+    def create_release(self):
+        self.release = self.repo.create_git_release("torbrowser-release", "Tor Browser releases", "These releases were uploaded to be distributed with gettor.")
+
+    def upload(self, filename, arch):
+        self.release.upload_asset(filename)
 
 #Download list of tor browser releases and upload them to github
-def upload_files(release):
+def upload_files(remotes):
+    if len(remotes) == 0:
+        print("ERROR: No remotes to update", file=sys.stderr)
+        return 1
+
     url = urllib.request.urlopen("https://aus1.torproject.org/torbrowser/update_3/release/downloads.json")
     data = json.loads(url.read().decode())
     for arch in data['downloads']:
@@ -36,44 +100,54 @@ def upload_files(release):
                 filename = url.split('/')[-1]
                 try:
                     subprocess.check_call(["/usr/bin/wget", "--quiet", url])
-                    release.upload_asset(filename)
-                    os.remove(filename)
+
                 except:
-                    print("Error: failed to update "+url+". Will retry later.")
+                    print("Error: failed to fetch "+url+". Will retry later.")
                     failed_uploads.append(url)
+                    continue
+
+                for remote in remotes:
+                    remote.upload(filename, arch)
+                os.remove(filename)
     #Retry failed uploads
     for url in failed_uploads:
         filename = url.split('/')[-1]
         try:
             subprocess.check_call(["/usr/bin/wget", "--quiet", url])
-            release.upload_asset(filename)
+            for remote in remotes:
+                remote.upload(filename, arch)
             os.remove(filename)
         except:
             print("Error: failed to update "+url+". Please upload this file manually.")
             failure = True
 
-
-def main(token):
-
-    #Initialize a new release
-    g = Github(token)
-    repo = g.get_repo(REPO_NAME)
-
-    delete_old_releases(repo)
-
-    #Create a new release
-    release = repo.create_git_release("torbrowser-release", "Tor Browser releases", "These releases were uploaded to be distributed with gettor.")
-    upload_files(release)
-
     if failure:
-        sys.exit(1)
+        return 1
 
+
+def main():
+    remotes = []
+    if 'GITHUB_AUTH' not in os.environ:
+        print("WARNING: No Github authentication token given", file=sys.stderr)
+        print("The authentication token for github should be placed in the environment"
+                "variable 'GITHUB_AUTH'", file=sys.stderr)
+    else:
+        github = GithubRemote(os.environ['GITHUB_AUTH'])
+        github.delete_old_releases()
+        github.create_release()
+        remotes.append(github)
+
+    if 'GITLAB_AUTH' not in os.environ:
+        print("WARNING: No GitLab authenticatin token given", file=sys.stderr)
+        print("The authentication token for gitlab should be placed in the environment"
+                "variable 'GITLAB_AUTH'", file=sys.stderr)
+    else:
+        gitlab = GitlabRemote(os.environ['GITLAB_AUTH'])
+        gitlab.delete_old_projects()
+        gitlab.create_projects()
+        remotes.append(gitlab)
+
+    return upload_files(remotes)
 
 if __name__ == "__main__":
-    if 'GITHUB_AUTH' not in os.environ:
-        print("Usage: {}".format(sys.argv[0]), file=sys.stderr)
-        print("\nThe authentication token for github should be placed in the environment"
-                "variable 'GITHUB_AUTH'", file=sys.stderr)
-        sys.exit(1)
-    token = os.environ['GITHUB_AUTH']
-    sys.exit(main(token))
+    sys.exit(main())
