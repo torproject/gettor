@@ -3,26 +3,17 @@
 # This file is part of GetTor, a Tor Browser distribution system.
 #
 # :authors: hiro <hiro@torproject.org>
+#           cecylia <cohosh@torproject.org>
 #           see also AUTHORS file
 #
 # :copyright:   (c) 2008-2019, The Tor Project, Inc.
 #
 # :license: This is Free Software. See LICENSE for license information.
 #
-# Updates all the files in all the endpoints.
+# Updates tor browser binaries at Google Drive and Internet Archive
 #
 
 cd ~/releases
-git checkout master
-git branch -D torbrowser-releases
-
-git fetch --all --prune
-
-git add .
-git commit -am 'Create release branch'
-git checkout -b torbrowser-releases
-git push -f --follow-tags origin torbrowser-releases
-
 rclone delete gdrive:releases
 rclone cleanup gdrive:releases
 
@@ -36,17 +27,7 @@ for row in $(
       tr -d '",'
     );
     if [[ $r = *[!\ ]* ]]; then
-      # Update GitLab
-      git fetch --all
       wget $r
-      git add .
-      git commit -m '[dist ci] commit from CI runner - update with new torbrowser downloads'
-      diffs=$(git diff origin/torbrowser-releases)
-      if [ -z "$diffs" ]; then
-          echo "No new releases"
-      else
-          git push -f --follow-tags origin torbrowser-releases
-      fi
 
       f=${r##*/}
 
