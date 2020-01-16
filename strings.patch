@@ -1,0 +1,301 @@
+From 906bec40b28a7e49ffba3a6e1c646bd81e5441b9 Mon Sep 17 00:00:00 2001
+From: hiro <hiro@torproject.org>
+Date: Thu, 9 Jan 2020 12:24:10 +0100
+Subject: [PATCH] Fix current issue with gettor strings splitting #32906 Add
+ tests to check sent email messages.
+
+---
+ gettor/services/email/sendmail.py | 82 ++++++++++++++++++-------------
+ gettor/utils/options.py           |  8 +--
+ gettor/utils/settings.py          |  7 +--
+ scripts/process_email             |  6 ++-
+ share/locale/es.json              |  2 +-
+ tests/conftests.py                |  2 +-
+ tests/test_email_service.py       | 35 ++++++++++++-
+ tests/test_twitter.py             |  1 +
+ 8 files changed, 98 insertions(+), 45 deletions(-)
+
+diff --git a/gettor/services/email/sendmail.py b/gettor/services/email/sendmail.py
+index 53d90f6..356f6c4 100644
+--- a/gettor/services/email/sendmail.py
++++ b/gettor/services/email/sendmail.py
+@@ -100,6 +100,52 @@ class Sendmail(object):
+         ).addCallback(self.sendmail_callback).addErrback(self.sendmail_errback)
+ 
+ 
++    def build_help_body_message(self):
++        body_msg = strings._("help_body_intro")
++        body_msg += strings._("help_body_paragraph")
++        body_msg += strings._("help_body_support")
++
++        return body_msg
++
++
++    def build_link_strings(self, links, platform, locale):
++        """
++        Build the links strings
++        """
++
++        link_msg = None
++
++        for link in links:
++            provider = link[5]
++            version = link[4]
++            arch = link[3]
++            url = link[0]
++            file = link[7]
++            sig_url = url + ".asc"
++
++            link_str = "Tor Browser {} for {}-{}-{} ({}): {}\n".format(
++                version, platform, locale, arch, provider, url
++            )
++
++            link_str += "Signature file: {}\n".format(sig_url)
++
++            link_msg = "{}\n{}".format(link_msg, link_str)
++
++        return link_msg, file
++
++
++    def build_body_message(self, link_msg, platform, file):
++        body_msg = strings._("links_body_platform").format(platform)
++        body_msg += strings._("links_body_links").format(link_msg)
++        body_msg += strings._("links_body_archive")
++        body_msg += strings._("links_body_internet_archive")
++        body_msg += strings._("links_body_google_drive")
++        body_msg += strings._("links_body_internet_archive").format(file)
++        body_msg += strings._("links_body_ending")
++
++        return body_msg
++
++
+     @defer.inlineCallbacks
+     def get_new(self):
+         """
+@@ -132,9 +178,7 @@ class Sendmail(object):
+                         )
+                     )
+ 
+-                    body_msg = strings._("help_body_intro")
+-                    body_msg += strings._("help_body_paragraph")
+-                    body_msg += strings._("help_body_support")
++                    body_msg = self.build_help_body_message()
+ 
+                     yield self.sendmail(
+                         email_addr=id,
+@@ -179,36 +223,8 @@ class Sendmail(object):
+                     )
+ 
+                     # build message
+-                    link_msg = None
+-                    file = ""
+-
+-                    for link in links:
+-                        provider = link[5]
+-                        version = link[4]
+-                        arch = link[3]
+-                        url = link[0]
+-                        file = link[7]
+-                        sig_url = url + ".asc"
+-
+-                        link_str = "Tor Browser {} for {}-{}-{} ({}): {}\n".format(
+-                            version, platform, locale, arch, provider, url
+-                        )
+-
+-                        link_str += "Signature file: {}\n".format(sig_url)
+-
+-                        if link_msg:
+-                            link_msg = "{}\n{}".format(link_msg, link_str)
+-                        else:
+-                            link_msg = link_str
+-
+-                    body_msg = strings._("links_body_platform").format(platform)
+-                    body_msg += strings._("links_body_links").format(link_msg)
+-                    body_msg += strings._("links_body_archive")
+-                    body_msg += strings._("links_body_internet_archive")
+-                    body_msg += strings._("links_body_google_drive")
+-                    body_msg += strings._("links_body_internet_archive").format(file)
+-                    body_msg += strings._("links_body_ending")
+-
++                    link_msg, file = self.build_link_strings(links, platform, locale)
++                    body_msg = self.build_body_message(link_msg, platform, file)
+                     subject_msg = strings._("links_subject")
+ 
+                     hid = hashlib.sha256(id.encode('utf-8'))
+diff --git a/gettor/utils/options.py b/gettor/utils/options.py
+index 8504f42..6f8d693 100644
+--- a/gettor/utils/options.py
++++ b/gettor/utils/options.py
+@@ -3,9 +3,7 @@
+ This file is part of GetTor, a service providing alternative methods to download
+ the Tor Browser.
+ 
+-:authors: Hiro <hiro@torproject.org>
+-            parser = argparse.ArgumentParser(formatter_class=lambda prog: argparse.HelpFormatter(prog,max_help_position=28))
+-    parser.add_argument('--config', metavar='config',  please also see AUTHORS file
++:authors: Hiro <hiro@torproject.org> please also see AUTHORS file
+ :copyright: (c) 2008-2014, The Tor Project, Inc.
+             (c) 2014, all entities within the AUTHORS file
+ :license: see included LICENSE for information
+@@ -24,11 +22,13 @@ def load_settings(config):
+     settings.load()
+     return settings
+ 
+-def parse_settings(locale, config):
++def parse_settings(locale="en", config=None):
+     """
+     Parse settings and loads strings in a given locale
+     This function needs to be rewritten considering passing a locale and
+     returing translated strings
++
+     """
++
+     strings.load_strings(locale)
+     return load_settings(config)
+diff --git a/gettor/utils/settings.py b/gettor/utils/settings.py
+index a519755..67c31ec 100644
+--- a/gettor/utils/settings.py
++++ b/gettor/utils/settings.py
+@@ -33,7 +33,8 @@ class Settings(object):
+                 self.filename = config
+         else:
+             # Default config
+-            self.filename = self.build_filename()
++            default_config = "/home/gettor/gettor/gettor.conf.json"
++            self.filename = self.build_filename(default_config)
+ 
+         # Dictionary of available languages,
+         # mapped to the language name, in that language
+@@ -41,11 +42,11 @@ class Settings(object):
+         self._version = strings.get_version()
+         self._settings = {}
+ 
+-    def build_filename(self):
++    def build_filename(self, file):
+         """
+         Returns the path of the settings file.
+         """
+-        return strings.get_resource_path('/home/gettor/gettor/gettor.conf.json', strings.find_run_dir())
++        return strings.get_resource_path(file, strings.find_run_dir())
+ 
+     def load(self):
+         """
+diff --git a/scripts/process_email b/scripts/process_email
+index a5da6eb..37c4e0b 100755
+--- a/scripts/process_email
++++ b/scripts/process_email
+@@ -23,7 +23,8 @@ from gettor.utils import options
+ 
+ @defer.inlineCallbacks
+ def process_email(message):
+-    settings = options.parse_settings()
++
++    settings = options.parse_settings("en", "/home/gettor/gettor/gettor.conf.json")
+ 
+     try:
+         ep = EmailParser(settings, "gettor@torproject.org")
+@@ -49,7 +50,8 @@ def main():
+ 
+ 
+ if __name__ == '__main__':
+-    settings = options.parse_settings()
++
++    settings = options.parse_settings("en", "/home/gettor/gettor/gettor.conf.json")
+     email_parser_logfile = settings.get("email_parser_logfile")
+     log.startLogging(open(email_parser_logfile, 'a'))
+     log.msg("New email request received.", system="process email")
+diff --git a/share/locale/es.json b/share/locale/es.json
+index be7dd33..8ac5705 100644
+--- a/share/locale/es.json
++++ b/share/locale/es.json
+@@ -15,7 +15,7 @@
+   "help_config": "Custom config file location (optional)",
+   "smtp_links_subject": "[GetTor] Links for your request",
+   "smtp_mirrors_subject": "[GetTor] Mirrors",
+-  "smtp_help_subject": "[GetTor] Help",
++  "smtp_help_subject": "[GetTor] Ayuda",
+   "smtp_unsupported_locale_subject": "[GetTor] Unsupported locale",
+   "smtp_unsupported_locale_msg": "The locale you requested '{}' is not supported."
+ }
+diff --git a/tests/conftests.py b/tests/conftests.py
+index f5194a5..cbb4d28 100644
+--- a/tests/conftests.py
++++ b/tests/conftests.py
+@@ -5,7 +5,7 @@ from __future__ import unicode_literals
+ from gettor.utils import options
+ from gettor.utils import strings
+ from gettor.utils import twitter
+-from gettor.services.email import sendmail
++from gettor.services.email.sendmail import Sendmail
+ from gettor.services.twitter import twitterdm
+ from gettor.parse.email import EmailParser, AddressError, DKIMError
+ from gettor.parse.twitter import TwitterParser
+diff --git a/tests/test_email_service.py b/tests/test_email_service.py
+index 8e60f7a..ff364f0 100644
+--- a/tests/test_email_service.py
++++ b/tests/test_email_service.py
+@@ -14,8 +14,20 @@ class EmailServiceTests(unittest.TestCase):
+     timeout = 15
+     def setUp(self):
+         self.settings = conftests.options.parse_settings("en","./gettor.conf.json")
+-        self.sm_client = conftests.sendmail.Sendmail(self.settings)
++        self.sm_client = conftests.Sendmail(self.settings)
+         self.locales = conftests.strings.get_locales()
++        self.links = [
++            [
++                "https://gitlab.com/thetorproject/gettorbrowser/raw/torbrowser-releases/TorBrowser-9.0.3-osx64_en-US.dmg",
++                "osx",
++                "en-US",
++                "64",
++                "9.0.3",
++                "gitlab",
++                "ACTIVE",
++                "TorBrowser-9.0.3-osx64_en-US.dmg"
++            ]
++        ]
+ 
+     def tearDown(self):
+         print("tearDown()")
+@@ -76,6 +88,27 @@ class EmailServiceTests(unittest.TestCase):
+         self.assertEqual(request["platform"], "osx")
+         self.assertEqual(request["language"], "en")
+ 
++    def test_sent_links_message(self):
++        ep = self.sm_client
++        links = self.links
++        link_msg, file = ep.build_link_strings(links, "osx", "en")
++        assert "https://gitlab.com/thetorproject/gettorbrowser/raw/torbrowser-releases/TorBrowser-9.0.3-osx64_en-US.dmg" in link_msg
++        assert "osx" in link_msg
++
++        self.assertEqual("TorBrowser-9.0.3-osx64_en-US.dmg", file)
++
++    def test_sent_body_message(self):
++        ep = self.sm_client
++        links = self.links
++        link_msg, file = ep.build_link_strings(links, "osx", "en")
++        body_msg = ep.build_body_message(link_msg, "osx", file)
++        assert "You requested Tor Browser for osx" in body_msg
++
++    def test_help_body_message(self):
++        ep = self.sm_client
++        help_msg = ep.build_help_body_message()
++        assert "This is how you can request a tor browser bundle link" in help_msg
++
+ 
+ if __name__ == "__main__":
+     unittest.main()
+diff --git a/tests/test_twitter.py b/tests/test_twitter.py
+index 7458cfc..a1515d0 100644
+--- a/tests/test_twitter.py
++++ b/tests/test_twitter.py
+@@ -20,6 +20,7 @@ class TwitterTests(unittest.TestCase):
+ 
+     def test_load_messages(self):
+         data = self.tw_client.twitter_data()
++        print(data)
+         assert data['events']
+ 
+ 
+-- 
+2.20.1
+

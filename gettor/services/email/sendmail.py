@@ -140,7 +140,7 @@ class Sendmail(object):
         body_msg += strings._("links_body_archive")
         body_msg += strings._("links_body_internet_archive")
         body_msg += strings._("links_body_google_drive")
-        body_msg += strings._("links_body_internet_archive").format(file)
+        body_msg += strings._("links_body_download_filename").format(file)
         body_msg += strings._("links_body_ending")
 
         return body_msg

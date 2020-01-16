@@ -4,7 +4,7 @@
   "links_body_archive": "Should you have issues with any of the links above you can access the following archives:\n\n",
   "links_body_internet_archive": "- Internet Archive: https://archive.org/details/@gettor\n\n",
   "links_body_google_drive": "- Google Drive folder: https://drive.google.com/open?id=13CADQTsCwrGsIID09YQbNz2DfRMUoxUU\n\n",
-  "links_body_internet_archive": "Download the file: {}\n\n",
+  "links_body_download_filename": "Download the file: {}\n\n",
   "links_body_ending": "\n--\nGetTor",
   "links_subject": "[GetTor] Links for your request",
   "help_body_intro": "This is how you can request a tor browser bundle link.\n\n",
@@ -15,7 +15,7 @@
   "help_config": "Custom config file location (optional)",
   "smtp_links_subject": "[GetTor] Links for your request",
   "smtp_mirrors_subject": "[GetTor] Mirrors",
-  "smtp_help_subject": "[GetTor] Ayuda",
+  "smtp_help_subject": "[GetTor] Help",
   "smtp_unsupported_locale_subject": "[GetTor] Unsupported locale",
   "smtp_unsupported_locale_msg": "The locale you requested '{}' is not supported."
 }
