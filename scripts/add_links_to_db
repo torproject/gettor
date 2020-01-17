@@ -72,7 +72,7 @@ def main():
 
     providers = {
         "gitlab": "https://gitlab.com/thetorproject/gettorbrowser/raw/torbrowser-releases/",
-        "github": "https://github.com/TheTorProject/gettorbrowser/releases/download/torbrowser-release/"
+        "github": "https://github.com/torproject/torbrowser-releases/releases/download/torbrowser-release/"
     }
 
     prefixes = {
