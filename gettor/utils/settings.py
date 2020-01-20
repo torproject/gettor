@@ -28,9 +28,8 @@ class Settings(object):
 
 
         # If a readable config file was provided, use that instead
-        if config:
-            if os.path.isfile(config):
-                self.filename = config
+        if config and os.path.isfile(config):
+            self.filename = config
         else:
             # Default config
             default_config = "/home/gettor/gettor/gettor.conf.json"
