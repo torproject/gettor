@@ -18,12 +18,6 @@ class TwitterTests(unittest.TestCase):
         print("tearDown()")
 
 
-    def test_load_messages(self):
-        data = self.tw_client.twitter_data()
-        print(data)
-        assert data['events']
-
-
     def test_parse_tweet(self):
         e = {'type': 'message_create', 'id': '1178649287208689669', 'created_timestamp': '1569846862972', 'message_create': {'target': {'recipient_id': '2514714800'}, 'sender_id': '1467062174', 'message_data': {'text': 'windows 10', 'entities': {'hashtags': [], 'symbols': [], 'user_mentions': [], 'urls': []}}}}
         message_id = { 'id': e['id'], 'twitter_handle': e['message_create']['sender_id'] }
