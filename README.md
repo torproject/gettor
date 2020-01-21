@@ -78,7 +78,7 @@ $ ./bin/gettor_service start
 Running tests
 =================
 
-GetTor includes PyTest unit tests. To run the tests, first install some dependencies:
+GetTor includes PyTest unit tests. To run the tests, first install the dependencies above and then run:
 
 
 ```
