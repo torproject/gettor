@@ -28,7 +28,7 @@ class LocalesTests(unittest.TestCase):
 
     def test_load_es_strings(self):
         conftests.strings.load_strings("es")
-        self.assertEqual(conftests.strings._("smtp_help_subject"), "[GetTor] Ayuda")
+        self.assertEqual(conftests.strings._("smtp_help_subject"), "[GetTor] Help")
 
     def test_locale_supported(self):
         self.assertEqual(self.locales['en']['language'], "English")
