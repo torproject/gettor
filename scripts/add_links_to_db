@@ -70,6 +70,8 @@ def main():
         print("Could not fetch version from {}.".format(TOR_BROWSER_DOWNLOADS))
         sys.exit(1)
 
+    # For gitlab, we have three repositories for linux, mac, and windows.
+    # The string "arch" will later be replaced with the respective architecture
     providers = {
         "gitlab": "https://gitlab.com/thetorproject/torbrowser-arch/raw/master/",
         "github": "https://github.com/torproject/torbrowser-releases/releases/download/torbrowser-release/"

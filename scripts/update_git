@@ -35,9 +35,18 @@ class GitlabRemote:
 
     def create_projects(self):
         # Create one project for each platform
-        self.windows = self.gl.projects.create({'name': 'torbrowser-windows'})
-        self.mac = self.gl.projects.create({'name': 'torbrowser-osx'})
-        self.linux = self.gl.projects.create({'name': 'torbrowser-linux'})
+        windows_repo = self.gl.projects.create({'name': 'torbrowser-windows'})
+        mac_repo = self.gl.projects.create({'name': 'torbrowser-osx'})
+        linux_repo = self.gl.projects.create({'name': 'torbrowser-linux'})
+
+        self.repositories = {
+            "linux32" : linux_repo,
+            "linux64" : linux_repo,
+            "win32" : windows_repo,
+            "win64" : windows_repo,
+            "osx64" : mac_repo
+        }
+
 
     def upload(self, filename, arch):
         with open(filename, 'rb') as f:
@@ -56,17 +65,7 @@ class GitlabRemote:
             ]
         }
 
-        if arch == 'linux32' or arch == 'linux64':
-            commit = self.linux.commits.create(data)
-        elif arch == 'win32' or arch == 'win64':
-            commit = self.windows.commits.create(data)
-        elif arch == 'osx64':
-            commit = self.mac.commits.create(data)
-        else:
-            # Something changed with the structure of the downloads json file
-            print("Unkown architecture: " + arch)
-            sys.exit(1)
-
+        self.repositories[arch].commits.create(data)
 
 class GithubRemote:
     def __init__(self, token):
@@ -85,10 +84,10 @@ class GithubRemote:
     def upload(self, filename, arch):
         self.release.upload_asset(filename)
 
-#Download list of tor browser releases and upload them to github
+#Download list of tor browser releases and upload them to remote repositories
 def upload_files(remotes):
     if len(remotes) == 0:
-        print("ERROR: No remotes to update", file=sys.stderr)
+        print("Error: No remotes to update", file=sys.stderr)
         return 1
 
     url = urllib.request.urlopen("https://aus1.torproject.org/torbrowser/update_3/release/downloads.json")
@@ -102,7 +101,8 @@ def upload_files(remotes):
                     subprocess.check_call(["/usr/bin/wget", "--quiet", url])
 
                 except:
-                    print("Error: failed to fetch "+url+". Will retry later.")
+                    print("Error: failed to fetch "+url+". Will retry later.",
+                            file=sys.stderr)
                     failed_uploads.append(url)
                     continue
 
@@ -118,7 +118,8 @@ def upload_files(remotes):
                 remote.upload(filename, arch)
             os.remove(filename)
         except:
-            print("Error: failed to update "+url+". Please upload this file manually.")
+            print("Error: failed to update "+url+". Please upload this file manually.",
+                    file=sys.stderr)
             failure = True
 
     if failure:
