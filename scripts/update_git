@@ -109,6 +109,9 @@ def upload_files(remotes):
                 for remote in remotes:
                     remote.upload(filename, arch)
                 os.remove(filename)
+    
+    failure = False
+
     #Retry failed uploads
     for url in failed_uploads:
         filename = url.split('/')[-1]
