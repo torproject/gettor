@@ -35,9 +35,12 @@ class GitlabRemote:
 
     def create_projects(self):
         # Create one project for each platform
-        windows_repo = self.gl.projects.create({'name': 'torbrowser-windows'})
-        mac_repo = self.gl.projects.create({'name': 'torbrowser-osx'})
-        linux_repo = self.gl.projects.create({'name': 'torbrowser-linux'})
+        windows_repo = self.gl.projects.create({'name': 'torbrowser-windows',
+            'visibility': 'public'})
+        mac_repo = self.gl.projects.create({'name': 'torbrowser-osx',
+            'visibility': 'public'})
+        linux_repo = self.gl.projects.create({'name': 'torbrowser-linux',
+            'visibility': 'public'})
 
         self.repositories = {
             "linux32" : linux_repo,
