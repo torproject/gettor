@@ -59,7 +59,7 @@ class GitlabRemote:
                     # Binary files need to be base64 encoded
                     'action': 'create',
                     'file_path': filename,
-                    'content': base64.b64encode(contents),
+                    'content': base64.b64encode(contents).decode("ascii"),
                     'encoding': 'base64',
                 }
             ]
