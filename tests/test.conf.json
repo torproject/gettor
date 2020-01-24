@@ -1,6 +1,6 @@
 {
   "platforms": ["linux", "osx", "windows"],
-  "dbname": "gettor.db",
+  "dbname": "tests/gettor.db",
   "email_parser_logfile": "email_parser.log",
   "email_requests_limit": 30,
   "twitter_requests_limit": 1,

@@ -104,3 +104,11 @@ class SQLite3(object):
 		return self.dbpool.runQuery(
 			query, (platform, language, status)
 		).addCallback(self.query_callback).addErrback(self.query_errback)
+
+	def get_locales(self):
+		"""
+		Get a list of the supported tor browser binary locales
+		"""
+		query = "SELECT DISTINCT language FROM links"
+		return self.dbpool.runQuery(query
+		).addCallback(self.query_callback).addErrback(self.query_errback)

@@ -56,6 +56,7 @@ class EmailParser(object):
         self.settings = settings
         self.dkim = dkim
         self.to_addr = to_addr
+        self.locales = []
 
     def normalize(self, msg):
         # Normalization will convert <Alice Wonderland> alice@wonderland.net
@@ -112,7 +113,7 @@ class EmailParser(object):
             return True
 
 
-    def build_request(self, msg_str, norm_addr, languages, platforms):
+    def build_request(self, msg_str, norm_addr, platforms):
         # Search for commands keywords
         subject_re = re.compile(r"Subject: (.*)\r\n")
         subject = subject_re.search(msg_str)
@@ -128,7 +129,7 @@ class EmailParser(object):
         if subject:
             subject = subject.group(1)
             for word in re.split(r"\s+", subject.strip()):
-                if word.lower() in languages:
+                if word.lower() in self.locales:
                     request["language"] = word.lower()
                 if word.lower() in platforms:
                     request["command"] = "links"
@@ -139,7 +140,7 @@ class EmailParser(object):
 
         if not request["command"] or not request["language"]:
             for word in re.split(r"\s+", msg_str.strip()):
-                if word.lower() in languages:
+                if word.lower() in self.locales:
                     request["language"] = word.lower()
                 if word.lower() in platforms:
                     request["command"] = "links"
@@ -159,6 +160,15 @@ class EmailParser(object):
         else:
             return True
 
+    @defer.inlineCallbacks
+    def get_locales(self):
+        dbname = self.settings.get("dbname")
+        conn = SQLite3(dbname)
+
+        locales = yield conn.get_locales()
+        for l in locales:
+            self.locales.append(l[0])
+
 
     def parse(self, msg_str):
         """
@@ -177,7 +187,6 @@ class EmailParser(object):
         log.msg("Building email message from string.", system="email parser")
 
         platforms = self.settings.get("platforms")
-        languages = [*strings.get_locales().keys()]
         msg = message_from_string(msg_str)
 
         name, norm_addr, to_name, norm_to_addr = self.normalize(msg)
@@ -203,7 +212,7 @@ class EmailParser(object):
         except ValueError as e:
             log.msg("DKIM error: {}".format(e.args))
 
-        request = self.build_request(msg_str, norm_addr, languages, platforms)
+        request = self.build_request(msg_str, norm_addr, platforms)
 
         return request
 

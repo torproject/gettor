@@ -28,6 +28,7 @@ def process_email(message):
 
     try:
         ep = EmailParser(settings, "gettor@torproject.org")
+        yield ep.get_locales().addErrback(ep.parse_errback)
         yield defer.maybeDeferred(
             ep.parse, message
         ).addCallback(ep.parse_callback).addErrback(ep.parse_errback)

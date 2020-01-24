@@ -65,9 +65,9 @@ class EmailServiceTests(unittest.TestCase):
         ep = conftests.EmailParser(self.settings, "gettor@torproject.org")
         msg_str = "From: \"silvia [hiro]\" <hiro@torproject.org>\n Subject: \r\n Reply-To: hiro@torproject.org \nTo: gettor@torproject.org\r\n osx es"
         msg = conftests.message_from_string(msg_str)
-        languages = [*self.locales.keys()]
         platforms = self.settings.get('platforms')
-        request = ep.build_request(msg_str, "hiro@torproject.org", languages, platforms)
+        ep.locales = ["es", "en"]
+        request = ep.build_request(msg_str, "hiro@torproject.org", platforms)
         self.assertEqual(request["command"], "links")
         self.assertEqual(request["platform"], "osx")
         self.assertEqual(request["language"], "es")
@@ -83,10 +83,17 @@ class EmailServiceTests(unittest.TestCase):
 
     def test_language_email_parser(self):
         ep = conftests.EmailParser(self.settings, "gettor@torproject.org")
+        ep.locales = ["en", "ru"]
         request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n Subject: \r\n Reply-To: hiro@torproject.org \nTo: gettor@torproject.org\n osx en")
         self.assertEqual(request["command"], "links")
         self.assertEqual(request["platform"], "osx")
         self.assertEqual(request["language"], "en")
+
+        request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n Subject: \r\n Reply-To: hiro@torproject.org \nTo: gettor@torproject.org\n linux ru")
+        self.assertEqual(request["command"], "links")
+        self.assertEqual(request["platform"], "linux")
+        self.assertEqual(request["language"], "ru")
+
 
     def test_sent_links_message(self):
         ep = self.sm_client
