@@ -65,9 +65,8 @@ class EmailServiceTests(unittest.TestCase):
         ep = conftests.EmailParser(self.settings, "gettor@torproject.org")
         msg_str = "From: \"silvia [hiro]\" <hiro@torproject.org>\n Subject: \r\n Reply-To: hiro@torproject.org \nTo: gettor@torproject.org\r\n osx es"
         msg = conftests.message_from_string(msg_str)
-        platforms = self.settings.get('platforms')
         ep.locales = ["es", "en"]
-        request = ep.build_request(msg_str, "hiro@torproject.org", platforms)
+        request = ep.build_request(msg_str, "hiro@torproject.org")
         self.assertEqual(request["command"], "links")
         self.assertEqual(request["platform"], "osx")
         self.assertEqual(request["language"], "es")

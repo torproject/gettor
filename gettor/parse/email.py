@@ -57,6 +57,7 @@ class EmailParser(object):
         self.dkim = dkim
         self.to_addr = to_addr
         self.locales = []
+        self.platforms = self.settings.get("platforms")
 
     def normalize(self, msg):
         # Normalization will convert <Alice Wonderland> alice@wonderland.net
@@ -112,8 +113,20 @@ class EmailParser(object):
         else:
             return True
 
+    def parse_keywords(self, text, request):
 
-    def build_request(self, msg_str, norm_addr, platforms):
+        for word in re.split(r"\s+", text.strip()):
+            if word.lower() in self.locales:
+                request["language"] = word.lower()
+            if word.lower() in self.platforms:
+                request["command"] = "links"
+                request["platform"] = word.lower()
+            if word.lower() == "help":
+                request["command"] = "help"
+                break
+        return request
+
+    def build_request(self, msg_str, norm_addr):
         # Search for commands keywords
         subject_re = re.compile(r"Subject: (.*)\r\n")
         subject = subject_re.search(msg_str)
@@ -128,26 +141,10 @@ class EmailParser(object):
 
         if subject:
             subject = subject.group(1)
-            for word in re.split(r"\s+", subject.strip()):
-                if word.lower() in self.locales:
-                    request["language"] = word.lower()
-                if word.lower() in platforms:
-                    request["command"] = "links"
-                    request["platform"] = word.lower()
-                if word.lower() == "help":
-                    request["command"] = "help"
-                    break
+            request = self.parse_keywords(subject, request)
 
         if not request["command"] or not request["language"]:
-            for word in re.split(r"\s+", msg_str.strip()):
-                if word.lower() in self.locales:
-                    request["language"] = word.lower()
-                if word.lower() in platforms:
-                    request["command"] = "links"
-                    request["platform"] = word.lower()
-                if word.lower() == "help":
-                    request["command"] = "help"
-                    break
+            request = self.parse_keywords(msg_str, request)
 
         return request
 
@@ -186,7 +183,6 @@ class EmailParser(object):
 
         log.msg("Building email message from string.", system="email parser")
 
-        platforms = self.settings.get("platforms")
         msg = message_from_string(msg_str)
 
         name, norm_addr, to_name, norm_to_addr = self.normalize(msg)
@@ -212,7 +208,7 @@ class EmailParser(object):
         except ValueError as e:
             log.msg("DKIM error: {}".format(e.args))
 
-        request = self.build_request(msg_str, norm_addr, platforms)
+        request = self.build_request(msg_str, norm_addr)
 
         return request
 
