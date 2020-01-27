@@ -116,8 +116,12 @@ class EmailParser(object):
     def parse_keywords(self, text, request):
 
         for word in re.split(r"\s+", text.strip()):
-            if word.lower() in self.locales:
-                request["language"] = word.lower()
+            for locale in self.locales:
+                if word.lower() == locale.lower():
+                    request["language"] = locale
+                elif (not request["language"]) and (word.lower()[:2] ==
+                        locale.lower()[:2]):
+                    request["language"] = locale
             if word.lower() in self.platforms:
                 request["command"] = "links"
                 request["platform"] = word.lower()
@@ -143,8 +147,11 @@ class EmailParser(object):
             subject = subject.group(1)
             request = self.parse_keywords(subject, request)
 
-        if not request["command"] or not request["language"]:
-            request = self.parse_keywords(msg_str, request)
+        # Always parse the body too, to see if there's more specific information
+        request = self.parse_keywords(msg_str, request)
+
+        if not request["language"]:
+            request["language"] = "en-US"
 
         return request
 
