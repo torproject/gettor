@@ -9,7 +9,7 @@
   "links_subject": "[GetTor] Links for your request",
   "help_body_intro": "This is how you can request a tor browser bundle link.\n\n",
   "help_body_paragraph": "Send an email to: gettor@torproject.org\n\nIn the body of the email only write: <operating system> <language>.\n\n",
-  "help_body_support": "We only support windows, osx and linux as operating systems.\n\nAt the moment please only use en as language.\n\n",
+  "help_body_support": "We only support windows, osx and linux as operating systems.\n\n",
   "help_subject": "[GetTor] Help Email",
   "help_debug": "Log application errors to stdout",
   "help_config": "Custom config file location (optional)",
