@@ -215,15 +215,15 @@ class Sendmail(object):
                     locales = strings.get_locales()
 
                     strings.load_strings(language)
-                    locale = locales[language]['locale']
+                    locale = locales['en']['locale']
 
-                    log.info("Getting links for {}.".format(platform))
+                    log.info("Getting links for {} {}.".format(platform, language))
                     links = yield self.conn.get_links(
-                        platform=platform, language=locale, status="ACTIVE"
+                        platform=platform, language=language, status="ACTIVE"
                     )
 
                     # build message
-                    link_msg, file = self.build_link_strings(links, platform, locale)
+                    link_msg, file = self.build_link_strings(links, platform, language)
                     body_msg = self.build_body_message(link_msg, platform, file)
                     subject_msg = strings._("links_subject")
 
@@ -241,7 +241,7 @@ class Sendmail(object):
                     )
 
                     yield self.conn.update_stats(
-                        command="links", platform=platform, language=locale,
+                        command="links", platform=platform, language=language,
                         service="email"
                     )
 
