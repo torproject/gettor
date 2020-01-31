@@ -72,15 +72,14 @@ class SQLite3(object):
 			query, (id, service)
 		).addCallback(self.query_callback).addErrback(self.query_errback)
 
-	def update_request(self, id, hid, status, service, date):
+	def remove_request(self, id, service, date):
 		"""
-		Update request record in the database
+		Removes completed request record from the database
 		"""
-		query = "UPDATE requests SET id=?, status=? WHERE id=? AND "\
-		"service=? AND date=?"
+		query = "DELETE FROM requests WHERE id=? AND service=? AND date=?"
 
 		return self.dbpool.runQuery(
-			query, (hid, status, id, service, date)
+			query, (id, service, date)
 		).addCallback(self.query_callback).addErrback(self.query_errback)
 
 	def update_stats(self, command, service, platform=None, language='en'):

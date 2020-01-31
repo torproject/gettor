@@ -191,9 +191,8 @@ class Sendmail(object):
                         service="email"
                     )
 
-                    yield self.conn.update_request(
-                        id=id, hid=hid.hexdigest(), status="SENT",
-                        service="email", date=date
+                    yield self.conn.remove_request(
+                        id=id, service="email", date=date
                     )
 
             except SMTPError as e:
@@ -245,9 +244,8 @@ class Sendmail(object):
                         service="email"
                     )
 
-                    yield self.conn.update_request(
-                        id=id, hid=hid.hexdigest(), status="SENT",
-                        service="email", date=date
+                    yield self.conn.remove_request(
+                        id=id, service="email", date=date
                     )
 
             except SMTPError as e:
