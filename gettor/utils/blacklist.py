@@ -11,9 +11,7 @@
 # :license: This is Free Software. See LICENSE for license information.
 
 import os
-import time
 import logging
-import sqlite3
 import datetime
 import configparser
 

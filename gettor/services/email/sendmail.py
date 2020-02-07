@@ -12,12 +12,9 @@
 
 from __future__ import absolute_import
 
-import gettext
 import hashlib
 
 import configparser
-from email import encoders
-from email import mime
 from email.mime.text import MIMEText
 
 from twisted.internet import defer

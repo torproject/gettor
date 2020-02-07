@@ -11,7 +11,6 @@
 # :license: This is Free Software. See LICENSE for license information.
 
 from twisted.logger import Logger
-from twisted.enterprise import adbapi
 from twisted.application import internet
 
 # Define an application logger

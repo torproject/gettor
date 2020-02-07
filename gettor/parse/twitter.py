@@ -21,7 +21,6 @@ import configparser
 
 from twisted.python import log
 from twisted.internet import defer
-from twisted.enterprise import adbapi
 
 from ..utils.db import SQLite3
 from ..utils import strings

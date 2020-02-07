@@ -20,7 +20,6 @@ import configparser
 from time import gmtime, strftime
 
 import core
-import utils
 
 """
 GetTor RESTful API

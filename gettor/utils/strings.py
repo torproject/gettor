@@ -11,7 +11,6 @@ the Tor Browser.
 """
 
 import json
-import locale
 import os
 import inspect
 

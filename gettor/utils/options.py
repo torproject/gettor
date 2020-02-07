@@ -9,8 +9,6 @@ the Tor Browser.
 :license: see included LICENSE for information
 """
 
-import argparse
-
 from .settings import Settings
 from . import strings
 

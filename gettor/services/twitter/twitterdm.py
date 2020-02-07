@@ -12,7 +12,6 @@
 
 from __future__ import absolute_import
 
-import gettext
 import hashlib
 import json
 import time

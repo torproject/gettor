@@ -24,10 +24,8 @@ from email.utils import parseaddr
 
 from twisted.python import log
 from twisted.internet import defer
-from twisted.enterprise import adbapi
 
 from ..utils.db import SQLite3
-from ..utils import strings
 from ..utils import validate_email
 
 class AddressError(Exception):
