@@ -13,6 +13,7 @@
 from __future__ import absolute_import
 
 import re
+import io
 import dkim
 import hashlib
 
@@ -117,18 +118,22 @@ class EmailParser(object):
 
     def parse_keywords(self, text, request):
 
-        for word in re.split(r"\s+", text.strip()):
-            for locale in self.locales:
-                if word.lower() == locale.lower():
-                    request["language"] = locale
-                elif (not request["language"]) and (word.lower()[:2] ==
-                        locale.lower()[:2]):
-                    request["language"] = locale
-            if word.lower() in self.platforms:
-                request["command"] = "links"
-                request["platform"] = word.lower()
-            if (not request["command"])  and word.lower() == "help":
-                request["command"] = "help"
+        buf = io.StringIO(text)
+        for line in buf:
+            if len(line.strip()) > 0 and line.strip()[0] == ">":
+                continue
+            for word in re.split(r"\s+", line.strip()):
+                for locale in self.locales:
+                    if word.lower() == locale.lower():
+                        request["language"] = locale
+                    elif (not request["language"]) and (word.lower()[:2] ==
+                            locale.lower()[:2]):
+                        request["language"] = locale
+                if word.lower() in self.platforms:
+                    request["command"] = "links"
+                    request["platform"] = word.lower()
+                if (not request["command"])  and word.lower() == "help":
+                    request["command"] = "help"
         return request
 
     def build_request(self, msg_str, norm_addr):
