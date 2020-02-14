@@ -239,6 +239,39 @@ class EmailServiceTests(unittest.TestCase):
 
         request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
                 "Subject: Re: [GetTor] Help Email\r\n Reply-To: hiro@torproject.org \nTo:"
+                "gettor@torproject.org\nlinux fa\n\n"
+                "On 2020-02-10 11:54 a.m., gettor@torproject.org wrote:\n"
+                "This is how you can request a tor browser bundle link.\n"
+                "\n"
+                "Send an email to: gettor@torproject.org\n"
+                "\n"
+                "In the body of the email only write: <operating system> <language>.\n"
+                "\n"
+                "We only support windows, osx and linux as operating systems.\n"
+                "\n")
+        self.assertEqual(request["command"], "links")
+        self.assertEqual(request["language"], "fa")
+        self.assertEqual(request["platform"], "linux")
+
+        request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
+                "Subject: Re: [GetTor] Help Email\r\n Reply-To: hiro@torproject.org \nTo:"
+                "gettor@torproject.org\n"
+                "On 2020-02-10 11:54 a.m., gettor@torproject.org wrote:\n"
+                "> This is how you can request a tor browser bundle link.\n"
+                ">\n"
+                "> Send an email to: gettor@torproject.org\n"
+                ">\n"
+                "> In the body of the email only write: <operating system> <language>.\n"
+                ">\n"
+                "> We only support windows, osx and linux as operating systems.\n"
+                ">\n"
+                "linux fa\n\n")
+        self.assertEqual(request["command"], "links")
+        self.assertEqual(request["language"], "fa")
+        self.assertEqual(request["platform"], "linux")
+
+        request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
+                "Subject: Re: [GetTor] Help Email\r\n Reply-To: hiro@torproject.org \nTo:"
                 "gettor@torproject.org\n"
                 "On 2020-02-10 11:54 a.m., gettor@torproject.org wrote:\n"
                 "> This is how you can request a tor browser bundle link.\n"
