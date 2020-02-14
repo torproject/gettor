@@ -213,13 +213,18 @@ class EmailServiceTests(unittest.TestCase):
     def test_help_reply(self):
         #Replying to GetTor Help with a valid links request should get you links
         ep = conftests.EmailParser(self.settings, "gettor@torproject.org")
-        ep.locales = ["en-US", "es-ES", "es-AR", "pt-BR", "fa"]
+        ep.locales = ["en-US", "es-ES", "es-AR", "pt-BR", "fa", "fr"]
         request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
                 "Subject: Re: [GetTor] Help Email\r\n Reply-To: hiro@torproject.org \nTo:"
                 "gettor@torproject.org\n osx en\n")
         self.assertEqual(request["command"], "links")
         self.assertEqual(request["language"], "en-US")
         self.assertEqual(request["platform"], "osx")
+
+        request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
+                "Subject: Re: [GetTor] Help Email\r\n Reply-To: hiro@torproject.org \nTo:"
+                "gettor@torproject.org\n i like french fries\n")
+        self.assertEqual(request["command"], "help")
 
         request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
                 "Subject: Re: [GetTor] Help Email\r\n Reply-To: hiro@torproject.org \nTo:"

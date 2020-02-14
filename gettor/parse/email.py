@@ -123,16 +123,18 @@ class EmailParser(object):
             if len(line.strip()) > 0 and line.strip()[0] == ">":
                 continue
             for word in re.split(r"\s+", line.strip()):
+                word = word.lower()
                 for locale in self.locales:
-                    if word.lower() == locale.lower():
+                    if word == locale.lower():
                         request["language"] = locale
-                    elif (not request["language"]) and (word.lower()[:2] ==
-                            locale.lower()[:2]):
-                        request["language"] = locale
-                if word.lower() in self.platforms:
+                    elif not request["language"]:
+                        parts = re.split(r"[-_]", word)
+                        if parts[0] == locale.lower()[:2]:
+                            request["language"] = locale
+                if word in self.platforms:
                     request["command"] = "links"
-                    request["platform"] = word.lower()
-                if (not request["command"])  and word.lower() == "help":
+                    request["platform"] = word
+                if (not request["command"]) and word == "help":
                     request["command"] = "help"
         return request
 
