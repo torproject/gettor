@@ -1,8 +1,9 @@
 Current maintainer/core developers:
     hiro               <hiro@torproject.org>
-    Israel Leiva       <ilv@torproject.org>        4096R/540BFC0E
+    Cecylia Bocovich   <cohosh@torproject.org>
 
 Past core developers:
+    Israel Leiva       <ilv@torproject.org>        4096R/540BFC0E
     Jacob Appelbaum    <jacob@appelbaum.net>
     Christian Fromme   <kaner@strace.org>
 
@@ -14,4 +15,3 @@ Contributors:
     Sukhbir Singh      <sukhbir@torproject.org>    4096R/B297B391
     Aaron Gibson
     Donncha O'Cearbhaill
-    Cecylia Bocovich   <cohosh@torproject.org>
