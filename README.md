@@ -82,7 +82,5 @@ GetTor includes PyTest unit tests. To run the tests, first install the dependenc
 
 
 ```
-$ python3 scripts/create_db -n -c -o -f tests/gettor.db
-$ python3 scripts/add_links_to_db -f tests/gettor.db
 $ pytest-3 tests/
 ```

@@ -5,7 +5,6 @@ from __future__ import unicode_literals
 from gettor.utils import options
 from gettor.utils import strings
 from gettor.utils import twitter
-from gettor.utils.db import SQLite3
 from gettor.services.email.sendmail import Sendmail
 from gettor.services.twitter import twitterdm
 from gettor.parse.email import EmailParser, AddressError, DKIMError
