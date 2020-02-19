@@ -45,6 +45,8 @@ class Sendmail(object):
         dbname = self.settings.get("dbname")
         self.conn = DB(dbname)
 
+    def __del__(self):
+        del self.conn
 
     def get_interval(self):
         """

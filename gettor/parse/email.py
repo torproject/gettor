@@ -56,6 +56,10 @@ class EmailParser(object):
         self.to_addr = to_addr
         self.locales = []
         self.platforms = self.settings.get("platforms")
+        self.conn = SQLite3(self.settings.get("dbname"))
+
+    def __del__(self):
+        del self.conn
 
     def normalize(self, msg):
         # Normalization will convert <Alice Wonderland> alice@wonderland.net
@@ -164,10 +168,8 @@ class EmailParser(object):
 
     @defer.inlineCallbacks
     def get_locales(self):
-        dbname = self.settings.get("dbname")
-        conn = SQLite3(dbname)
 
-        locales = yield conn.get_locales()
+        locales = yield self.conn.get_locales()
         for l in locales:
             self.locales.append(l[0])
 
@@ -235,7 +237,6 @@ class EmailParser(object):
         now_str = datetime.now().strftime("%Y%m%d%H%M%S")
         dbname = self.settings.get("dbname")
         test_hid = self.settings.get("test_hid")
-        conn = SQLite3(dbname)
 
         if request["command"]:
 
@@ -247,7 +248,7 @@ class EmailParser(object):
                 system="email parser"
             )
 
-            num_requests = yield conn.get_num_requests(
+            num_requests = yield self.conn.get_num_requests(
                 id=hid, service=request_service
             )
 
@@ -262,7 +263,7 @@ class EmailParser(object):
                     ), system="email parser"
                 )
             else:
-                conn.new_request(
+                self.conn.new_request(
                     id=request['id'],
                     command=request['command'],
                     platform=request['platform'],

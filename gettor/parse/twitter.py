@@ -35,7 +35,10 @@ class TwitterParser(object):
         """
         self.settings = settings
         self.twitter_id = twitter_id
+        self.conn = SQLite3(self.settings.get("dbname"))
 
+    def __del__(self):
+        del self.conn
 
     def build_request(self, msg_text, twitter_id, languages, platforms):
 
@@ -110,16 +113,14 @@ class TwitterParser(object):
 
         if request["command"]:
             now_str = datetime.now().strftime("%Y%m%d%H%M%S")
-            dbname = self.settings.get("dbname")
-            conn = SQLite3(dbname)
 
             hid = hashlib.sha256(str(request['id']).encode('utf-8'))
             # check limits first
-            num_requests = yield conn.get_num_requests(
+            num_requests = yield self.conn.get_num_requests(
                 id=hid.hexdigest(), service=request['service']
             )
 
-            num_requests += yield conn.get_num_requests(
+            num_requests += yield self.conn.get_num_requests(
                 id=str(request['id']), service=request['service']
             )
 
@@ -130,7 +131,7 @@ class TwitterParser(object):
                     ), system="twitter parser"
                 )
             else:
-                conn.new_request(
+                self.conn.new_request(
                     id=str(request['id']),
                     command=request['command'],
                     platform=request['platform'],

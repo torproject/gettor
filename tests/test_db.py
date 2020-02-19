@@ -2,8 +2,6 @@
 import pytest
 import pytest_twisted
 from twisted.trial import unittest
-from twisted.internet import defer, reactor
-from twisted.internet import task
 
 from . import conftests
 
@@ -19,7 +17,7 @@ class DatabaseTests(unittest.TestCase):
 
     def tearDown(self):
         print("tearDown()")
-        return self.conn.dbpool.close()
+        del self.conn
 
     @pytest_twisted.inlineCallbacks
     def test_stored_locales(self):

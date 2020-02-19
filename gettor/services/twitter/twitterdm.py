@@ -41,6 +41,8 @@ class Twitterdm(object):
         self.twitter = Twitter(settings)
         self.conn = DB(dbname)
 
+    def __del__(self):
+        del self.conn
 
     def get_interval(self):
         """
@@ -115,6 +117,7 @@ class Twitterdm(object):
             yield defer.maybeDeferred(
                 tp.parse, e['message_create']['message_data']['text'], message_id
             ).addCallback(tp.parse_callback).addErrback(tp.parse_errback)
+            del tp
 
         # Manage help and links messages separately
         help_requests = yield self.conn.get_requests(

@@ -24,6 +24,9 @@ class SQLite3(object):
 			"sqlite3", dbname, check_same_thread=False
 		)
 
+	def __del__(self):
+		self.dbpool.close()
+
 	def query_callback(self, results=None):
 		"""
 		Query callback

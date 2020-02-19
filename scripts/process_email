@@ -41,6 +41,7 @@ def process_email(message):
             log.err("DKIM error: {}".format(e), system="process email")
             reactor.stop()
 
+    del ep
     reactor.stop()
 
 def main():

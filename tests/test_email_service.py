@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import pytest
+import pytest_twisted
 import hashlib
 from datetime import datetime
 from twisted.trial import unittest
@@ -31,6 +32,7 @@ class EmailServiceTests(unittest.TestCase):
 
     def tearDown(self):
         print("tearDown()")
+        del self.sm_client
 
     def test_get_interval(self):
         self.assertEqual(self.settings.get("sendmail_interval"), self.sm_client.get_interval())
@@ -39,6 +41,7 @@ class EmailServiceTests(unittest.TestCase):
         ep = conftests.EmailParser(self.settings, "gettor@torproject.org")
         request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n Subject: help\n Reply-To: hiro@torproject.org \nTo: gettor@torproject.org")
         self.assertEqual(request["command"], "help")
+        del ep
 
     def test_normalize_msg(self):
         ep = conftests.EmailParser(self.settings, "gettor@torproject.org")
@@ -46,6 +49,7 @@ class EmailServiceTests(unittest.TestCase):
         msg = conftests.message_from_string(msg_str)
         request = ep.normalize(msg)
         self.assertEqual(request, ('silvia [hiro]', 'hiro@torproject.org', '', 'gettor@torproject.org'))
+        del ep
 
     def test_validate_msg(self):
         ep = conftests.EmailParser(self.settings, "gettor@torproject.org")
@@ -53,6 +57,7 @@ class EmailServiceTests(unittest.TestCase):
         msg = conftests.message_from_string(msg_str)
         request = ep.validate("hiro@torproject.org", msg)
         assert request
+        del ep
 
     def test_dkim_verify(self):
         ep = conftests.EmailParser(self.settings, "gettor@torproject.org")
@@ -60,6 +65,7 @@ class EmailServiceTests(unittest.TestCase):
         msg = conftests.message_from_string(msg_str)
         request = ep.dkim_verify(msg, "hiro@torproject.org")
         assert request
+        del ep
 
     def test_build_request(self):
         ep = conftests.EmailParser(self.settings, "gettor@torproject.org")
@@ -70,6 +76,7 @@ class EmailServiceTests(unittest.TestCase):
         self.assertEqual(request["command"], "links")
         self.assertEqual(request["platform"], "osx")
         self.assertEqual(request["language"], "es")
+        del ep
 
     def test_too_many_request_exclude(self):
         ep = conftests.EmailParser(self.settings, "gettor@torproject.org")
@@ -79,6 +86,7 @@ class EmailServiceTests(unittest.TestCase):
         check = ep.too_many_requests(hid, self.settings.get("test_hid"), num_requests, limit)
         self.assertEqual(hid, self.settings.get("test_hid"))
         self.assertEqual(check, False)
+        del ep
 
     def test_language_email_parser(self):
         ep = conftests.EmailParser(self.settings, "gettor@torproject.org")
@@ -137,6 +145,7 @@ class EmailServiceTests(unittest.TestCase):
                 "Subject: linux es-AR\r\n Reply-To: hiro@torproject.org \nTo:"
                 "gettor@torproject.org\n linux es")
         self.assertEqual(request["language"], "es-AR")
+        del ep
 
     def test_sent_links_message(self):
         ep = self.sm_client
@@ -158,6 +167,13 @@ class EmailServiceTests(unittest.TestCase):
         ep = self.sm_client
         help_msg = ep.build_help_body_message()
         assert "This is how you can request a tor browser bundle link" in help_msg
+
+    @pytest_twisted.inlineCallbacks
+    def test_get_locales(self):
+        ep = conftests.EmailParser(self.settings, "gettor@torproject.org")
+        yield ep.get_locales().addErrback(ep.parse_errback)
+        assert "en-US" in ep.locales
+        del ep
 
 
 if __name__ == "__main__":
