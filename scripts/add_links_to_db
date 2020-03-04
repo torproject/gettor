@@ -73,7 +73,7 @@ def main():
     # For gitlab, we have three repositories for linux, mac, and windows.
     # The string "arch" will later be replaced with the respective architecture
     providers = {
-        "gitlab": "https://gitlab.com/thetorproject/torbrowser-arch/raw/master/",
+        "gitlab": "https://gitlab.com/thetorproject/torbrowser-version-arch/raw/master/",
         "github": "https://github.com/torproject/torbrowser-releases/releases/download/torbrowser-release/"
     }
 
@@ -148,7 +148,8 @@ def main():
                     c.execute(
                         "INSERT INTO links(link, platform, language, arch, version, provider, status, file)"
                         "VALUES ('%s', '%s', '%s', '64', '%s', '%s', 'ACTIVE', '%s')"
-                        % (providers.get(p).replace("arch", k) + release_link, k, l, version, p, release_link))
+                        % (providers.get(p).replace("arch", k).replace("version", version) +
+                            release_link, k, l, version, p, release_link))
 
 
 if __name__ == "__main__":

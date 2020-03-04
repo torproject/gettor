@@ -24,6 +24,9 @@ failure = False
 
 failed_uploads = []
 
+version = None
+data = None
+
 class GitlabRemote:
     def __init__(self, token):
         self.gl = Gitlab("https://gitlab.com", private_token=token)
@@ -35,11 +38,11 @@ class GitlabRemote:
 
     def create_projects(self):
         # Create one project for each platform
-        windows_repo = self.gl.projects.create({'name': 'torbrowser-windows',
+        windows_repo = self.gl.projects.create({'name': 'torbrowser-'+version+'-windows',
             'visibility': 'public'})
-        mac_repo = self.gl.projects.create({'name': 'torbrowser-osx',
+        mac_repo = self.gl.projects.create({'name': 'torbrowser-'+version+'-osx',
             'visibility': 'public'})
-        linux_repo = self.gl.projects.create({'name': 'torbrowser-linux',
+        linux_repo = self.gl.projects.create({'name': 'torbrowser-'+version+'-linux',
             'visibility': 'public'})
 
         self.repositories = {
@@ -93,8 +96,6 @@ def upload_files(remotes):
         print("Error: No remotes to update", file=sys.stderr)
         return 1
 
-    url = urllib.request.urlopen("https://aus1.torproject.org/torbrowser/update_3/release/downloads.json")
-    data = json.loads(url.read().decode())
     for arch in data['downloads']:
         for locale in data['downloads'][arch]:
             for asset in data['downloads'][arch][locale]:
@@ -133,6 +134,13 @@ def upload_files(remotes):
 
 
 def main():
+    global version
+    global data
+
+    url = urllib.request.urlopen("https://aus1.torproject.org/torbrowser/update_3/release/downloads.json")
+    data = json.loads(url.read().decode())
+    version = data["version"]
+
     remotes = []
     if 'GITHUB_AUTH' not in os.environ:
         print("WARNING: No Github authentication token given", file=sys.stderr)
