@@ -88,6 +88,41 @@ class EmailServiceTests(unittest.TestCase):
         self.assertEqual(check, False)
         del ep
 
+    def test_email_parser(self):
+        ep = conftests.EmailParser(self.settings, "gettor@torproject.org")
+        ep.locales = ["en-US", "es-ES", "es-AR", "pt-BR", "fa"]
+        request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
+                "Subject: \r\n Reply-To: hiro@torproject.org \nTo:"
+                "gettor@torproject.org\n\n")
+        self.assertEqual(request["language"], "en-US")
+        self.assertEqual(request["command"], "help")
+
+        request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
+                "Subject: \r\n Reply-To: hiro@torproject.org \nTo:"
+                "gettor@torproject.org\n\n please send me tor\n")
+        self.assertEqual(request["language"], "en-US")
+        self.assertEqual(request["command"], "help")
+
+        request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
+                "Subject: \r\n Reply-To: hiro@torproject.org \nTo:"
+                "gettor@torproject.org\n\nwindows\n")
+        self.assertEqual(request["language"], "en-US")
+        self.assertEqual(request["platform"], "windows")
+        self.assertEqual(request["command"], "links")
+
+        request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
+                "Subject: \r\n Reply-To: hiro@torproject.org \nTo:"
+                "gettor@torproject.org\n\n fa\n")
+        self.assertEqual(request["language"], "fa")
+        self.assertEqual(request["command"], "help")
+
+        request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
+                "Subject: \r\n Reply-To: hiro@torproject.org \nTo:"
+                "gettor@torproject.org\n\n please help me get tor for windows\n")
+        self.assertEqual(request["language"], "en-US")
+        self.assertEqual(request["command"], "links")
+        self.assertEqual(request["platform"], "windows")
+
     def test_language_email_parser(self):
         ep = conftests.EmailParser(self.settings, "gettor@torproject.org")
         ep.locales = ["en-US", "es-ES", "es-AR", "pt-BR", "fa"]

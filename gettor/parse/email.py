@@ -127,9 +127,8 @@ class EmailParser(object):
             if word.lower() in self.platforms:
                 request["command"] = "links"
                 request["platform"] = word.lower()
-            if word.lower() == "help":
+            if (not request["command"])  and word.lower() == "help":
                 request["command"] = "help"
-                break
         return request
 
     def build_request(self, msg_str, norm_addr):
@@ -154,6 +153,9 @@ class EmailParser(object):
 
         if not request["language"]:
             request["language"] = "en-US"
+
+        if not request["command"]:
+            request["command"] = "help"
 
         return request
 
