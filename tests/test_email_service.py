@@ -17,18 +17,6 @@ class EmailServiceTests(unittest.TestCase):
         self.settings = conftests.options.parse_settings("en","tests/test.conf.json")
         self.sm_client = conftests.Sendmail(self.settings)
         self.locales = conftests.strings.get_locales()
-        self.links = [
-            [
-                "https://gitlab.com/thetorproject/gettorbrowser/raw/torbrowser-releases/TorBrowser-9.0.3-osx64_en-US.dmg",
-                "osx",
-                "en-US",
-                "64",
-                "9.0.3",
-                "gitlab",
-                "ACTIVE",
-                "TorBrowser-9.0.3-osx64_en-US.dmg"
-            ]
-        ]
 
     def tearDown(self):
         print("tearDown()")
@@ -182,21 +170,29 @@ class EmailServiceTests(unittest.TestCase):
         self.assertEqual(request["language"], "es-AR")
         del ep
 
+    @pytest_twisted.inlineCallbacks
     def test_sent_links_message(self):
         ep = self.sm_client
-        links = self.links
-        link_msg, file = ep.build_link_strings(links, "osx", "en")
-        assert "https://gitlab.com/thetorproject/gettorbrowser/raw/torbrowser-releases/TorBrowser-9.0.3-osx64_en-US.dmg" in link_msg
-        assert "osx" in link_msg
-
-        self.assertEqual("TorBrowser-9.0.3-osx64_en-US.dmg", file)
-
-    def test_sent_body_message(self):
-        ep = self.sm_client
-        links = self.links
-        link_msg, file = ep.build_link_strings(links, "osx", "en")
+        links = yield ep.conn.get_links(
+            platform="osx", language="en-US", status="ACTIVE"
+        )
+        link_msg, file = ep.build_link_strings(links, "osx", "en-US")
         body_msg = ep.build_body_message(link_msg, "osx", file)
         assert "You requested Tor Browser for osx" in body_msg
+
+        links = yield ep.conn.get_links(
+            platform="windows", language="en-US", status="ACTIVE"
+        )
+        link_msg, file = ep.build_link_strings(links, "windows", "en-US")
+        body_msg = ep.build_body_message(link_msg, "windows", file)
+        assert "You requested Tor Browser for windows" in body_msg
+
+        links = yield ep.conn.get_links(
+            platform="linux", language="en-US", status="ACTIVE"
+        )
+        link_msg, file = ep.build_link_strings(links, "linux", "en-US")
+        body_msg = ep.build_body_message(link_msg, "linux", file)
+        assert "You requested Tor Browser for linux" in body_msg
 
     @pytest_twisted.inlineCallbacks
     def test_help_body_message(self):

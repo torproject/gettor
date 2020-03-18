@@ -125,7 +125,6 @@ class Sendmail(object):
         link_msg = ""
 
         for link in links:
-            print(link)
             provider = link[5]
             version = link[4]
             arch = link[3]
@@ -143,6 +142,16 @@ class Sendmail(object):
 
 
     def build_body_message(self, link_msg, platform, file):
+        signature_strings = {
+            "windows":"links_body_windows",
+            "linux":"links_body_linux",
+            "osx":"links_body_osx"
+        }
+        signature_cmds = {
+            "windows":"gpgv --keyring .\\tor.keyring Downloads\\{0}.asc Downloads\\{0}",
+            "linux":"gpgv --keyring ./tor.keyring ~/Downloads/{}{{.asc,}}",
+            "osx":"gpgv --keyring ./tor.keyring ~/Downloads/{}{{.asc,}}"
+        }
         body_msg = strings._("body_intro")
         body_msg += strings._("links_body_platform").format(platform)
         body_msg += strings._("links_body_step1").format(link_msg)
@@ -150,8 +159,9 @@ class Sendmail(object):
         body_msg += strings._("links_body_internet_archive")
         body_msg += strings._("links_body_google_drive")
         body_msg += strings._("links_body_step2")
+        body_msg += strings._(signature_strings[platform])
+        body_msg += strings._("links_body_all").format(signature_cmds[platform].format(file))
         body_msg += strings._("links_body_step3")
-        print(body_msg)
 
         return body_msg
 
