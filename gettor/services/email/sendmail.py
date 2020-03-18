@@ -122,9 +122,10 @@ class Sendmail(object):
         Build the links strings
         """
 
-        link_msg = None
+        link_msg = ""
 
         for link in links:
+            print(link)
             provider = link[5]
             version = link[4]
             arch = link[3]
@@ -132,11 +133,9 @@ class Sendmail(object):
             file = link[7]
             sig_url = url + ".asc"
 
-            link_str = "Tor Browser {} for {}-{}-{} ({}): {}\n".format(
-                version, platform, locale, arch, provider, url
-            )
+            link_str = "\t{}: {}\n".format(provider, url)
 
-            link_str += "Signature file: {}\n".format(sig_url)
+            link_str += "\tSignature file: {}\n".format(sig_url)
 
             link_msg = "{}\n{}".format(link_msg, link_str)
 
@@ -144,13 +143,15 @@ class Sendmail(object):
 
 
     def build_body_message(self, link_msg, platform, file):
-        body_msg = strings._("links_body_platform").format(platform)
-        body_msg += strings._("links_body_links").format(link_msg)
-        body_msg += strings._("links_body_archive")
+        body_msg = strings._("body_intro")
+        body_msg += strings._("links_body_platform").format(platform)
+        body_msg += strings._("links_body_step1").format(link_msg)
+        body_msg += strings._("links_body_archive").format(file)
         body_msg += strings._("links_body_internet_archive")
         body_msg += strings._("links_body_google_drive")
-        body_msg += strings._("links_body_download_filename").format(file)
-        body_msg += strings._("links_body_ending")
+        body_msg += strings._("links_body_step2")
+        body_msg += strings._("links_body_step3")
+        print(body_msg)
 
         return body_msg
 
