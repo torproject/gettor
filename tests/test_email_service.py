@@ -198,10 +198,14 @@ class EmailServiceTests(unittest.TestCase):
         body_msg = ep.build_body_message(link_msg, "osx", file)
         assert "You requested Tor Browser for osx" in body_msg
 
+    @pytest_twisted.inlineCallbacks
     def test_help_body_message(self):
         ep = self.sm_client
-        help_msg = ep.build_help_body_message()
-        assert "This is how you can request a tor browser bundle link" in help_msg
+        locales = yield ep.conn.get_locales()
+        locale_string = ep.build_locale_string(locales)
+        help_msg = ep.build_help_body_message(locale_string)
+        assert "This is an automated email response from GetTor." in help_msg
+        assert "\twindows\n\tlinux\n\tosx\n" in help_msg
 
     @pytest_twisted.inlineCallbacks
     def test_get_locales(self):

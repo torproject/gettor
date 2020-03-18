@@ -98,11 +98,21 @@ class Sendmail(object):
             requireTransportSecurity=True
         ).addCallback(self.sendmail_callback).addErrback(self.sendmail_errback)
 
+    def build_locale_string(self, locales):
+        locale_string = ""
+        for locale in locales:
+            locale_string += "\t" + locale[0] + "\n"
+        return locale_string
 
-    def build_help_body_message(self):
-        body_msg = strings._("help_body_intro")
-        body_msg += strings._("help_body_paragraph")
+    def build_help_body_message(self, locale_string):
+        body_msg = strings._("body_intro")
+        body_msg += strings._("help_body_intro")
         body_msg += strings._("help_body_support")
+        body_msg += "\twindows\n\tlinux\n\tosx\n\n"
+        body_msg += strings._("help_body_respond")
+        body_msg += strings._("help_body_locale")
+        body_msg += locale_string + "\n"
+        body_msg += strings._("help_body_example").format("Windows", "Arabic", "windows ar")
 
         return body_msg
 
@@ -176,8 +186,10 @@ class Sendmail(object):
                             hid.hexdigest()
                         )
                     )
+                    locales = yield self.conn.get_locales()
+                    locale_string = self.build_locale_string(locales)
 
-                    body_msg = self.build_help_body_message()
+                    body_msg = self.build_help_body_message(locale_string)
 
                     yield self.sendmail(
                         email_addr=id,
