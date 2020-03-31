@@ -38,20 +38,23 @@ def upload_files(basedir, client):
 
     """
     files = []
-
+    
+    folder_metadata = client.metadata('/')
+    metadata_set = {content['path'].split('/')[-1] for content in metadata['contents'] if content['is_dir'] == False}
+    
     for name in os.listdir(basedir):
         path = os.path.abspath(os.path.join(basedir, name))
-        if os.path.isfile(path) and valid_format(name, 'linux'):
+        if os.path.isfile(path) and valid_format(name, 'linux') and (name not in metadata_set):
             files.append(name)
 
     for name in os.listdir(basedir):
         path = os.path.abspath(os.path.join(basedir, name))
-        if os.path.isfile(path) and valid_format(name, 'windows'):
+        if os.path.isfile(path) and valid_format(name, 'windows') and (name not in metadata_set): 
             files.append(name)
 
     for name in os.listdir(basedir):
         path = os.path.abspath(os.path.join(basedir, name))
-        if os.path.isfile(path) and valid_format(name, 'osx'):
+        if os.path.isfile(path) and valid_format(name, 'osx') and (name not in metadata_set):
             files.append(name)
 
     for file in files:
