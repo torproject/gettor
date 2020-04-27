@@ -54,15 +54,14 @@ class SQLite3(object):
 			query, (id, command, platform, language, service, date, status)
 		).addCallback(self.query_callback).addErrback(self.query_errback)
 
-	def get_requests(self, status, command, service):
+	def get_requests(self, status, service):
 		"""
 		Perform a SELECT request to the database
 		"""
-		query = "SELECT * FROM requests WHERE service=? AND command=? AND "\
-		"status = ?"
+		query = "SELECT * FROM requests WHERE service=? AND status = ?"
 
 		return self.dbpool.runQuery(
-			query, (service, command, status)
+			query, (service, status)
 		).addCallback(self.query_callback).addErrback(self.query_errback)
 
 	def get_num_requests(self, id, service):

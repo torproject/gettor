@@ -168,77 +168,36 @@ class Sendmail(object):
         """
 
         # Manage help and links messages separately
-        help_requests = yield self.conn.get_requests(
-            status="ONHOLD", command="help", service="email"
+        requests = yield self.conn.get_requests(
+            status="ONHOLD", service="email"
         )
 
-        link_requests = yield self.conn.get_requests(
-            status="ONHOLD", command="links", service="email"
-        )
+        strings.load_strings("en")
+        try:
 
-        if help_requests:
-            strings.load_strings("en")
-            try:
-                log.info("Got new help request.")
+            for request in requests:
+                id = request[0]
+                command = request[1]
+                platform = request[2]
+                language = request[3]
+                date = request[5]
 
-                for request in help_requests:
-                    id = request[0]
-                    date = request[5]
+                if not language:
+                    language = 'en'
 
-                    hid = hashlib.sha256(id.encode('utf-8'))
-                    log.info(
-                        "Sending help message to {}.".format(
-                            hid.hexdigest()
-                        )
-                    )
+                body_msg =""
+                subject_msg =""
+
+                if command == "help":
+
                     locales = yield self.conn.get_locales()
                     locale_string = self.build_locale_string(locales)
 
+                    # build message
                     body_msg = self.build_help_body_message(locale_string)
+                    subject_msg = strings._("help_subject")
 
-                    yield self.sendmail(
-                        email_addr=id,
-                        subject=strings._("help_subject"),
-                        body=body_msg
-                    )
-
-                    yield self.conn.update_stats(
-                        command="help", platform='', language='en',
-                        service="email"
-                    )
-
-                    yield self.conn.remove_request(
-                        id=id, service="email", date=date
-                    )
-
-            except smtp.SMTPClientError as e:
-                if e.code == 501: # Bad recipient address syntax
-                    yield self.conn.remove_request(
-                        id=id, service="email", date=date
-                    )
-                log.info("Error sending email: {}.".format(e))
-
-            except Exception as e:
-                log.info("Error sending email: {}.".format(e))
-
-        elif link_requests:
-            try:
-                log.info("Got new links request.")
-
-                for request in link_requests:
-                    id = request[0]
-                    date = request[5]
-                    platform = request[2]
-                    language = request[3]
-
-                    if not language:
-                        language = 'en'
-
-                    locales = strings.get_locales()
-
-                    strings.load_strings(language)
-                    locale = locales['en']['locale']
-
+                elif command == "links":
                     log.info("Getting links for {} {}.".format(platform, language))
                     links = yield self.conn.get_links(
                         platform=platform, language=language, status="ACTIVE"
@@ -248,37 +207,35 @@ class Sendmail(object):
                     link_msg, file = self.build_link_strings(links, platform, language)
                     body_msg = self.build_body_message(link_msg, platform, file)
                     subject_msg = strings._("links_subject")
-
-                    hid = hashlib.sha256(id.encode('utf-8'))
-                    log.info(
-                        "Sending links to {}.".format(
-                            hid.hexdigest()
-                        )
-                    )
-
-                    yield self.sendmail(
-                        email_addr=id,
-                        subject=subject_msg,
-                        body=body_msg
-                    )
-
-                    yield self.conn.update_stats(
-                        command="links", platform=platform, language=language,
-                        service="email"
-                    )
-
+                else:
+                    log.info("Invalid gettor command {}.".format(command))
                     yield self.conn.remove_request(
                         id=id, service="email", date=date
                     )
 
-            except smtp.SMTPClientError as e:
-                if e.code == 501: # Bad recipient address syntax
-                    yield self.conn.remove_request(
-                        id=id, service="email", date=date
-                    )
-                log.info("Error sending email: {}.".format(e))
+                log.info("Sending {} message.".format(request[1]))
 
-            except Exception as e:
-                log.info("Error sending email: {}.".format(e))
-        else:
-            log.debug("No pending email requests. Keep waiting.")
+                yield self.sendmail(
+                    email_addr=id,
+                    subject=subject_msg,
+                    body=body_msg
+                )
+
+                yield self.conn.update_stats(
+                    command=command, platform=platform, language=language,
+                    service="email"
+                )
+
+                yield self.conn.remove_request(
+                    id=id, service="email", date=date
+                )
+
+        except smtp.SMTPClientError as e:
+            if e.code == 501: # Bad recipient address syntax
+                yield self.conn.remove_request(
+                    id=id, service="email", date=date
+                )
+            log.info("Error sending email: {}.".format(e))
+
+        except Exception as e:
+            log.error("Error sending email: {}.".format(e))
