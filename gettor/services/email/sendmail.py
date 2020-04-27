@@ -18,18 +18,12 @@ import configparser
 from email.mime.text import MIMEText
 
 from twisted.internet import defer
-from twisted.mail.smtp import sendmail
+from twisted.mail import smtp
 
 from ...utils.db import SQLite3 as DB
 from ...utils.commons import log
 from ...utils import strings
 
-
-class SMTPError(Exception):
-    """
-    Error if we can't send emails.
-    """
-    pass
 
 from email.mime.text import MIMEText
 class Sendmail(object):
@@ -70,7 +64,7 @@ class Sendmail(object):
         Errback if we don't/can't send the message.
         """
         log.debug("Could not send email.")
-        raise SMTPError("{}".format(error))
+        raise error
 
     def sendmail(self, email_addr, subject, body):
         """
@@ -93,7 +87,7 @@ class Sendmail(object):
 
         log.debug("Calling asynchronous sendmail.")
 
-        return sendmail(
+        return smtp.sendmail(
             self.settings.get("sendmail_host"), self.settings.get("sendmail_addr"), email_addr, message,
             requireTransportSecurity=True
         ).addCallback(self.sendmail_callback).addErrback(self.sendmail_errback)
@@ -217,7 +211,14 @@ class Sendmail(object):
                         id=id, service="email", date=date
                     )
 
-            except SMTPError as e:
+            except smtp.SMTPClientError as e:
+                if e.code == 501: # Bad recipient address syntax
+                    yield self.conn.remove_request(
+                        id=id, service="email", date=date
+                    )
+                log.info("Error sending email: {}.".format(e))
+
+            except Exception as e:
                 log.info("Error sending email: {}.".format(e))
 
         elif link_requests:
@@ -270,7 +271,14 @@ class Sendmail(object):
                         id=id, service="email", date=date
                     )
 
-            except SMTPError as e:
+            except smtp.SMTPClientError as e:
+                if e.code == 501: # Bad recipient address syntax
+                    yield self.conn.remove_request(
+                        id=id, service="email", date=date
+                    )
+                log.info("Error sending email: {}.".format(e))
+
+            except Exception as e:
                 log.info("Error sending email: {}.".format(e))
         else:
             log.debug("No pending email requests. Keep waiting.")
