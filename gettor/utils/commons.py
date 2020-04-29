@@ -10,11 +10,13 @@
 #
 # :license: This is Free Software. See LICENSE for license information.
 
-from twisted.logger import Logger
+from twisted.logger import Logger, LogLevel
+from twisted.logger import FilteringLogObserver, LogLevelFilterPredicate
 from twisted.application import internet
-
 # Define an application logger
 log = Logger(namespace="gettor")
+predicate = LogLevelFilterPredicate(defaultLogLevel=LogLevel.info)
+log.observer = FilteringLogObserver(log.observer, [predicate])
 
 class BaseService(internet.TimerService):
     """
