@@ -57,7 +57,7 @@ class BaseService(internet.TimerService):
         """
         log.info("SERVICE:: Stopping {} service.".format(self.name))
         log.debug("SERVICE:: Calling shutdown on {}".format(self.name))
-        self.instance.shutdown()
+        del self.instance
         log.debug("SERVICE:: Shutdown for {} done".format(self.name))
         internet.TimerService.stopService(self)
         log.info("SERVICE:: Service stopped.")
