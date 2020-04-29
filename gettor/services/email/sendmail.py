@@ -57,13 +57,13 @@ class Sendmail(object):
 
         :param message (string): Success details from the server.
         """
-        log.info("Email sent successfully.")
+        log.debug("Email sent successfully.")
 
     def sendmail_errback(self, error):
         """
         Errback if we don't/can't send the message.
         """
-        log.debug("Could not send email.")
+        log.warn("Could not send email.")
         raise error
 
     def sendmail(self, email_addr, subject, body):
@@ -198,7 +198,7 @@ class Sendmail(object):
                     subject_msg = strings._("help_subject")
 
                 elif command == "links":
-                    log.info("Getting links for {} {}.".format(platform, language))
+                    log.debug("Getting links for {} {}.".format(platform, language))
                     links = yield self.conn.get_links(
                         platform=platform, language=language, status="ACTIVE"
                     )
@@ -208,12 +208,12 @@ class Sendmail(object):
                     body_msg = self.build_body_message(link_msg, platform, file)
                     subject_msg = strings._("links_subject")
                 else:
-                    log.info("Invalid gettor command {}.".format(command))
+                    log.warn("Invalid gettor command {}.".format(command))
                     yield self.conn.remove_request(
                         id=id, service="email", date=date
                     )
 
-                log.info("Sending {} message.".format(request[1]))
+                log.debug("Sending {} message.".format(request[1]))
 
                 yield self.sendmail(
                     email_addr=id,
@@ -235,7 +235,7 @@ class Sendmail(object):
                 yield self.conn.remove_request(
                     id=id, service="email", date=date
                 )
-            log.info("Error sending email: {}.".format(e))
+            log.error("Error sending email: {}.".format(e))
 
         except Exception as e:
             log.error("Error sending email: {}.".format(e))

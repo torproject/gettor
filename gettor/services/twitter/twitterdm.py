@@ -59,14 +59,14 @@ class Twitterdm(object):
 
         :param message (string): Success details from the server.
         """
-        log.info("Message sent successfully.")
+        log.debug("Message sent successfully.")
 
 
     def twitter_errback(self, error):
         """
         Errback if we don't/can't send the message.
         """
-        log.debug("Could not send message.")
+        log.warn("Could not send message.")
         raise RuntimeError("{}".format(error))
 
 
@@ -131,7 +131,7 @@ class Twitterdm(object):
         if help_requests:
             strings.load_strings("en")
             try:
-                log.info("Got new help request.")
+                log.debug("Got new help request.")
 
                 for request in help_requests:
                     ids = json.loads("{}".format(request[0].replace("'", '"')))
@@ -140,7 +140,7 @@ class Twitterdm(object):
                     date = request[5]
 
                     hid = hashlib.sha256(twitter_id.encode('utf-8'))
-                    log.info(
+                    log.debug(
                         "Sending help message to {}.".format(
                             hid.hexdigest()
                         )
@@ -166,11 +166,11 @@ class Twitterdm(object):
                     )
 
             except RuntimeError as e:
-                log.info("Error sending twitter message: {}.".format(e))
+                log.error("Error sending twitter message: {}.".format(e))
 
         elif link_requests:
             try:
-                log.info("Got new links request.")
+                log.debug("Got new links request.")
 
                 for request in link_requests:
                     ids = json.loads("{}".format(request[0].replace("'", '"')))
@@ -188,7 +188,7 @@ class Twitterdm(object):
                     strings.load_strings(language)
                     locale = locales[language]['locale']
 
-                    log.info("Getting links for {}.".format(platform))
+                    log.debug("Getting links for {}.".format(platform))
                     links = yield self.conn.get_links(
                         platform=platform, language=locale, status="ACTIVE"
                     )
@@ -225,7 +225,7 @@ class Twitterdm(object):
                         body_msg += trings._("links_body_ending")
 
                     hid = hashlib.sha256(twitter_id.encode('utf-8'))
-                    log.info(
+                    log.debug(
                         "Sending links to {}.".format(
                             hid.hexdigest()
                         )
@@ -247,6 +247,6 @@ class Twitterdm(object):
                     )
 
             except RuntimeError as e:
-                log.info("Error sending message: {}.".format(e))
+                log.error("Error sending message: {}.".format(e))
         else:
             log.debug("No pending twitter requests. Keep waiting.")
