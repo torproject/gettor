@@ -84,6 +84,11 @@ class EmailParser(object):
                 "Email address normalized and validated.",
                 system="email parser"
             )
+
+            # Add a check for auto-generated mail-daemon emails
+            if "mailer-daemon@" in norm_addr.lower():
+                raise AddressError("Received mail from Mail Delivery System {}"
+                        .format(msg['From']))
             return True
 
         else:
@@ -206,7 +211,8 @@ class EmailParser(object):
         try:
             self.validate(norm_addr, msg)
         except AddressError as e:
-            log.message("Address error: {}".format(e.args))
+            log.msg("Address error: {}".format(e.args))
+            return {}
 
         hid = hashlib.sha256(norm_addr.encode('utf-8'))
         log.msg(

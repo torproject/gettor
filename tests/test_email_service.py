@@ -289,6 +289,13 @@ class EmailServiceTests(unittest.TestCase):
                 ">\n")
         self.assertEqual(request["command"], "help")
 
+    def test_bounce(self):
+        ep = conftests.EmailParser(self.settings, "gettor@torproject.org")
+        request = ep.parse("From: MAILER-DAEMON@mx1.riseup.net\n"
+                "Subject: Undelivered Mail Returned to Sender\r\n"
+                "To: gettor@torproject.org\n osx en\n")
+
+        self.assertEqual(request, {})
 
 if __name__ == "__main__":
     unittest.main()
