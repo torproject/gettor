@@ -96,6 +96,13 @@ MX_DNS_CACHE = {}
 MX_CHECK_CACHE = {}
 
 
+# List of known autoresponder email patterns
+autoresponders = [
+        r'mailer-daemon@.*',
+        r'postmaster@.*',
+        r'gettor.*@torproject.org'
+]
+
 def get_mx_ip(hostname):
     if hostname not in MX_DNS_CACHE:
         try:
@@ -175,6 +182,20 @@ def validate_email(email, check_mx=False, verify=False, debug=False, smtp_timeou
             logger.debug('ServerError or socket.error exception raised (%s).', e)
         return None
     return True
+
+def autoresponder(from_addr):
+    """
+    We sometimes receive messages from autoresponders like Mail Deliver System
+    or postmaster due to bounced messages. This can send GetTor into an infinite
+    loop with the autoresponder (or itself).
+
+    Returns true if the email address matches a known autoresponder pattern.
+    """
+    for pattern in autoresponders:
+        if re.match(pattern, from_addr.lower()) is not None:
+            return True
+
+    return False
 
 if __name__ == "__main__":
     import time

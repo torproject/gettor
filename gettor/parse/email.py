@@ -86,8 +86,8 @@ class EmailParser(object):
             )
 
             # Add a check for auto-generated mail-daemon emails
-            if "mailer-daemon@" in norm_addr.lower():
-                raise AddressError("Received mail from Mail Delivery System {}"
+            if validate_email.autoresponder(norm_addr):
+                raise AddressError("Received mail from a known autoresponder {}"
                         .format(msg['From']))
             return True
 
