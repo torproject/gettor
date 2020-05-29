@@ -32,7 +32,6 @@ class SQLite3(object):
 		Query callback
 		Log that the database query has been executed and return results
 		"""
-		log.msg("Database query executed successfully.")
 		return results
 
 	def query_errback(self, error=None):
