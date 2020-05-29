@@ -253,7 +253,7 @@ class EmailParser(object):
         dbname = self.settings.get("dbname")
         test_hid = self.settings.get("test_hid")
 
-        if request["command"]:
+        if "command" in request:
 
             hid = hashlib.sha256(request['id'].encode('utf-8')).hexdigest()
             request_service = request['service']
