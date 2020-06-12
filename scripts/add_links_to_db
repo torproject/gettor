@@ -148,7 +148,8 @@ def main():
                     c.execute(
                         "INSERT INTO links(link, platform, language, arch, version, provider, status, file)"
                         "VALUES ('%s', '%s', '%s', '64', '%s', '%s', 'ACTIVE', '%s')"
-                        % (providers.get(p).replace("arch", k).replace("version", version) +
+                        % (providers.get(p).replace("arch", k).replace("version",
+                            version.replace(".", "-")) +
                             release_link, k, l, version, p, release_link))
 
 
