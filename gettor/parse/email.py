@@ -145,8 +145,14 @@ class EmailParser(object):
 
     def build_request(self, msg_str, norm_addr):
         # Search for commands keywords
-        subject_re = re.compile(r"Subject: (.*)\r\n")
+        subject_re = re.compile("Subject: (.*)\n")
         subject = subject_re.search(msg_str)
+
+        # the body of a message is "a sequence of characters that follows the header
+        # section and is separated from the header section by an empty line"
+        # https://tools.ietf.org/html/rfc5322#section-2.1
+        body_re = re.compile("\r?\n\r?\n(.*)$", re.DOTALL)
+        body = body_re.search(msg_str)
 
         request = {
             "id": norm_addr,
@@ -161,7 +167,9 @@ class EmailParser(object):
             request = self.parse_keywords(subject, request)
 
         # Always parse the body too, to see if there's more specific information
-        request = self.parse_keywords(msg_str, request)
+        if body:
+            body = body.group(1)
+            request = self.parse_keywords(body, request)
 
         if not request["language"]:
             request["language"] = "en-US"

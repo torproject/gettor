@@ -57,7 +57,7 @@ class EmailServiceTests(unittest.TestCase):
 
     def test_build_request(self):
         ep = conftests.EmailParser(self.settings, "gettor@torproject.org")
-        msg_str = "From: \"silvia [hiro]\" <hiro@torproject.org>\n Subject: \r\n Reply-To: hiro@torproject.org \nTo: gettor@torproject.org\r\n osx es"
+        msg_str = "From: \"silvia [hiro]\" <hiro@torproject.org>\n Subject: \r\n Reply-To: hiro@torproject.org \nTo: gettor@torproject.org\r\n\r\n osx es"
         msg = conftests.message_from_string(msg_str)
         ep.locales = ["es", "en"]
         request = ep.build_request(msg_str, "hiro@torproject.org")
@@ -81,32 +81,32 @@ class EmailServiceTests(unittest.TestCase):
         ep.locales = ["en-US", "es-ES", "es-AR", "pt-BR", "fa"]
         request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
                 "Subject: \r\n Reply-To: hiro@torproject.org \nTo:"
-                "gettor@torproject.org\n\n")
+                "gettor@torproject.org\r\n\r\n")
         self.assertEqual(request["language"], "en-US")
         self.assertEqual(request["command"], "help")
 
         request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
                 "Subject: \r\n Reply-To: hiro@torproject.org \nTo:"
-                "gettor@torproject.org\n\n please send me tor\n")
+                "gettor@torproject.org\r\n\r\n please send me tor\n")
         self.assertEqual(request["language"], "en-US")
         self.assertEqual(request["command"], "help")
 
         request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
                 "Subject: \r\n Reply-To: hiro@torproject.org \nTo:"
-                "gettor@torproject.org\n\nwindows\n")
+                "gettor@torproject.org\r\n\r\nwindows\n")
         self.assertEqual(request["language"], "en-US")
         self.assertEqual(request["platform"], "windows")
         self.assertEqual(request["command"], "links")
 
         request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
                 "Subject: \r\n Reply-To: hiro@torproject.org \nTo:"
-                "gettor@torproject.org\n\n fa\n")
+                "gettor@torproject.org\r\n\r\n fa\n")
         self.assertEqual(request["language"], "fa")
         self.assertEqual(request["command"], "help")
 
         request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
                 "Subject: \r\n Reply-To: hiro@torproject.org \nTo:"
-                "gettor@torproject.org\n\n please help me get tor for windows\n")
+                "gettor@torproject.org\r\n\r\n please help me get tor for windows\n")
         self.assertEqual(request["language"], "en-US")
         self.assertEqual(request["command"], "links")
         self.assertEqual(request["platform"], "windows")
@@ -116,58 +116,91 @@ class EmailServiceTests(unittest.TestCase):
         ep.locales = ["en-US", "es-ES", "es-AR", "pt-BR", "fa"]
         request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
                 "Subject: \r\n Reply-To: hiro@torproject.org \nTo:"
-                "gettor@torproject.org\n osx en")
+                "gettor@torproject.org\r\n\r\n osx en")
         self.assertEqual(request["language"], "en-US")
 
         request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
                 "Subject: \r\n Reply-To: hiro@torproject.org \nTo:"
-                "gettor@torproject.org\n osx ES")
+                "gettor@torproject.org\r\n\r\n osx ES")
         self.assertEqual(request["language"], "es-ES")
 
         request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
                 "Subject: \r\n Reply-To: hiro@torproject.org \nTo:"
-                "gettor@torproject.org\n osx en-US")
+                "gettor@torproject.org\r\n\r\n osx en-US")
         self.assertEqual(request["language"], "en-US")
 
         request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
                 "Subject: \r\n Reply-To: hiro@torproject.org \nTo:"
-                "gettor@torproject.org\n linux fa")
+                "gettor@torproject.org\r\n\r\n linux fa")
         self.assertEqual(request["language"], "fa")
 
         request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
                 "Subject: \r\n Reply-To: hiro@torproject.org \nTo:"
-                "gettor@torproject.org\n osx es")
+                "gettor@torproject.org\r\n\r\n osx es")
         self.assertEqual(request["language"], "es-ES")
 
         request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
                 "Subject: \r\n Reply-To: hiro@torproject.org \nTo:"
-                "gettor@torproject.org\n linux zz")
+                "gettor@torproject.org\r\n\r\n linux zz")
         self.assertEqual(request["language"], "en-US")
 
         request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
                 "Subject: \r\n Reply-To: hiro@torproject.org \nTo:"
-                "gettor@torproject.org\n linux pt-PT")
+                "gettor@torproject.org\r\n\r\n linux pt-PT")
         self.assertEqual(request["language"], "pt-BR")
 
         request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
                 "Subject: \r\n Reply-To: hiro@torproject.org \nTo:"
-                "gettor@torproject.org\n linux es-AR")
+                "gettor@torproject.org\r\n\r\n linux es-AR")
         self.assertEqual(request["language"], "es-AR")
 
         request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
                 "Subject: linux es\r\n Reply-To: hiro@torproject.org \nTo:"
-                "gettor@torproject.org\n linux es-AR")
+                "gettor@torproject.org\r\n\r\n linux es-AR")
         self.assertEqual(request["language"], "es-AR")
 
         request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
                 "Subject: linux es\r\n Reply-To: hiro@torproject.org \nTo:"
-                "gettor@torproject.org\n linux")
+                "gettor@torproject.org\r\n\r\n linux")
         self.assertEqual(request["language"], "es-ES")
 
         request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
                 "Subject: linux es-AR\r\n Reply-To: hiro@torproject.org \nTo:"
-                "gettor@torproject.org\n linux es")
+                "gettor@torproject.org\r\n\r\n linux es")
         self.assertEqual(request["language"], "es-AR")
+        del ep
+
+    def test_body_subject_parser(self):
+        ep = conftests.EmailParser(self.settings, "gettor@torproject.org")
+        ep.locales = ["en-US", "es-ES", "es-AR", "pt-BR", "fa"]
+        request = ep.parse(
+            "To: gettor@torproject.org\r\n"
+            "From: Cecylia Bocovich <cohosh@torproject.org>\r\n"
+            "Subject: windows es\r\n"
+            "Message-ID: <0befc58c-c94d-c262-9597-4365122c04b4@torproject.org>\r\n"
+            "Date: Mon, 11 Jan 2021 11:28:37 -0500\r\n"
+            "MIME-Version: 1.0\r\n"
+            "Content-Type: text/plain; charset=utf-8\r\n"
+            "Content-Language: en-US\r\n"
+            "Content-Transfer-Encoding: 7bit\r\n"
+            "\r\n"
+            "windows es\r\n"
+        )
+        self.assertEqual(request["language"], "es-ES")
+        request = ep.parse(
+            "To: gettor@torproject.org\n"
+            "From: Cecylia Bocovich <cohosh@torproject.org>\n"
+            "Subject: linux fa\n"
+            "Message-ID: <0befc58c-c94d-c262-9597-4365122c04b4@torproject.org>\n"
+            "Date: Mon, 11 Jan 2021 11:28:37 -0500\n"
+            "MIME-Version: 1.0\n"
+            "Content-Type: text/plain; charset=utf-8\n"
+            "Content-Language: en-US\n"
+            "Content-Transfer-Encoding: 7bit\n"
+            "\n"
+            "linux fa\n"
+        )
+        self.assertEqual(request["language"], "fa")
         del ep
 
     @pytest_twisted.inlineCallbacks
@@ -216,19 +249,19 @@ class EmailServiceTests(unittest.TestCase):
         ep.locales = ["en-US", "es-ES", "es-AR", "pt-BR", "fa", "fr"]
         request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
                 "Subject: Re: [GetTor] Help Email\r\n Reply-To: hiro@torproject.org \nTo:"
-                "gettor@torproject.org\n osx en\n")
+                "gettor@torproject.org\r\n\r\n osx en\n")
         self.assertEqual(request["command"], "links")
         self.assertEqual(request["language"], "en-US")
         self.assertEqual(request["platform"], "osx")
 
         request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
                 "Subject: Re: [GetTor] Help Email\r\n Reply-To: hiro@torproject.org \nTo:"
-                "gettor@torproject.org\n i like french fries\n")
+                "gettor@torproject.org\r\n\r\n i like french fries\n")
         self.assertEqual(request["command"], "help")
 
         request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
                 "Subject: Re: [GetTor] Help Email\r\n Reply-To: hiro@torproject.org \nTo:"
-                "gettor@torproject.org\nlinux fa\n\n"
+                "gettor@torproject.org\r\n\r\nlinux fa\n"
                 "On 2020-02-10 11:54 a.m., gettor@torproject.org wrote:\n"
                 "> This is how you can request a tor browser bundle link.\n"
                 ">\n"
@@ -237,14 +270,15 @@ class EmailServiceTests(unittest.TestCase):
                 "> In the body of the email only write: <operating system> <language>.\n"
                 ">\n"
                 "> We only support windows, osx and linux as operating systems.\n"
-                ">\n")
+                ">\n"
+        )
         self.assertEqual(request["command"], "links")
         self.assertEqual(request["language"], "fa")
         self.assertEqual(request["platform"], "linux")
 
         request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
                 "Subject: Re: [GetTor] Help Email\r\n Reply-To: hiro@torproject.org \nTo:"
-                "gettor@torproject.org\nlinux fa\n\n"
+                "gettor@torproject.org\r\n\r\nlinux fa\n"
                 "On 2020-02-10 11:54 a.m., gettor@torproject.org wrote:\n"
                 "This is how you can request a tor browser bundle link.\n"
                 "\n"
@@ -260,7 +294,7 @@ class EmailServiceTests(unittest.TestCase):
 
         request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
                 "Subject: Re: [GetTor] Help Email\r\n Reply-To: hiro@torproject.org \nTo:"
-                "gettor@torproject.org\n"
+                "gettor@torproject.org\r\n\r\n"
                 "On 2020-02-10 11:54 a.m., gettor@torproject.org wrote:\n"
                 "> This is how you can request a tor browser bundle link.\n"
                 ">\n"
@@ -277,7 +311,7 @@ class EmailServiceTests(unittest.TestCase):
 
         request = ep.parse("From: \"silvia [hiro]\" <hiro@torproject.org>\n"
                 "Subject: Re: [GetTor] Help Email\r\n Reply-To: hiro@torproject.org \nTo:"
-                "gettor@torproject.org\n"
+                "gettor@torproject.org\r\n\r\n"
                 "On 2020-02-10 11:54 a.m., gettor@torproject.org wrote:\n"
                 "> This is how you can request a tor browser bundle link.\n"
                 ">\n"
@@ -293,22 +327,22 @@ class EmailServiceTests(unittest.TestCase):
         ep = conftests.EmailParser(self.settings, "gettor@torproject.org")
         request = ep.parse("From: MAILER-DAEMON@mx1.riseup.net\n"
                 "Subject: Undelivered Mail Returned to Sender\r\n"
-                "To: gettor@torproject.org\n osx en\n")
+                "To: gettor@torproject.org\r\n\r\n osx en\n")
 
         self.assertEqual(request, {})
         request = ep.parse("From: postmaster@example.sk\n"
                 "Subject: Undelivered Mail Returned to Sender\r\n"
-                "To: gettor@torproject.org\n\n osx en\n")
+                "To: gettor@torproject.org\r\n\r\n osx en\n")
 
         self.assertEqual(request, {})
         request = ep.parse("From: gettor@torproject.org\n"
                 "Subject: links\r\n"
-                "To: gettor@torproject.org\n\n osx en\n")
+                "To: gettor@torproject.org\r\n\r\n osx en\n")
 
         self.assertEqual(request, {})
         request = ep.parse("From: gettor+en@torproject.org\n"
                 "Subject: links\r\n"
-                "To: gettor@torproject.org\n\n osx en\n")
+                "To: gettor@torproject.org\r\n\r\n osx en\n")
 
         self.assertEqual(request, {})
 
