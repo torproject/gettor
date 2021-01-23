@@ -13,6 +13,7 @@ the Tor Browser.
 import json
 import os
 import inspect
+import re
 
 strings = {}
 translations = {}
@@ -114,6 +115,10 @@ def load_strings(current_locale):
     for s in translations[current_locale]:
         strings[s] = translations[current_locale][s]
 
+
+def redact_emails(text):
+    redacted_text = re.sub(r'[\w\.+-]+@[\w\.+-]+', '[REDACTED_EMAIL]', text)
+    return redacted_text
 
 
 def translated(k):

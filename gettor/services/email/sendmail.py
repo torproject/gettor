@@ -235,7 +235,11 @@ class Sendmail(object):
                 yield self.conn.remove_request(
                     id=id, service="email", date=date
                 )
-            log.error("Error sending email: {}.".format(e))
+            log.error(
+                strings.redact_emails("Error sending email:{}.".format(e))
+                )
 
         except Exception as e:
-            log.error("Error sending email: {}.".format(e))
+            log.error(
+                strings.redact_emails("Error sending email:{}.".format(e))
+                )
