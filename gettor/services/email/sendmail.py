@@ -230,14 +230,9 @@ class Sendmail(object):
                     id=id, service="email", date=date
                 )
 
-        except smtp.SMTPClientError as e:
+        except Exception as e:
             yield self.conn.remove_request(
                 id=id, service="email", date=date
             )
             log.error(strings.redact_emails(
                 "Error sending email to {}:{}.".format(id, e)))
-
-        except Exception as e:
-            log.error(
-                strings.redact_emails("Error sending email:{}.".format(e))
-                )
