@@ -231,13 +231,11 @@ class Sendmail(object):
                 )
 
         except smtp.SMTPClientError as e:
-            if e.code == 501: # Bad recipient address syntax
-                yield self.conn.remove_request(
-                    id=id, service="email", date=date
-                )
-            log.error(
-                strings.redact_emails("Error sending email:{}.".format(e))
-                )
+            yield self.conn.remove_request(
+                id=id, service="email", date=date
+            )
+            log.error(strings.redact_emails(
+                "Error sending email to {}:{}.".format(id, e)))
 
         except Exception as e:
             log.error(
